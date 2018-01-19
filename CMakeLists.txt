@@ -38,11 +38,10 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.cpp
             src/wximgkap.h
             )
-
-
-
       
 IF(UNIX)
+ INCLUDE("cmake/FindGeoTIFF.cmake")
+ FIND_PACKAGE(GeoTIFF QUIET)
  INCLUDE("cmake/FindTinyXML.cmake")
  FIND_PACKAGE(TinyXML QUIET)
 ENDIF(UNIX)
@@ -64,10 +63,13 @@ ELSE(TINYXML_FOUND)
 ENDIF(TINYXML_FOUND)
 ADD_DEFINITIONS(-DTIXML_USE_STL)
 
-
-
-ADD_DEFINITIONS(-DTIXML_USE_STL)
-
+IF(GEOTIFF_FOUND)
+  message (STATUS "Building with system libGeoTIFF")
+  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+ELSE(GEOTIFF_FOUND)
+  message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+ENDIF(GEOTIFF_FOUND)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
