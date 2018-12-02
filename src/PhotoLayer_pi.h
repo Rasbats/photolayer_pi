@@ -36,7 +36,7 @@
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    13
 
-#define     MY_PLUGIN_VERSION_MAJOR    0
+#define     MY_PLUGIN_VERSION_MAJOR    2
 #define     MY_PLUGIN_VERSION_MINOR    1
 
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
