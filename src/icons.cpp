@@ -5,9 +5,19 @@
 #endif
 #include <wx/mstream.h>
 #include "icons.h"
+#include <wx/fileconf.h>
 
 wxBitmap *_img_photolayer;
 wxBitmap *_img_photolayer_pi;
+
+#ifdef PHOTOLAYER_USE_SVG
+#include "ocpn_plugin.h"
+wxString _svg_photolayer;
+wxString _svg_photolayer_rollover;
+wxString _svg_photolayer_toggled;
+#endif
+
+
 
 void initialize_images(void)
 {
@@ -19,5 +29,20 @@ void initialize_images(void)
 		wxMemoryInputStream sm("\211PNG\r\n\032\n\000\000\000\rIHDR\000\000\000 \000\000\000 \b\006\000\000\000szz\364\000\000\000\011pHYs\000\000\016\304\000\000\016\304\001\225+\016\033\000\000\000\242IDATX\303\355\327\315\011\3030\014\206\341\327%K8\003v\216\316\321\001\3451\324[ $Nt\221>(\361\331\360\274\350\340\237ff\216p\275\020\257'@\036\260D7\366\365\253\233@\026\036\n\310\304\207\275\257\003\262\361\313\011T\340\323\200*\3744\240\022?\004T\343\273\000\005\276\005\250p\200\346|\\\205\247\336\005\021\034\240E\036$k\357\272\2438\023\277\r\310\306m\214y@\005>\235@\025~\032P\211\037\002\252\361]\200\002\337\002T8@\303\335Ux\372\263\374\016\aX\"\233\236\237\321_\a\374\000\301\351H\322C\226\a\357\000\000\000\000IEND\256B`\202", 240);
 		_img_photolayer_pi = new wxBitmap(wxImage(sm));
 	}
+
+#ifdef PHOTOLAYER_USE_SVG
+	wxFileName fn;
+	fn.SetPath(*GetpSharedDataLocation());
+	fn.AppendDir(_T("plugins"));
+	fn.AppendDir(_T("PhotoLayer_pi"));
+	fn.AppendDir(_T("data"));
+	fn.SetFullName(_T("PhotoLayer_pi.svg"));
+	_svg_photolayer = fn.GetFullPath();
+	fn.SetFullName(_T("PhotoLayer_pi.svg"));
+	_svg_photolayer_rollover = fn.GetFullPath();
+	fn.SetFullName(_T("PhotoLayer_pi_toggled.svg"));
+	_svg_photolayer_toggled = fn.GetFullPath();
+#endif
+
 	return;
 }

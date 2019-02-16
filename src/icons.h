@@ -12,5 +12,11 @@ extern void initialize_images(void);
 extern wxBitmap *_img_photolayer;
 extern wxBitmap *_img_photolayer_pi;
 
+#ifdef PHOTOLAYER_USE_SVG
+extern wxString _svg_photolayer;
+extern wxString _svg_photolayer_rollover;
+extern wxString _svg_photolayer_toggled;
+#endif
+
 
 #endif /* ICONS_H */

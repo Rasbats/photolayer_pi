@@ -30,6 +30,7 @@
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/fileconf.h>
+#include "ocpn_plugin.h" //Required for OCPN plugin functions
 
 #include "version.h"
 
@@ -111,7 +112,7 @@ private:
       bool              LoadConfig(void);
       bool              SaveConfig(void);
 
-      void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
+      void				SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
       int               m_PhotoLayer_dialog_x, m_PhotoLayer_dialog_y;
       int               m_display_width, m_display_height;

@@ -63,11 +63,33 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
 int PhotoLayer_pi::Init(void)
 {
     AddLocaleCatalog( _T("opencpn-PhotoLayer_pi") );
-    m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_photolayer,
-                                            _img_photolayer, wxITEM_NORMAL,
-                                            _("PhotoLayer"), _T(""), NULL,
-                                            PHOTOLAYER_TOOL_POSITION, 0, this);
+    //m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_photolayer,
+    //                                        _img_photolayer, wxITEM_NORMAL,
+    //                                        _("PhotoLayer"), _T(""), NULL,
+    //                                        PHOTOLAYER_TOOL_POSITION, 0, this);
     m_pPhotoLayer = NULL;
+
+	
+		wxString shareLocn = *GetpSharedDataLocation() +
+			_T("plugins") + wxFileName::GetPathSeparator() +
+			_T("PhotoLayer_pi") + wxFileName::GetPathSeparator()
+			+ _T("data") + wxFileName::GetPathSeparator();
+
+		wxString normalIcon = shareLocn + _T("PhotoLayer.svg");
+		wxString toggledIcon = shareLocn + _T("PhotoLayer_toggled.svg");
+		wxString rolloverIcon = shareLocn + _T("PhotoLayer.svg");
+
+		//  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
+	/*	if (GetActiveStyleName().Lower() != _T("traditional")) {
+			normalIcon = _T("");
+			toggledIcon = _T("");
+			rolloverIcon = _T("");
+		}
+		*/
+		wxLogMessage(normalIcon);
+		m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
+			_("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
+	
 
     return (WANTS_OVERLAY_CALLBACK |
             WANTS_OPENGL_OVERLAY_CALLBACK |
