@@ -30,7 +30,6 @@
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/fileconf.h>
-#include "ocpn_plugin.h" //Required for OCPN plugin functions
 
 #include "version.h"
 
@@ -76,6 +75,8 @@ public:
 
       int GetToolbarToolCount(void);
       void OnToolbarToolCallback(int id);
+	  void OnDialogClose();
+	  bool m_bShowPhoto;
 
 	  void SetPhotoLayerDialogX(int x){ m_PhotoLayer_dialog_x = x; };
 	  void SetPhotoLayerDialogY(int x){ m_PhotoLayer_dialog_y = x; };

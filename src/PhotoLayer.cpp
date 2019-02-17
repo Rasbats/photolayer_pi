@@ -289,9 +289,10 @@ PhotoLayer::PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent)
     wxIcon icon;
     icon.CopyFromBitmap(*_img_photolayer);
 
-	wxIcon pIcon;
-    pIcon.CopyFromBitmap(photolayer_xpm);
-	SetIcon(pIcon);
+	//wxIcon pIcon;
+   //pIcon.CopyFromBitmap(photolayer_xpm);
+	
+	SetIcon(icon);
 	LoadTIFCoordinatesFromXml(m_BuiltinCoords, _T("PhotoLayerDataSets.xml"));
 	ShowSavedImages();
     UpdateMenuStates();
@@ -309,6 +310,12 @@ PhotoLayer::~PhotoLayer()
     for(unsigned int i=0; i<m_Faxes.size(); i++)
         delete m_Faxes[i];
 }
+
+void PhotoLayer::OnClose(wxCloseEvent& event) {
+	
+	m_PhotoLayer_pi.OnDialogClose();
+}
+
 
 void PhotoLayer::EnableDisplayControls(bool enable)
 {
@@ -561,33 +568,35 @@ void PhotoLayer::OnDelete( wxCommandEvent& event )
 	wxString filename;
 
 	for(int selection = 0; selection < (int)m_Faxes.size(); selection++) {
-        if(!m_lFaxes->IsSelected(selection))
-            continue;
+		if (m_lFaxes->IsSelected(selection)) {
 
-		filename = m_Faxes[selection]->m_Coords->name;
+			filename = m_Faxes[selection]->m_Coords->name;
 
-		wxMessageDialog *dial = new wxMessageDialog(NULL,
-			wxT("Delete the image file?"), wxT("Question"),
-			wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
-		dial->ShowModal();
+			wxMessageDialog *dial = new wxMessageDialog(NULL,
+				wxT("YES to DELETE the file\n\nNO to remove from the list\n... but NOT delete the file"), wxT("Question"),
+				wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
+			
 
-		if (dial->ShowModal() == wxID_OK){
-			wxRemoveFile(filename);
-			UpdateDataSet(filename);
+			if (dial->ShowModal() == wxID_YES) {				
+				wxRemoveFile(filename);
+				UpdateDataSet(filename);
+
+			}
+			else {
+
+				wxMessageBox(_("Image will be removed from the list\nbut NOT deleted"), _("Remove from list"));
+				UpdateDataSet(filename);
+			}
+
+			delete m_Faxes[selection];
+			m_Faxes.erase(m_Faxes.begin() + selection);
+
+			m_lFaxes->Delete(selection);
+			UpdateMenuStates();
+
+			RequestRefresh(m_parent);
+			selection--;
 		}
-		else {
-			wxMessageBox(_("Image will be removed from the list\nbut NOT deleted"), _("Remove from list"));
-			UpdateDataSet(filename);
-		}
-		
-        delete m_Faxes[selection];
-        m_Faxes.erase(m_Faxes.begin() + selection);
-
-        m_lFaxes->Delete(selection);
-        UpdateMenuStates();
-        
-        RequestRefresh( m_parent );
-        selection--;
     }
 }
 

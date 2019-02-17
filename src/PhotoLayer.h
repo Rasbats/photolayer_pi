@@ -58,7 +58,7 @@ public:
     PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent);
     ~PhotoLayer();
 
-    void OnClose( wxCloseEvent& event ) { Hide(); }
+	void OnClose(wxCloseEvent& event);
     void EnableDisplayControls(bool enable);
 	void ShowSavedImages();
     void OnFaxes( wxCommandEvent& event );
@@ -72,7 +72,6 @@ public:
 	void UpdateDataSet(wxString filename);
     void OnExport( wxCommandEvent& event );
     void OnPreferences( wxCommandEvent& event ) { m_PhotoLayer_pi.ShowPreferencesDialog( this ); }
-    void OnClose( wxCommandEvent& event ) { Hide(); }
     void OnAbout( wxCommandEvent& event );
 
     bool Show( bool show = true );

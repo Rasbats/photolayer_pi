@@ -69,6 +69,7 @@ int PhotoLayer_pi::Init(void)
     //                                        PHOTOLAYER_TOOL_POSITION, 0, this);
     m_pPhotoLayer = NULL;
 
+	m_bShowPhoto = false;
 	
 		wxString shareLocn = *GetpSharedDataLocation() +
 			_T("plugins") + wxFileName::GetPathSeparator() +
@@ -77,7 +78,7 @@ int PhotoLayer_pi::Init(void)
 
 		wxString normalIcon = shareLocn + _T("PhotoLayer.svg");
 		wxString toggledIcon = shareLocn + _T("PhotoLayer_toggled.svg");
-		wxString rolloverIcon = shareLocn + _T("PhotoLayer.svg");
+		wxString rolloverIcon = shareLocn + _T("PhotoLayer_rollover.svg");
 
 		//  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
 	/*	if (GetActiveStyleName().Lower() != _T("traditional")) {
@@ -90,6 +91,7 @@ int PhotoLayer_pi::Init(void)
 		m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
 			_("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
 	
+
 
     return (WANTS_OVERLAY_CALLBACK |
             WANTS_OPENGL_OVERLAY_CALLBACK |
@@ -205,7 +207,18 @@ void PhotoLayer_pi::OnToolbarToolCallback(int id)
 
     }
 
-    m_pPhotoLayer->Show(!m_pPhotoLayer->IsShown());
+	//Toggle GRIB overlay display
+	m_bShowPhoto = !m_bShowPhoto;
+
+	//    Toggle dialog?
+	if (m_bShowPhoto) {
+		m_pPhotoLayer->Show();
+		RequestRefresh(m_parent_window); // refresh main window
+	}
+	else {
+		m_pPhotoLayer->Hide();
+	}
+    
 
     RearrangeWindow();
 
@@ -213,6 +226,8 @@ void PhotoLayer_pi::OnToolbarToolCallback(int id)
     m_pPhotoLayer->Move(0,0);        // workaround for gtk autocentre dialog behavior
     m_pPhotoLayer->Move(p);
 }
+
+
 
 bool PhotoLayer_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
@@ -224,6 +239,14 @@ bool PhotoLayer_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
             m_pPhotoLayer->m_Faxes[i]->RenderImage(dc, vp);
 
     return true;
+}
+
+void PhotoLayer_pi::OnDialogClose()
+{
+	m_bShowPhoto = false;
+	SetToolbarItemState(m_leftclick_tool_id, m_bShowPhoto);
+	m_pPhotoLayer->Hide();
+	RequestRefresh(m_parent_window); // refresh main window
 }
 
 bool PhotoLayer_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
