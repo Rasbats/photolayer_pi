@@ -78,7 +78,6 @@ int PhotoLayer_pi::Init(void)
 
 		wxString normalIcon = shareLocn + _T("PhotoLayer.svg");
 		wxString toggledIcon = shareLocn + _T("PhotoLayer_toggled.svg");
-		wxString rolloverIcon = shareLocn + _T("PhotoLayer_rollover.svg");
 
 		//  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
 	/*	if (GetActiveStyleName().Lower() != _T("traditional")) {
@@ -88,7 +87,7 @@ int PhotoLayer_pi::Init(void)
 		}
 		*/
 		wxLogMessage(normalIcon);
-		m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
+		m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, normalIcon, toggledIcon, wxITEM_CHECK,
 			_("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
 	
 

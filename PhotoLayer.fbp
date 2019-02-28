@@ -18,7 +18,7 @@
         <property name="internationalize">1</property>
         <property name="name">PhotoLayer</property>
         <property name="namespace"></property>
-        <property name="path">C:\plugins\photolayer_pi\src</property>
+        <property name="path">C:\plugins - wxWidgets 3.1.2\photolayer_pi\src</property>
         <property name="precompiled_header"></property>
         <property name="relative_path">1</property>
         <property name="skip_lua_events">1</property>
@@ -770,7 +770,7 @@
                                                                 <property name="hidden">0</property>
                                                                 <property name="id">wxID_ANY</property>
                                                                 <property name="initial">64</property>
-                                                                <property name="max">32768</property>
+                                                                <property name="max">64</property>
                                                                 <property name="max_size"></property>
                                                                 <property name="maximize_button">0</property>
                                                                 <property name="maximum_size"></property>
@@ -894,7 +894,7 @@
                                                         <property name="gripper">0</property>
                                                         <property name="hidden">0</property>
                                                         <property name="id">wxID_ANY</property>
-                                                        <property name="label">Recommended 4, 16, 64, or 256</property>
+                                                        <property name="label">Recommended: 64</property>
                                                         <property name="markup">0</property>
                                                         <property name="max_size"></property>
                                                         <property name="maximize_button">0</property>
