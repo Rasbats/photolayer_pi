@@ -970,7 +970,7 @@ int wximgtokap(PhotoLayerImage &image, int colors, int units, const char *sd, co
     widthout = widthin;
     heightout = heightin;
 #endif
-
+	
     /* calculate resolution en size in meters */
 
     dx = postod((lat0+lat1)/2,lon0,(lat0+lat1)/2,lon1);

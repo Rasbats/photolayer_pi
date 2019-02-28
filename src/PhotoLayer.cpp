@@ -286,11 +286,11 @@ PhotoLayer::PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent)
     : PhotoLayerBase( parent ),
       m_PhotoLayer_pi(_PhotoLayer_pi)
 {
-    wxIcon icon;
-    icon.CopyFromBitmap(*_img_photolayer);
+	wxString blank_name = *GetpSharedDataLocation()
+		+ _T("plugins/PhotoLayer_pi/data/blank.ico");
 
-	//wxIcon pIcon;
-   //pIcon.CopyFromBitmap(photolayer_xpm);
+	wxIcon icon(blank_name, wxBITMAP_TYPE_ICO);
+	SetIcon(icon);
 	
 	SetIcon(icon);
 	LoadTIFCoordinatesFromXml(m_BuiltinCoords, _T("PhotoLayerDataSets.xml"));
@@ -585,7 +585,6 @@ void PhotoLayer::OnDelete( wxCommandEvent& event )
 			else {
 
 				wxMessageBox(_("Image will be removed from the list\nbut NOT deleted"), _("Remove from list"));
-				UpdateDataSet(filename);
 			}
 
 			delete m_Faxes[selection];

@@ -14,7 +14,7 @@ SET(TITLE_NAME PhotoLayer)
 SET(CPACK_PACKAGE_CONTACT "Mike Rossiter")
 
 SET(VERSION_MAJOR "2")
-SET(VERSION_MINOR "1")
+SET(VERSION_MINOR "1.1")
 
 IF (MSVC)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/include/msvc)
@@ -28,6 +28,19 @@ ENDIF(PHOTOLAYER_USE_SVG)
 
 INCLUDE("cmake/PluginConfigure.cmake")
 
+IF(WIN32)
+	SET(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+	SET(geotiff "${PARENT}.lib")
+	SET(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+	SET(libtiff "${PARENT}.lib")
+
+	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+
+	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/include)
+	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
+	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
+ENDIF(WIN32)
 
 SET(SRC_PHOTOLAYER
             src/PhotoLayer_pi.cpp
@@ -77,6 +90,11 @@ IF(GEOTIFF_FOUND)
 ELSE(GEOTIFF_FOUND)
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 ENDIF(GEOTIFF_FOUND)
+
+FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

@@ -217,7 +217,7 @@ PhotoLayerPrefsDialog::PhotoLayerPrefsDialog( wxWindow* parent, wxWindowID id, c
 	m_staticText36->Wrap( -1 );
 	fgSizer511->Add( m_staticText36, 0, wxALL, 5 );
 
-	m_sExportColors = new wxSpinCtrl( sbSizer17->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 32768, 64 );
+	m_sExportColors = new wxSpinCtrl( sbSizer17->GetStaticBox(), wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 64, 64 );
 	fgSizer511->Add( m_sExportColors, 0, wxALL, 5 );
 
 	m_staticText37 = new wxStaticText( sbSizer17->GetStaticBox(), wxID_ANY, _("Colors"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -227,7 +227,7 @@ PhotoLayerPrefsDialog::PhotoLayerPrefsDialog( wxWindow* parent, wxWindowID id, c
 
 	fgSizer53->Add( fgSizer511, 1, wxEXPAND, 5 );
 
-	m_staticText45 = new wxStaticText( sbSizer17->GetStaticBox(), wxID_ANY, _("Recommended 4, 16, 64, or 256"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText45 = new wxStaticText( sbSizer17->GetStaticBox(), wxID_ANY, _("Recommended: 64"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText45->Wrap( -1 );
 	fgSizer53->Add( m_staticText45, 0, wxALL, 5 );
 
