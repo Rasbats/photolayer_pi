@@ -41,10 +41,7 @@ IF(WIN32)
 	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
 	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
 
-FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
 
 ENDIF(WIN32)
 
@@ -97,7 +94,10 @@ ELSE(GEOTIFF_FOUND)
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 ENDIF(GEOTIFF_FOUND)
 
+FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")

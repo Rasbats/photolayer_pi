@@ -52,6 +52,16 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     initialize_images();
+
+	wxString shareLocn = *GetpSharedDataLocation() +
+		_T("plugins") + wxFileName::GetPathSeparator() +
+		_T("photolayer_pi") + wxFileName::GetPathSeparator()
+		+ _T("data") + wxFileName::GetPathSeparator();
+	wxImage panelIcon(shareLocn + _T("photolayer_panel_icon.png"));
+	if (panelIcon.IsOk())
+		m_panelBitmap = wxBitmap(panelIcon);
+	else
+		wxLogMessage(_T("    PhotoLayer panel icon NOT loaded"));
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -142,7 +152,7 @@ int PhotoLayer_pi::GetPlugInVersionMinor()
 
 wxBitmap *PhotoLayer_pi::GetPlugInBitmap()
 {
-    return new wxBitmap(_img_photolayer_pi->ConvertToImage().Copy());
+    return &m_panelBitmap;
 }
 
 wxString PhotoLayer_pi::GetCommonName()

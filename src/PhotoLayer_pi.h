@@ -121,6 +121,7 @@ private:
       int               m_leftclick_tool_id;
 
       void              RearrangeWindow();
+	  wxBitmap			m_panelBitmap;
 };
 
 #endif
