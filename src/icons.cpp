@@ -34,13 +34,13 @@ void initialize_images(void)
 	wxFileName fn;
 	fn.SetPath(*GetpSharedDataLocation());
 	fn.AppendDir(_T("plugins"));
-	fn.AppendDir(_T("PhotoLayer_pi"));
+	fn.AppendDir(_T("photolayer_pi"));
 	fn.AppendDir(_T("data"));
-	fn.SetFullName(_T("PhotoLayer.svg"));
+	fn.SetFullName(_T("photolayer.svg"));
 	_svg_photolayer = fn.GetFullPath();
-	fn.SetFullName(_T("PhotoLayer_rollover.svg"));
+	fn.SetFullName(_T("photolayer_rollover.svg"));
 	_svg_photolayer_rollover = fn.GetFullPath();
-	fn.SetFullName(_T("PhotoLayer_toggled.svg"));
+	fn.SetFullName(_T("photolayer_toggled.svg"));
 	_svg_photolayer_toggled = fn.GetFullPath();
 #endif
 

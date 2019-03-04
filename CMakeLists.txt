@@ -7,16 +7,18 @@
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 
-PROJECT(PhotoLayer_pi)
-SET(PACKAGE_NAME PhotoLayer_pi)
-SET(VERBOSE_NAME PhotoLayer)
-SET(TITLE_NAME PhotoLayer)
+PROJECT(photolayer_pi)
+SET(PACKAGE_NAME photolayer_pi)
+SET(VERBOSE_NAME photolayer)
+SET(TITLE_NAME photolayer)
 SET(CPACK_PACKAGE_CONTACT "Mike Rossiter")
 
 SET(VERSION_MAJOR "2")
 SET(VERSION_MINOR "1.1")
 
 SET(NAME_SUFFIX "ov50")
+
+set (CMAKE_CXX_STANDARD 11)
 
 OPTION(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 

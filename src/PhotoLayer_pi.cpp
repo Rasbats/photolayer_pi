@@ -70,14 +70,14 @@ int PhotoLayer_pi::Init(void)
     m_pPhotoLayer = NULL;
 
 	m_bShowPhoto = false;
-	
+
 		wxString shareLocn = *GetpSharedDataLocation() +
 			_T("plugins") + wxFileName::GetPathSeparator() +
-			_T("PhotoLayer_pi") + wxFileName::GetPathSeparator()
+			_T("photolayer_pi") + wxFileName::GetPathSeparator()
 			+ _T("data") + wxFileName::GetPathSeparator();
 
-		wxString normalIcon = shareLocn + _T("PhotoLayer.svg");
-		wxString toggledIcon = shareLocn + _T("PhotoLayer_toggled.svg");
+		wxString normalIcon = shareLocn + _T("photolayer.svg");
+		wxString toggledIcon = shareLocn + _T("photolayer_toggled.svg");
 
 		//  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
 	/*	if (GetActiveStyleName().Lower() != _T("traditional")) {
@@ -89,7 +89,7 @@ int PhotoLayer_pi::Init(void)
 		wxLogMessage(normalIcon);
 		m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, normalIcon, toggledIcon, wxITEM_CHECK,
 			_("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
-	
+
 
 
     return (WANTS_OVERLAY_CALLBACK |
@@ -217,7 +217,7 @@ void PhotoLayer_pi::OnToolbarToolCallback(int id)
 	else {
 		m_pPhotoLayer->Hide();
 	}
-    
+
 
     RearrangeWindow();
 
@@ -327,14 +327,14 @@ bool PhotoLayer_pi::SaveConfig(void)
 
 	pConf->SetPath(_T("/Settings/PhotoLayer"));
 	pConf->Write(_T("Path"), m_path);
-	pConf->Write(_T("ExportPath"), m_export_path); 
+	pConf->Write(_T("ExportPath"), m_export_path);
 	pConf->Write(_T("ExportColors"), wxString::Format(_T("%i"), m_iExportColors));
 	if (m_pPhotoLayer) {
 		wxPoint p = m_pPhotoLayer->GetPosition();
 		pConf->Write(_T("DialogPosX"), p.x);
 		pConf->Write(_T("DialogPosY"), p.y);
 	}
-    
+
 
     return true;
 }
@@ -350,16 +350,16 @@ void PhotoLayer_pi::ShowPreferencesDialog( wxWindow* parent )
         new PhotoLayerPrefsDialog( parent, wxID_ANY, _("PhotoLayer Preferences"),
                                    wxPoint( m_PhotoLayer_dialog_x, m_PhotoLayer_dialog_y),
                                    wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
-    
+
     dialog->m_sExportColors->SetValue(m_iExportColors);
     dialog->m_rbExportDepthMeters->SetValue(m_bExportDepthMeters);
     dialog->m_tExportSoundingDatum->SetValue(m_sExportSoundingDatum);
-    
+
     dialog->Fit();
     wxColour cl;
     GetGlobalColor(_T("DILG1"), &cl);
     dialog->SetBackgroundColour(cl);
-    
+
     if(dialog->ShowModal() == wxID_OK)
     {
         m_iExportColors = dialog->m_sExportColors->GetValue();
