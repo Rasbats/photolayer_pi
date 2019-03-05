@@ -80,7 +80,7 @@ static char *photolayer_xpm[] = {
 * if possible lat/long.
 */
 
-int PhotoLayer::GTIFReportACorner(GTIF *gtif, GTIFDefn *defn, 
+int PhotoLayer::GTIFReportACorner(GTIF *gtif, GTIFDefn *defn,
 	const char * corner_name,
 	double x, double y, int inv_flag, int dec_flag)
 
@@ -118,13 +118,13 @@ int PhotoLayer::GTIFReportACorner(GTIF *gtif, GTIFDefn *defn,
 	return false;
 }
 
-void PhotoLayer::GTIFPrintCorners(GTIF *gtif, GTIFDefn *defn, 
+void PhotoLayer::GTIFPrintCorners(GTIF *gtif, GTIFDefn *defn,
 	int xsize, int ysize, int inv_flag, int dec_flag)
 {
 	printf("\nCorner Coordinates:\n");
 	cornerNum = 0;
-	
-	if (!GTIFReportACorner(gtif, defn, 
+
+	if (!GTIFReportACorner(gtif, defn,
 		"Upper Left", 0.0, 0.0, inv_flag, dec_flag))
 	{
 		wxMessageBox(_(" ... unable to transform points between pixel/line and PCS space\n"));
@@ -142,7 +142,7 @@ void PhotoLayer::GTIFPrintCorners(GTIF *gtif, GTIFDefn *defn,
 	cornerNum++;
 	GTIFReportACorner(gtif, defn,  "Center", xsize / 2.0, ysize / 2.0,
 		inv_flag, dec_flag);
-	cornerNum++;	
+	cornerNum++;
 }
 
 
@@ -174,20 +174,20 @@ int AttributeInt(TiXmlElement *e, const char *name, int def)
 #define FAIL(X) do { error = X; goto failed; } while(0)
 
 void PhotoLayer::LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, wxString filename)
-{	
+{
 	wxString name = filename;
-	
+
 	PhotoLayerImageCoordinates* coord = new PhotoLayerImageCoordinates(name);
 	coord->name = filename;
 	coord->p1.x = 0;
 	coord->p1.y = 0;
-	coord->lat1 = m_geoPolygon[1]; 
-	coord->lon1 = m_geoPolygon[0];  
+	coord->lat1 = m_geoPolygon[1];
+	coord->lon1 = m_geoPolygon[0];
 
 	coord->p2.x = imageWidthX;  //3265
 	coord->p2.y = imageHeightY;  //3776
 
-	coord->lat2 = m_geoPolygon[7];    
+	coord->lat2 = m_geoPolygon[7];
 	coord->lon2 = m_geoPolygon[6];
 
 	coord->CenterLat = m_geoPolygon[9];
@@ -201,11 +201,11 @@ void PhotoLayer::LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, w
 	coord->mappingratio = 1.0;
 
 	coords.Append(coord);
-				
+
 }
 
 void PhotoLayer::SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, wxString filename)
-{	
+{
 	TiXmlDocument doc;
 	TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "utf-8", "");
 	doc.LinkEndChild(decl);
@@ -245,7 +245,7 @@ void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords
 
     wxString error;
     wxString coordinatesets_path = PhotoLayer_pi::StandardPath();
-   
+
     if(!doc.LoadFile((coordinatesets_path + coordinatesets).mb_str()))
         FAIL(_("Failed to load data sets"));
     else {
@@ -271,7 +271,7 @@ void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords
 
                 coord->CenterLat = AttributeDouble(e, "CenterLat", 0);
                 coord->CenterLon = AttributeDouble(e, "CenterLon", 0);
-         
+
                 coords.Append(coord);
 
             } else
@@ -291,7 +291,7 @@ PhotoLayer::PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent)
 
 	wxIcon icon(blank_name, wxBITMAP_TYPE_ICO);
 	SetIcon(icon);
-	
+
 	SetIcon(icon);
 	LoadTIFCoordinatesFromXml(m_BuiltinCoords, _T("PhotoLayerDataSets.xml"));
 	ShowSavedImages();
@@ -312,7 +312,7 @@ PhotoLayer::~PhotoLayer()
 }
 
 void PhotoLayer::OnClose(wxCloseEvent& event) {
-	
+
 	m_PhotoLayer_pi.OnDialogClose();
 }
 
@@ -335,7 +335,7 @@ void PhotoLayer::ShowSavedImages(){
 
 	for (unsigned int i = 0; i < m_BuiltinCoords.GetCount(); i++){
 		name = m_BuiltinCoords[i]->name;
-	
+
 		if (!wimg.LoadFile(name)) {
 			{
 				wxMessageDialog mdlg(this, _("Failed to load input file: ") + name,
@@ -351,7 +351,7 @@ void PhotoLayer::ShowSavedImages(){
 			m_lFaxes->Append(name);
 			m_Faxes.push_back(img);
 
-		}			
+		}
 	}
 	m_lFaxes->SetSelection(0);
 	RequestRefresh(m_parent);
@@ -377,12 +377,12 @@ void PhotoLayer::OnFaxes( wxCommandEvent& event )
 
 
 bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff) {
-	
+
 	int		xsize, ysize;
 	int		inv_flag = 0, dec_flag = 1;
 
 	GTIFDefn defn;
-	
+
 	if (GTIFGetDefn(m_gTiff, &defn))
 	{
 		TIFFGetField(m_Tiff, TIFFTAG_IMAGEWIDTH, &xsize);
@@ -397,7 +397,7 @@ bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff) {
 	else {
 		return false;
 	}
-	return false;	
+	return false;
 }
 
 void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, wxString contents)
@@ -431,10 +431,11 @@ void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, w
 			wxMessageDialog mdlg(this, _("Failed to load input file: ") + filename,
 				_("PhotoLayer"), wxOK | wxICON_ERROR);
 			mdlg.ShowModal();
+			UpdateDataSet(filename);
 			return;
 		}
 	}
-	
+
 	PhotoLayerImage *img = new PhotoLayerImage(wimg, transparency, whitetransparency, invert);
 	wxString name = filename;  // _T("TIF");
 
@@ -445,7 +446,7 @@ void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, w
 			if (img->MakeMappedImage(this))
 				goto wizarddone;
 		}
-	
+
 wizarddone:
 	name = station.size() && contents.size() ? (station + _T(" - ") + contents) : filename;
 	int selection = m_lFaxes->Append(name);
@@ -461,7 +462,7 @@ wizarddone:
 	if (BuiltinCoordList.GetCount())
 		m_BuiltinCoords.Append(BuiltinCoordList[0]);
 }
-                 
+
 
 void PhotoLayer::Goto(int selection)
 {
@@ -492,7 +493,7 @@ All files (*.*)|*.*" ), wxFD_OPEN);
 
     if( openDialog.ShowModal() == wxID_OK ) {
         wxString filename = openDialog.GetPath();
-        m_PhotoLayer_pi.m_path = openDialog.GetDirectory();        
+        m_PhotoLayer_pi.m_path = openDialog.GetDirectory();
         OpenImage(filename);
     }
 }
@@ -514,7 +515,7 @@ All files (*.*)|*.*" ), wxFD_SAVE);
 
         if( saveDialog.ShowModal() == wxID_OK ) {
             wxString filename = saveDialog.GetPath();
-            m_PhotoLayer_pi.m_export_path = saveDialog.GetDirectory();        
+            m_PhotoLayer_pi.m_export_path = saveDialog.GetDirectory();
 
             if(!image.m_mappedimg.SaveFile(filename)) {
                 wxMessageDialog mdlg(this, _("Failed to save file: ") + filename,
@@ -543,7 +544,7 @@ void PhotoLayer::OnExport( wxCommandEvent& event )
             continue;
 
         PhotoLayerImage &image = *m_Faxes[selection];
-    
+
         wxFileDialog saveDialog
             ( this, _( "Save PhotoLayer To KAP" ),
               m_PhotoLayer_pi.m_export_path, image.m_Coords->name + _T(".kap"),
@@ -553,7 +554,7 @@ All files (*.*)|*.*" ), wxFD_SAVE);
 
         if( saveDialog.ShowModal() == wxID_OK ) {
             wxString filename = saveDialog.GetPath();
-            m_PhotoLayer_pi.m_export_path = saveDialog.GetDirectory();        
+            m_PhotoLayer_pi.m_export_path = saveDialog.GetDirectory();
 
             wximgtokap(image, m_PhotoLayer_pi.m_iExportColors,
                        m_PhotoLayer_pi.m_bExportDepthMeters ? METERS : FATHOMS,
@@ -575,9 +576,9 @@ void PhotoLayer::OnDelete( wxCommandEvent& event )
 			wxMessageDialog *dial = new wxMessageDialog(NULL,
 				wxT("YES to DELETE the file\n\nNO to remove from the list\n... but NOT delete the file"), wxT("Question"),
 				wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
-			
 
-			if (dial->ShowModal() == wxID_YES) {				
+
+			if (dial->ShowModal() == wxID_YES) {
 				wxRemoveFile(filename);
 				UpdateDataSet(filename);
 
@@ -611,12 +612,12 @@ void PhotoLayer::UpdateDataSet(wxString filename){
 	}
 
 	m_BuiltinCoords = BuiltinCoordList;
-   
+
 	wxString xmlFileName = _T("PhotoLayerDataSets.xml");
 	wxString path = PhotoLayer_pi::StandardPath();
 	wxString datasetsfile = path + xmlFileName;
-	
-	wxRemoveFile(datasetsfile);	
+
+	wxRemoveFile(datasetsfile);
 	SaveTIFCoordinatesToXml(m_BuiltinCoords, xmlFileName);
 }
 
@@ -678,7 +679,7 @@ void PhotoLayer::OnAbout( wxCommandEvent& event )
 
 bool PhotoLayer::Show( bool show )
 {
-    
+
     return PhotoLayerBase::Show(show);
 }
 

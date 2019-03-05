@@ -1,9 +1,9 @@
 ##---------------------------------------------------------------------------
 ## Author:      Mike Rossiter with massive help from Sean D'Epagnier
-## Copyright:   
+## Copyright:
 ## License:     GPLv3
 ##---------------------------------------------------------------------------
- 
+
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 
@@ -49,7 +49,7 @@ SET(SRC_PHOTOLAYER
             src/PhotoLayer_pi.cpp
 	        src/PhotoLayer_pi.h
             src/PhotoLayer.cpp
-	        src/PhotoLayer.h	
+	        src/PhotoLayer.h
             src/PhotoLayerUI.cpp
             src/PhotoLayerUI.h
             src/PhotoLayerImage.cpp
@@ -61,7 +61,7 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.cpp
             src/wximgkap.h
             )
-      
+
 IF(UNIX)
  INCLUDE("cmake/FindGeoTIFF.cmake")
  FIND_PACKAGE(GeoTIFF QUIET)
@@ -94,10 +94,12 @@ ELSE(GEOTIFF_FOUND)
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 ENDIF(GEOTIFF_FOUND)
 
+IF(WIN32)
 FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
 FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
+ENDIF(WIN32)
 
 INCLUDE("cmake/PluginInstall.cmake")
 INCLUDE("cmake/PluginLocalization.cmake")
