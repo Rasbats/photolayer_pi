@@ -585,6 +585,7 @@ void PhotoLayer::OnDelete( wxCommandEvent& event )
 			else {
 
 				wxMessageBox(_("Image will be removed from the list\nbut NOT deleted"), _("Remove from list"));
+				UpdateDataSet(filename);
 			}
 
 			delete m_Faxes[selection];
