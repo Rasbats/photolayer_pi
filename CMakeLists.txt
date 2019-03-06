@@ -94,6 +94,15 @@ ELSE(GEOTIFF_FOUND)
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 ENDIF(GEOTIFF_FOUND)
 
+IF(LIBTIFF_FOUND)
+  message (STATUS "Building with system libTIFF")
+  INCLUDE_DIRECTORIES(${LIBTIFF_INCLUDE_DIR})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
+ELSE(LIBTIFF_FOUND)
+  message (STATUS "libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+ENDIF(LIBTIFF_FOUND)
+
+
 IF(WIN32)
 FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
 FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
