@@ -242,22 +242,22 @@ void PhotoLayer::SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, 
 void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords, wxString coordinatesets)
 {
     TiXmlDocument doc;
-
+	wxString name;
     wxString error;
     wxString coordinatesets_path = PhotoLayer_pi::StandardPath();
 
     if(!doc.LoadFile((coordinatesets_path + coordinatesets).mb_str()))
         FAIL(_("Failed to load data sets"));
     else {
-        TiXmlHandle root(doc.RootElement());
+		TiXmlElement* root = doc.RootElement();
 
-        if(strcmp(root.Element()->Value(), "PhotoLayerDataSet"))
+        if(strcmp(root->Value(), "PhotoLayerDataSet"))
             FAIL(_("Invalid xml file"));
 
-        for(TiXmlElement* e = root.FirstChild().Element(); e; e = e->NextSiblingElement())
-            if(!strcmp(e->Value(), "Data")) {
-                wxString name = wxString::FromUTF8(e->Attribute("Name"));
-                PhotoLayerImageCoordinates *coord = new PhotoLayerImageCoordinates(name);
+		for (TiXmlElement* e = root->FirstChildElement(); e; e = e->NextSiblingElement()) {
+			if (!strcmp(e->Value(), "Data")) {
+				name = wxString::FromUTF8(e->Attribute("Name"));				
+				PhotoLayerImageCoordinates *coord = new PhotoLayerImageCoordinates(name);
 				coord->name = name;
 				coord->p1.x = AttributeInt(e, "X1", 0);
 				coord->p1.y = AttributeInt(e, "Y1", 0);
@@ -269,13 +269,15 @@ void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords
 				coord->lat2 = AttributeDouble(e, "Lat2", 0);
 				coord->lon2 = AttributeDouble(e, "Lon2", 0);
 
-                coord->CenterLat = AttributeDouble(e, "CenterLat", 0);
-                coord->CenterLon = AttributeDouble(e, "CenterLon", 0);
+				coord->CenterLat = AttributeDouble(e, "CenterLat", 0);
+				coord->CenterLon = AttributeDouble(e, "CenterLon", 0);
 
-                coords.Append(coord);
+				coords.Append(coord);
 
-            } else
-                FAIL(_("Unrecognized xml node: ") + wxString::FromUTF8(e->Value()));
+			}
+			else
+				FAIL(_("Unrecognized xml node: ") + wxString::FromUTF8(e->Value()));
+		}
     }
     return;
 failed:
@@ -488,7 +490,7 @@ void PhotoLayer::OnOpen( wxCommandEvent& event )
 		(this, _("Open PhotoLayer Input File"),
 		m_PhotoLayer_pi.m_path, wxT(""),
 		_("\
-		  Supported Files|*.tif;*.TIF|\
+		  GeoTiff files|*.tif;*.TIF;*.tiff;*.TIFF|\
 All files (*.*)|*.*" ), wxFD_OPEN);
 
     if( openDialog.ShowModal() == wxID_OK ) {
