@@ -1,0 +1,126 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-20 11:04+0100\n"
+"PO-Revision-Date: 2019-06-24 02:03\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
+"Language-Team: Thai\n"
+"Language: th_TH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: th\n"
+"X-Crowdin-File: /plugins/photolayer_pi/po/photolayer_pi.pot\n"
+
+#: src/PhotoLayer.cpp:130
+msgid " ... unable to transform points between pixel/line and PCS space\n"
+msgstr ""
+
+#: src/PhotoLayer.cpp:239 src/PhotoLayer.cpp:284 src/PhotoLayer.cpp:344
+#: src/PhotoLayer.cpp:434 src/PhotoLayer.cpp:524 src/PhotoLayerImage.cpp:599
+#: src/PhotoLayer_pi.cpp:101 src/PhotoLayer_pi.cpp:160
+msgid "PhotoLayer"
+msgstr ""
+
+#: src/PhotoLayer.cpp:239
+msgid "Failed to save xml file: "
+msgstr ""
+
+#: src/PhotoLayer.cpp:250
+msgid "Failed to load data sets"
+msgstr ""
+
+#: src/PhotoLayer.cpp:255
+msgid "Invalid xml file"
+msgstr ""
+
+#: src/PhotoLayer.cpp:279
+msgid "Unrecognized xml node: "
+msgstr ""
+
+#: src/PhotoLayer.cpp:343 src/PhotoLayer.cpp:433
+msgid "Failed to load input file: "
+msgstr ""
+
+#: src/PhotoLayer.cpp:490
+msgid "Open PhotoLayer Input File"
+msgstr ""
+
+#: src/PhotoLayer.cpp:492
+msgid "\t\t  GeoTiff files|*.tif;*.TIF;*.tiff;*.TIFF|All files (*.*)|*.*"
+msgstr ""
+
+#: src/PhotoLayer.cpp:512
+msgid "Save PhotoLayer To Image"
+msgstr ""
+
+#: src/PhotoLayer.cpp:514
+msgid "Image Files|*.BMP;*.bmp|*.PNG;*.png|*.TIFF;*.tiffAll files (*.*)|*.*"
+msgstr ""
+
+#: src/PhotoLayer.cpp:523
+msgid "Failed to save file: "
+msgstr ""
+
+#: src/PhotoLayer.cpp:551
+msgid "Save PhotoLayer To KAP"
+msgstr ""
+
+#: src/PhotoLayer.cpp:553
+msgid "KAP Files|*.KAP;*.kap|All files (*.*)|*.*"
+msgstr ""
+
+#: src/PhotoLayer.cpp:590
+msgid "Image will be removed from the list\n"
+"but NOT deleted"
+msgstr ""
+
+#: src/PhotoLayer.cpp:590
+msgid "Remove from list"
+msgstr ""
+
+#: src/PhotoLayerImage.cpp:442
+msgid "Resulting image has negative dimensions, aborting\n"
+msgstr ""
+
+#: src/PhotoLayerImage.cpp:443 src/PhotoLayerImage.cpp:457
+msgid "Mapping Failed"
+msgstr ""
+
+#: src/PhotoLayerImage.cpp:454
+#, c-format
+msgid "Resulting image larger than %dMB\n"
+"Try changing size parameter to a smaller value. (less than %.2f)\n"
+"aborting\n"
+msgstr ""
+
+#: src/PhotoLayerImage.cpp:465
+msgid "Mapping PhotoLayer Image"
+msgstr ""
+
+#: src/PhotoLayerImage.cpp:465
+msgid "PhotoLayer Mapper"
+msgstr ""
+
+#: src/PhotoLayerImage.cpp:598
+msgid "Graphics hardware not supported (Disable OpenGL)\n"
+msgstr ""
+
+#: src/PhotoLayer_pi.cpp:165
+msgid "PhotoLayer PlugIn for OpenCPN"
+msgstr ""
+
+#: src/PhotoLayer_pi.cpp:170
+msgid "PhotoLayer PlugIn for OpenCPN\n"
+"A viewer for GeoTiff image files.\n"
+"Builtin record of images that have been loade.\n\n"
+msgstr ""
+
+#: src/PhotoLayer_pi.cpp:360
+msgid "PhotoLayer Preferences"
+msgstr ""
+

@@ -1,0 +1,131 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-20 11:04+0100\n"
+"PO-Revision-Date: 2019-07-06 17:07\n"
+"Last-Translator: Pavel Kalian (nohal)\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: /plugins/photolayer_pi/po/photolayer_pi.pot\n"
+
+#: src/PhotoLayer.cpp:130
+msgid " ... unable to transform points between pixel/line and PCS space\n"
+msgstr " ... impossible de transformer des points entre pixel/ligne et espace PCS\n"
+
+#: src/PhotoLayer.cpp:239 src/PhotoLayer.cpp:284 src/PhotoLayer.cpp:344
+#: src/PhotoLayer.cpp:434 src/PhotoLayer.cpp:524 src/PhotoLayerImage.cpp:599
+#: src/PhotoLayer_pi.cpp:101 src/PhotoLayer_pi.cpp:160
+msgid "PhotoLayer"
+msgstr "PhotoLayer"
+
+#: src/PhotoLayer.cpp:239
+msgid "Failed to save xml file: "
+msgstr "Echec de sauvegarde du fichier xml : "
+
+#: src/PhotoLayer.cpp:250
+msgid "Failed to load data sets"
+msgstr "Impossible de charger les données"
+
+#: src/PhotoLayer.cpp:255
+msgid "Invalid xml file"
+msgstr "Fichier xml invalide"
+
+#: src/PhotoLayer.cpp:279
+msgid "Unrecognized xml node: "
+msgstr "Node xml non reconnu"
+
+#: src/PhotoLayer.cpp:343 src/PhotoLayer.cpp:433
+msgid "Failed to load input file: "
+msgstr "Impossible de charger le fichier : "
+
+#: src/PhotoLayer.cpp:490
+msgid "Open PhotoLayer Input File"
+msgstr "Ouvrir le fichier d'entrée PhotoLayer"
+
+#: src/PhotoLayer.cpp:492
+msgid "\t\t  GeoTiff files|*.tif;*.TIF;*.tiff;*.TIFF|All files (*.*)|*.*"
+msgstr "\t\t  Fichiers GeoTiff |*.tif;*.TIF;*.tiff;*.TIFF|All files (*.*)|*.*"
+
+#: src/PhotoLayer.cpp:512
+msgid "Save PhotoLayer To Image"
+msgstr "Sauver PhotoIayer en image"
+
+#: src/PhotoLayer.cpp:514
+msgid "Image Files|*.BMP;*.bmp|*.PNG;*.png|*.TIFF;*.tiffAll files (*.*)|*.*"
+msgstr "Fichiers Image |*.BMP;*.bmp|*.PNG;*.png|*.TIFF;*.tiffAll files (*.*)|*.*"
+
+#: src/PhotoLayer.cpp:523
+msgid "Failed to save file: "
+msgstr "Echec de sauvegarde du fichier : "
+
+#: src/PhotoLayer.cpp:551
+msgid "Save PhotoLayer To KAP"
+msgstr "Sauver PhotoIayer en KAP"
+
+#: src/PhotoLayer.cpp:553
+msgid "KAP Files|*.KAP;*.kap|All files (*.*)|*.*"
+msgstr "Fichiers KAP |*.KAP;*.kap|All files (*.*)|*.*"
+
+#: src/PhotoLayer.cpp:590
+msgid "Image will be removed from the list\n"
+"but NOT deleted"
+msgstr "L'image sera supprimée de la liste\n"
+"mais PAS supprimée"
+
+#: src/PhotoLayer.cpp:590
+msgid "Remove from list"
+msgstr "Retirer de la liste"
+
+#: src/PhotoLayerImage.cpp:442
+msgid "Resulting image has negative dimensions, aborting\n"
+msgstr "L'image résultante a des dimensions négatives. Abandon\n"
+
+#: src/PhotoLayerImage.cpp:443 src/PhotoLayerImage.cpp:457
+msgid "Mapping Failed"
+msgstr "Échec du mappage"
+
+#: src/PhotoLayerImage.cpp:454
+#, c-format
+msgid "Resulting image larger than %dMB\n"
+"Try changing size parameter to a smaller value. (less than %.2f)\n"
+"aborting\n"
+msgstr "Taille de l'image résultante supérieure à %dMo\n"
+"Essayez de réduire la taille dans les paramètres. (moins que %.2f)\n"
+"Abandon\n"
+
+#: src/PhotoLayerImage.cpp:465
+msgid "Mapping PhotoLayer Image"
+msgstr "Mappage de l'image PhotoLayer"
+
+#: src/PhotoLayerImage.cpp:465
+msgid "PhotoLayer Mapper"
+msgstr "Mappeur de PhotoLayer"
+
+#: src/PhotoLayerImage.cpp:598
+msgid "Graphics hardware not supported (Disable OpenGL)\n"
+msgstr "Carte graphique non supportée. (Désactiver OpenGL)\n"
+
+#: src/PhotoLayer_pi.cpp:165
+msgid "PhotoLayer PlugIn for OpenCPN"
+msgstr "Complément PhotoLayer pour OpenCPN"
+
+#: src/PhotoLayer_pi.cpp:170
+msgid "PhotoLayer PlugIn for OpenCPN\n"
+"A viewer for GeoTiff image files.\n"
+"Builtin record of images that have been loade.\n\n"
+msgstr "Complément PhotoLayer pour OpenCPN\n"
+"Un visionneur pour les fichiers d'image GeoTiff.\n"
+"Enregistrement Builtin des images qui ont été téléchargées.\n\n"
+
+#: src/PhotoLayer_pi.cpp:360
+msgid "PhotoLayer Preferences"
+msgstr " Preférences de PhotoLayer"
+
