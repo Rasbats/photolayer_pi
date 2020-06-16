@@ -288,13 +288,7 @@ PhotoLayer::PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent)
     : PhotoLayerBase( parent ),
       m_PhotoLayer_pi(_PhotoLayer_pi)
 {
-	wxString blank_name = *GetpSharedDataLocation()
-		+ _T("plugins/PhotoLayer_pi/data/blank.ico");
-
-	wxIcon icon(blank_name, wxBITMAP_TYPE_ICO);
-	SetIcon(icon);
-
-	SetIcon(icon);
+	
 	LoadTIFCoordinatesFromXml(m_BuiltinCoords, _T("PhotoLayerDataSets.xml"));
 	ShowSavedImages();
     UpdateMenuStates();
