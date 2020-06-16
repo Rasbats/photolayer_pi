@@ -14,7 +14,7 @@ SET(TITLE_NAME photolayer)
 SET(CPACK_PACKAGE_CONTACT "Mike Rossiter")
 
 SET(VERSION_MAJOR "2")
-SET(VERSION_MINOR "1.2")
+SET(VERSION_MINOR "2")
 
 SET(NAME_SUFFIX "ov50")
 
@@ -62,12 +62,12 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.h
             )
 
-IF(UNIX)
+IF(NOT WIN32)
  INCLUDE("cmake/FindGeoTIFF.cmake")
  FIND_PACKAGE(GeoTIFF QUIET)
  INCLUDE("cmake/FindTinyXML.cmake")
  FIND_PACKAGE(TinyXML QUIET)
-ENDIF(UNIX)
+ENDIF(NOT WIN32)
 
 IF(TINYXML_FOUND)
  message (STATUS "Building with system tinyxml")

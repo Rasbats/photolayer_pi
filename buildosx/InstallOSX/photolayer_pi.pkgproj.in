@@ -22,39 +22,6 @@
 										<dict>
 											<key>CHILDREN</key>
 											<array>
-                                                <dict>
-                                                    <key>CHILDREN</key>
-                                                    <array>
-                                                        <dict>
-                                                            <key>CHILDREN</key>
-                                                            <array/>
-                                                            <key>GID</key>
-                                                            <integer>80</integer>
-                                                            <key>PATH</key>
-                                                            <string>libgeotiff.2.dylib</string>
-                                                            <key>PATH_TYPE</key>
-                                                            <integer>3</integer>
-                                                            <key>PERMISSIONS</key>
-                                                            <integer>493</integer>
-                                                            <key>TYPE</key>
-                                                            <integer>3</integer>
-                                                            <key>UID</key>
-                                                            <integer>0</integer>
-                                                        </dict>
-                                                    </array>
-                                                    <key>GID</key>
-                                                    <integer>80</integer>
-                                                    <key>PATH</key>
-                                                    <string>MacOS</string>
-                                                    <key>PATH_TYPE</key>
-                                                    <integer>0</integer>
-                                                    <key>PERMISSIONS</key>
-                                                    <integer>509</integer>
-                                                    <key>TYPE</key>
-                                                    <integer>2</integer>
-                                                    <key>UID</key>
-                                                    <integer>0</integer>
-                                                </dict>
 												<dict>
 													<key>CHILDREN</key>
 													<array>
@@ -118,6 +85,73 @@
 													<integer>493</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array>
+														<dict>
+															<key>CHILDREN</key>
+															<array>
+																<dict>
+																	<key>CHILDREN</key>
+																	<array>
+																		<dict>
+																			<key>CHILDREN</key>
+																			<array/>
+																			<key>GID</key>
+																			<integer>80</integer>
+																			<key>PATH</key>
+																			<string>../data</string>
+																			<key>PATH_TYPE</key>
+																			<integer>3</integer>
+																			<key>PERMISSIONS</key>
+																			<integer>493</integer>
+																			<key>TYPE</key>
+																			<integer>3</integer>
+																			<key>UID</key>
+																			<integer>0</integer>
+																		</dict>
+																	</array>
+																	<key>GID</key>
+																	<integer>80</integer>
+																	<key>PATH</key>
+																	<string>${PACKAGE_NAME}</string>
+																	<key>PATH_TYPE</key>
+																	<integer>0</integer>
+																	<key>PERMISSIONS</key>
+																	<integer>509</integer>
+																	<key>TYPE</key>
+																	<integer>2</integer>
+																	<key>UID</key>
+																	<integer>0</integer>
+																</dict>
+															</array>
+															<key>GID</key>
+															<integer>80</integer>
+															<key>PATH</key>
+															<string>plugins</string>
+															<key>PATH_TYPE</key>
+															<integer>0</integer>
+															<key>PERMISSIONS</key>
+															<integer>509</integer>
+															<key>TYPE</key>
+															<integer>2</integer>
+															<key>UID</key>
+															<integer>0</integer>
+														</dict>
+													</array>
+													<key>GID</key>
+													<integer>80</integer>
+													<key>PATH</key>
+													<string>SharedSupport</string>
+													<key>PATH_TYPE</key>
+													<integer>0</integer>
+													<key>PERMISSIONS</key>
+													<integer>509</integer>
+													<key>TYPE</key>
+													<integer>2</integer>
 													<key>UID</key>
 													<integer>0</integer>
 												</dict>
