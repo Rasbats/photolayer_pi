@@ -90,7 +90,7 @@ PhotoLayer_pi::~PhotoLayer_pi(void)
 
 int PhotoLayer_pi::Init(void)
 {
-    AddLocaleCatalog( _T("opencpn-PhotoLayer_pi") );
+    AddLocaleCatalog(PLUGIN_CATALOG_NAME);
     
     m_pPhotoLayer = NULL;
 
