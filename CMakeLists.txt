@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "2")
+set(VERSION_TWEAK "3")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -161,26 +161,6 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.h
             )
 
-
-ADD_DEFINITIONS(-DTIXML_USE_STL)
-
-IF(GEOTIFF_FOUND)
-  message (STATUS "Building with system libGeoTIFF")
-  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
-ELSE(GEOTIFF_FOUND)
-  message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(GEOTIFF_FOUND)
-
-IF(LIBTIFF_FOUND)
-  message (STATUS "Building with system libTIFF")
-  INCLUDE_DIRECTORIES(${LIBTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
-ELSE(LIBTIFF_FOUND)
-  message (STATUS "libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(LIBTIFF_FOUND)
-
-
 set(OCPNSRC ocpnsrc/TexFont.cpp)
 
 set(OCPNHDRS ocpninclude/ocpn_plugin.h ocpninclude/pluginmanager.h ocpninclude/TexFont.h)
@@ -271,6 +251,22 @@ if(UNIX AND NOT APPLE)
         endif(NOT (${elfedit} STREQUAL "elfedit-NOTFOUND"))
     endif(PI_JSON_SCHEMA_VALIDATOR)
 endif(UNIX AND NOT APPLE)
+
+IF(GEOTIFF_FOUND)
+  message (STATUS "Building with system libGeoTIFF")
+  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+ELSE(GEOTIFF_FOUND)
+  message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+ENDIF(GEOTIFF_FOUND)
+
+IF(LIBTIFF_FOUND)
+  message (STATUS "Building with system libTIFF")
+  INCLUDE_DIRECTORIES(${LIBTIFF_INCLUDE_DIR})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
+ELSE(LIBTIFF_FOUND)
+  message (STATUS "libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+ENDIF(LIBTIFF_FOUND)
 
 IF(WIN32)
 FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
