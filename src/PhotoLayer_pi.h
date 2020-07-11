@@ -31,19 +31,15 @@
 #include <wx/stdpaths.h>
 #include <wx/fileconf.h>
 
+#include "ocpn_plugin.h"
 #include "version.h"
-
-#define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    13
-
-#define     MY_PLUGIN_VERSION_MAJOR    2
-#define     MY_PLUGIN_VERSION_MINOR    2
 
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
 
-#include "ocpn_plugin.h"
 
 #include "defs.h"
+
+#include "version.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -54,11 +50,11 @@
 class PhotoLayerImage;
 class PhotoLayer;
 
-class PhotoLayer_pi : public opencpn_plugin_113
+class PhotoLayer_pi : public opencpn_plugin_116
 {
 public:
       PhotoLayer_pi(void *ppimgr);
-
+	  ~PhotoLayer_pi(void);
       
 //    The required PlugIn Methods
       int Init(void);

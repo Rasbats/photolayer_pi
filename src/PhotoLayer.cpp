@@ -234,8 +234,9 @@ void PhotoLayer::SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, 
 	}
 
 	wxString layer_path = PhotoLayer_pi::StandardPath();
+	wxString s = wxFileName::GetPathSeparator();
 
-	if (!doc.SaveFile((layer_path +  filename).mb_str()))
+	if (!doc.SaveFile((layer_path + s + filename).mb_str()))
 		wxLogMessage(_("PhotoLayer") + wxString(_T(": ")) + _("Failed to save xml file: ") + filename);
 }
 
@@ -245,8 +246,9 @@ void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords
 	wxString name;
     wxString error;
     wxString coordinatesets_path = PhotoLayer_pi::StandardPath();
+	wxString s = wxFileName::GetPathSeparator();
 
-    if(!doc.LoadFile((coordinatesets_path + coordinatesets).mb_str()))
+    if(!doc.LoadFile((coordinatesets_path + s + coordinatesets).mb_str()))
         FAIL(_("Failed to load data sets"));
     else {
 		TiXmlElement* root = doc.RootElement();
