@@ -28,7 +28,7 @@
 
 #include "PhotoLayerUI.h"
 
-
+#if defined WIN32
 	#include "geotiffio.h"
 	#include "xtiffio.h"
 	#include "geo_normalize.h"
@@ -36,7 +36,7 @@
 	#include "geovalues.h"
 	#include "tiffio.h"
 	#include "cpl_serv.h"
-
+#endif
 
 #include <wx/dynarray.h>
 #include <ctype.h>
