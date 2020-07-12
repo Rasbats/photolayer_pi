@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "13")
+set(VERSION_TWEAK "14")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -122,13 +122,6 @@ include("cmake/PluginConfigure.cmake")
 
 add_definitions(-DUSE_S57)
 
-IF(NOT WIN32)
- INCLUDE("cmake/FindGeoTIFF.cmake")
- FIND_PACKAGE(GeoTIFF QUIET)
- INCLUDE("cmake/FindTinyXML.cmake")
- FIND_PACKAGE(TinyXML QUIET)
-ENDIF(NOT WIN32)
-
 
 IF(WIN32)
 	SET(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
@@ -163,10 +156,17 @@ SET(SRC_PHOTOLAYER
             )
             
 IF(UNIX)
- INCLUDE("cmake/FindGeoTIFF.cmake")
- FIND_PACKAGE(GeoTIFF QUIET)
- INCLUDE("cmake/FindTinyXML.cmake")
- FIND_PACKAGE(TinyXML QUIET)
+SET(GEOTIFF_NAMES geotiff)  
+
+FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff PATH /usr/include/geotiff)
+
+FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
+
+SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
+
+INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+
 ENDIF(UNIX)          
 
 set(OCPNSRC ocpnsrc/TexFont.cpp)
@@ -262,8 +262,7 @@ endif(UNIX AND NOT APPLE)
 
 IF(GEOTIFF_FOUND)
   message (STATUS "Building with system libGeoTIFF")
-  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+  
 ELSE(GEOTIFF_FOUND)
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 ENDIF(GEOTIFF_FOUND)
