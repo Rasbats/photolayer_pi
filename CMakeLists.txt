@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "19")
+set(VERSION_TWEAK "20")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -267,7 +267,6 @@ ENDIF(WIN32)
 IF(UNIX)
 SET(GEOTIFF_NAMES geotiff)  
 
-
 FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff)
 FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
 
@@ -275,19 +274,65 @@ if( GEOTIFF_INCLUDE_DIR )
         set( GEOTIFF_FOUND "YES" )
 endif()
 
-
 SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
-
-
 SET(GEOTIFF_LIBRARY ${GEOTIFF_LIBRARIES})
-SET(GEOTIFF_INCLUDE_DIR ${GEOTIFF_INCLUDEDIR})
+SET(GEOTIFF_INCLUDE_DIR ${GEOTIFF_INCLUDE_DIR})
 
 INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
 
+ENDIF(UNIX)   
 
+IF (UNIX)
+ find_path(TIFF_INCLUDE_DIR tiff.h)
+#endif()
 
-ENDIF(UNIX)       
+set(TIFF_NAMES ${TIFF_NAMES} libtiff tiff libtiff3 tiff3)
+find_library(TIFF_LIBRARY NAMES ${TIFF_NAMES})
+
+if(TIFF_INCLUDE_DIR AND EXISTS "${TIFF_INCLUDE_DIR}/tiffvers.h")
+    file(STRINGS "${TIFF_INCLUDE_DIR}/tiffvers.h" tiff_version_str
+         REGEX "^#define[\t ]+TIFFLIB_VERSION_STR[\t ]+\"LIBTIFF, Version .*")
+
+    string(REGEX REPLACE "^#define[\t ]+TIFFLIB_VERSION_STR[\t ]+\"LIBTIFF, Version +([^ \\n]*).*"
+           "\\1" TIFF_VERSION_STRING "${tiff_version_str}")
+    unset(tiff_version_str)
+endif()
+
+# handle the QUIETLY and REQUIRED arguments and set TIFF_FOUND to TRUE if
+# all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(TIFF
+                                  REQUIRED_VARS TIFF_LIBRARY TIFF_INCLUDE_DIR
+                                  VERSION_VAR TIFF_VERSION_STRING)
+
+if(TIFF_FOUND)
+    set( TIFF_LIBRARIES ${TIFF_LIBRARY} )
+endif()
+
+if(TIFF_FOUND)
+    message(STATUS "Found TIFF version ${TIFF_VERSION_STRING}, includes at ${TIFF_INCLUDE_DIR}, libraries at ${TIFF_LIBRARIES}")
+
+    if(NOT WIN32)
+        # looking for C++ version of library libtiffxx.so
+        list(LENGTH TIFF_LIBRARIES len)
+        if(len EQUAL 1)
+            get_filename_component(tiff_library_name ${TIFF_LIBRARIES} NAME_WE )
+            get_filename_component(tiff_path ${TIFF_LIBRARIES} DIRECTORY )
+            get_filename_component(tiff_ext ${TIFF_LIBRARIES} EXT )
+            set(cpp_tiff_library "${tiff_path}/${tiff_library_name}xx${tiff_ext}")
+            if(NOT EXISTS ${cpp_tiff_library})
+                message(FATAL_ERROR "Could NOT find TIFF/C++ library ${cpp_tiff_library}.")
+            endif()
+            message(STATUS "Found TIFF C++ library ${cpp_tiff_library}")
+            set(TIFF_LIBRARIES ${TIFF_LIBRARIES};${cpp_tiff_library})
+        endif()
+    endif()
+endif()
+
+mark_as_advanced(TIFF_INCLUDE_DIR TIFF_LIBRARY)
+
+ENDIF(UNIX)   
 
 ##
 ## ----- Change above to match project requirements ----- ##
