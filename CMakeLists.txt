@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "7")
+set(VERSION_TWEAK "8")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -51,6 +51,7 @@ set(ALPHA "alpha") # Standard Repos
 
 set(CLOUDSMITH_USER "opencpn")
 # set this if your cloudsmith repository name does not match your git repository name set(CLOUDSMITH_BASE_REPOSITORY "testplugin_pi")
+set(CLOUDSMITH_BASE_REPOSITORY "photolayer")
 
 set(XML_INFO_URL "https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:developer_manual:plugins:beta_plugins:photolayer")
 set(XML_SUMMARY "Plugin to overlay satellite geotiff photo overlay files with tranparency on the navigation chart")
