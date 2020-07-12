@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "24")
+set(VERSION_TWEAK "25")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -160,6 +160,25 @@ IF (UNIX)
  FIND_PACKAGE(TinyXML QUIET)
 ENDIF (UNIX)
 
+IF(UNIX)
+  FIND_LIBRARY(GEOTIFF_LIBRARY NAMES geotiff
+    DOC "The geotiff library"
+    )
+  IF(GEOTIFF_LIBRARY)
+    MESSAGE (STATUS "${CMLOC}Found geotiff:  ${GEOTIFF_LIBRARY_LIBRARY}")
+    
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${GEOTIFF_LIBRARY})
+  ELSE()
+    MESSAGE (STATUS "")
+    MESSAGE (STATUS "================ WARNING ===================")
+    MESSAGE (STATUS "${CMLOC}geotiff library not found, cannot decode from geotiff")
+    MESSAGE (STATUS "You may want to install libgeotiff-dev and run cmake again")
+    MESSAGE (STATUS "============================================")
+    MESSAGE (STATUS "")
+  ENDIF()
+ENDIF(UNIX)
+
+
 IF(TINYXML_FOUND)
  message (STATUS "Building with system tinyxml")
  INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
@@ -176,6 +195,7 @@ ELSE(TINYXML_FOUND)
  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_PHOTOLAYER} ${SRC_LTINYXML})
 ENDIF(TINYXML_FOUND)
 
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${EXTRA_LIBS})
 
 set(OCPNSRC ocpnsrc/TexFont.cpp)
 
