@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "23")
+set(VERSION_TWEAK "24")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -155,15 +155,10 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.h
             )
             
-IF(UNIX)
- INCLUDE("cmake/FindGeoTIFF.cmake")
- FIND_PACKAGE(GeoTIFF QUIET)
- INCLUDE("cmake/FindTIFF.cmake")
- FIND_PACKAGE(LIBTIFF QUIET)
- 
- INCLUDE("cmake/FindTIFF.cmake")
+IF (UNIX)
+ INCLUDE("cmake/FindTinyXML.cmake")
  FIND_PACKAGE(TinyXML QUIET)
-ENDIF(UNIX)
+ENDIF (UNIX)
 
 IF(TINYXML_FOUND)
  message (STATUS "Building with system tinyxml")
@@ -180,23 +175,6 @@ ELSE(TINYXML_FOUND)
  )
  ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_PHOTOLAYER} ${SRC_LTINYXML})
 ENDIF(TINYXML_FOUND)
-ADD_DEFINITIONS(-DTIXML_USE_STL)
-
-IF(GEOTIFF_FOUND)
-  message (STATUS "Building with system libGeoTIFF")
-  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
-ELSE(GEOTIFF_FOUND)
-  message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(GEOTIFF_FOUND)
-
-IF(LIBTIFF_FOUND)
-  message (STATUS "Building with system libTIFF")
-  INCLUDE_DIRECTORIES(${LIBTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
-ELSE(LIBTIFF_FOUND)
-  message (STATUS "libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(LIBTIFF_FOUND)
 
 
 set(OCPNSRC ocpnsrc/TexFont.cpp)
@@ -281,8 +259,6 @@ FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
 ENDIF(WIN32)
 
-
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff) 
 
 ##
 ## ----- Change above to match project requirements ----- ##
