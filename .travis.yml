@@ -1,18 +1,21 @@
 language: cpp
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get -y install libgeotiff-dev
-  - sudo apt-get -y install libtiff-dev
-  
-addons:
-  homebrew:
-    packages:
-    - libgeotiff
-    - libtiff
-
 matrix:
   include:
+  
+  install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; 
+    then 
+      sudo apt-get -qq update; 
+      sudo apt-get install libgeotiff; 
+      sudo apt-get install libtiff; 
+      
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; 
+    then 
+      brew install libgeotiff libtiff;
+     
+    fi
 # The following 2 env: sections are now being done in circleci but are left here for examples
 #  - env:
 #    - OCPN_TARGET=stretch-armhf
