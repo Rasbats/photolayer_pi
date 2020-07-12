@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "11")
+set(VERSION_TWEAK "12")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -161,6 +161,13 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.cpp
             src/wximgkap.h
             )
+            
+IF(UNIX)
+ INCLUDE("cmake/FindGeoTIFF.cmake")
+ FIND_PACKAGE(GeoTIFF QUIET)
+ INCLUDE("cmake/FindTinyXML.cmake")
+ FIND_PACKAGE(TinyXML QUIET)
+ENDIF(UNIX)          
 
 set(OCPNSRC ocpnsrc/TexFont.cpp)
 
