@@ -1,5 +1,14 @@
 language: cpp
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install libgeotiff-dev
+  
+addons:
+  homebrew:
+    packages:
+    - libgeotiff
+
 matrix:
   include:
 # The following 2 env: sections are now being done in circleci but are left here for examples
