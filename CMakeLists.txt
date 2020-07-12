@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "20")
+set(VERSION_TWEAK "21")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -264,24 +264,60 @@ FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
 ENDIF(WIN32)
 
-IF(UNIX)
-SET(GEOTIFF_NAMES geotiff)  
+### finding geotiff
 
-FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff)
-FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
+SET(GEOTIFF_NAMES geotiff)
 
-if( GEOTIFF_INCLUDE_DIR )
-        set( GEOTIFF_FOUND "YES" )
-endif()
+IF(WIN32)
 
-SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
-SET(GEOTIFF_LIBRARY ${GEOTIFF_LIBRARIES})
-SET(GEOTIFF_INCLUDE_DIR ${GEOTIFF_INCLUDE_DIR})
+    IF(MINGW)
+        FIND_PATH(GEOTIFF_INCLUDE_DIR
+            geotiff.h
+            PATH_PREFIXES geotiff
+            PATHS
+            /usr/local/include
+            /usr/include
+            c:/msys/local/include)
 
-INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+        FIND_LIBRARY(GEOTIFF_LIBRARY
+            NAMES ${GEOTIFF_NAMES}
+            PATHS
+            /usr/local/lib
+            /usr/lib
+            c:/msys/local/lib)
+    ENDIF(MINGW)
 
-ENDIF(UNIX)   
+    IF(MSVC)
+        SET(GEOTIFF_INCLUDE_DIR "$ENV{LIB_DIR}/include" CACHE STRING INTERNAL)
+
+        SET(GEOTIFF_NAMES ${GEOTIFF_NAMES} geotiff_i)
+        FIND_LIBRARY(GEOTIFF_LIBRARY NAMES 
+            NAMES ${GEOTIFF_NAMES}
+            PATHS
+            "$ENV{LIB_DIR}/lib"
+            /usr/lib
+            c:/msys/local/lib)
+    ENDIF(MSVC)
+  
+ELSEIF(UNIX)
+
+    FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff PATH /usr/include/geotiff)
+    FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
+
+ELSE()
+    MESSAGE("FindGeoTIFF.cmake: unrecognized or unsupported operating system")
+ENDIF()
+
+IF(GEOTIFF_FOUND)
+  SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
+ENDIF()
+
+# Handle the QUIETLY and REQUIRED arguments and set SPATIALINDEX_FOUND to TRUE
+# if all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
+FIND_PACKAGE(GeoTIFF QUIET)
+### end finding geotiff
 
 IF (UNIX)
  find_path(TIFF_INCLUDE_DIR tiff.h)
@@ -332,7 +368,9 @@ endif()
 
 mark_as_advanced(TIFF_INCLUDE_DIR TIFF_LIBRARY)
 
-ENDIF(UNIX)   
+ENDIF(UNIX)  
+
+TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff) 
 
 ##
 ## ----- Change above to match project requirements ----- ##
