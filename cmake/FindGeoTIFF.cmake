@@ -5,10 +5,9 @@
 # On success, the macro sets the following variables:
 # GEOTIFF_FOUND       = if the library found
 # GEOTIFF_LIBRARIES   = full path to the library
-# GEOTIFF_INCLUDE_DIR = where to find the library headers also defined,
-#                       but not for general use are
-# GEOTIFF_LIBRARY     = where to find the PROJ.4 library.
-# GEOTIFF_VERSION     = version of library which was found, e.g. "1.2.5"
+# GEOTIFF_INCLUDE_DIR = where to find the library headers 
+# also defined, but not for general use are
+# GEOTIFF_LIBRARY, where to find the PROJ.4 library.
 #
 # Copyright (c) 2009 Mateusz Loskot <mateusz@loskot.net>
 #
@@ -19,69 +18,54 @@
 #
 ###############################################################################
 
-IF(GEOTIFF_INCLUDE_DIR)
-  # Already in cache, be silent
-  SET(GEOTIFF_FIND_QUIETLY TRUE)
-ENDIF()
+SET(GEOTIFF_NAMES geotiff)
 
 IF(WIN32)
-  SET(OSGEO4W_IMPORT_LIBRARY geotiff_i)
-  IF(DEFINED ENV{OSGEO4W_HOME})
-    SET(OSGEO4W_INCLUDE_DIR $ENV{OSGEO4W_ROOT}/include)
-    SET(OSGEO4W_LIB_DIR $ENV{OSGEO4W_ROOT}/lib)
-  ENDIF()
 
+    IF(MINGW)
+        FIND_PATH(GEOTIFF_INCLUDE_DIR
+            geotiff.h
+            PATH_PREFIXES geotiff
+            PATHS
+            /usr/local/include
+            /usr/include
+            c:/msys/local/include)
+
+        FIND_LIBRARY(GEOTIFF_LIBRARY
+            NAMES ${GEOTIFF_NAMES}
+            PATHS
+            /usr/local/lib
+            /usr/lib
+            c:/msys/local/lib)
+    ENDIF(MINGW)
+
+    IF(MSVC)
+        SET(GEOTIFF_INCLUDE_DIR "$ENV{LIB_DIR}/include" CACHE STRING INTERNAL)
+
+        SET(GEOTIFF_NAMES ${GEOTIFF_NAMES} geotiff_i)
+        FIND_LIBRARY(GEOTIFF_LIBRARY NAMES 
+            NAMES ${GEOTIFF_NAMES}
+            PATHS
+            "$ENV{LIB_DIR}/lib"
+            /usr/lib
+            c:/msys/local/lib)
+    ENDIF(MSVC)
+  
+ELSEIF(UNIX)
+
+    FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff PATH /usr/include/geotiff)
+
+    FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
+
+ELSE()
+    MESSAGE("FindGeoTIFF.cmake: unrecognized or unsupported operating system")
 ENDIF()
-
-FIND_PATH(GEOTIFF_INCLUDE_DIR
-  geotiff.h
-  PATH_SUFFIXES geotiff libgeotiff
-  PATHS
-  ${OSGEO4W_INCLUDE_DIR})
-
-SET(GEOTIFF_NAMES ${OSGEO4W_IMPORT_LIBRARY} geotiff)
-
-FIND_LIBRARY(GEOTIFF_LIBRARY
-  NAMES ${GEOTIFF_NAMES}
-  PATHS
-  ${OSGEO4W_LIB_DIR})
 
 IF(GEOTIFF_FOUND)
   SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
 ENDIF()
 
-IF(GEOTIFF_INCLUDE_DIR)
-  SET(GEOTIFF_VERSION 0)
-
-  SET(GEOTIFF_VERSION_H "${GEOTIFF_INCLUDE_DIR}/geotiff.h")
-  FILE(READ ${GEOTIFF_VERSION_H} GEOTIFF_VERSION_H_CONTENTS)
-
-  IF (DEFINED GEOTIFF_VERSION_H_CONTENTS)
-    STRING(REGEX REPLACE ".*#define[ \t]LIBGEOTIFF_VERSION[ \t]+([0-9]+).*" "\\1" GEOTIFF_VERSION_NUM "${GEOTIFF_VERSION_H_CONTENTS}")
-
-    IF(NOT ${GEOTIFF_VERSION_NULL} MATCHES "[0-9]+")
-      MESSAGE(FATAL_ERROR "GeoTIFF version parsing failed!")
-    ENDIF()
-
-    IF(GEOTIFF_VERSION_NUM AND NOT "${GEOTIFF_VERSION_NUM}" STREQUAL "0")
-      MATH(EXPR GTIFF_VERSION_MAJOR "${GEOTIFF_VERSION_NUM} / 1000")
-      MATH(EXPR GTIFF_VERSION_MINOR "${GEOTIFF_VERSION_NUM} % 1000 / 100")
-      MATH(EXPR GTIFF_VERSION_PATCH "${GEOTIFF_VERSION_NUM} % 100 / 10")
-    ENDIF()
-
-    SET(GEOTIFF_VERSION "${GTIFF_VERSION_MAJOR}.${GTIFF_VERSION_MINOR}.${GTIFF_VERSION_PATCH}"
-      CACHE INTERNAL "The version string for GeoTIFF library")
-
-    IF (GEOTIFF_VERSION VERSION_LESS GeoTIFF_FIND_VERSION)
-      MESSAGE(FATAL_ERROR "GeoTIFF version check failed. Version ${GEOTIFF_VERSION} was found, at least version ${GeoTIFF_FIND_VERSION} is required")
-    ENDIF()
-  ELSE()
-    MESSAGE(FATAL_ERROR "Failed to open ${GEOTIFF_VERSION_H} file")
-  ENDIF()
-
-ENDIF()
-
-# Handle the QUIETLY and REQUIRED arguments and set GEOTIFF_FOUND to TRUE
+# Handle the QUIETLY and REQUIRED arguments and set SPATIALINDEX_FOUND to TRUE
 # if all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GeoTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
