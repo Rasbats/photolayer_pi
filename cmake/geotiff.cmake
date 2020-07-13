@@ -3,7 +3,7 @@
 #
 
 find_package(GeoTIFF)
-set_package_properties(GeoTIFF PROPERTIES TYPE)
+
 if (GEOTIFF_FOUND)
     message("GeoTIFF found")
     include_directories("${GEOTIFF_INCLUDE_DIR}")
