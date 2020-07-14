@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "32")
+set(VERSION_TWEAK "33")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -162,10 +162,13 @@ ENDIF (UNIX)
 
 IF(UNIX)
 
-  SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-  INCLUDE("cmake/FindGeoTIFF.cmake")
-  INCLUDE("cmake/geotiff.cmake")
-  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR} ${GEOTIFF_LIBRARY})
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+ find_package(GeoTIFF REQUIRED)
+ include_directories(${GEOTIFF_INCLUDE_DIR})
+ set(LIBS ${LIBS} ${GEOTIFF_LIBRARIES})
+ target_link_libraries(${PACKAGE_NAME} ${LIBS})
+ 
 ENDIF(UNIX)
 
 
