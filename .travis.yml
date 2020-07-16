@@ -1,12 +1,10 @@
 language: cpp
 
-before_install:
-   
+install:
+   sudo apt-get install -y libgdal-dev
+ 
 addons:
-
 apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
       - gcc-6
       - g++-6
@@ -26,8 +24,6 @@ apt:
       - libgit2
       - udunits
     update: true
-
- 
     
 matrix:
   include:
