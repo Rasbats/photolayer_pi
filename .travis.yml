@@ -5,6 +5,12 @@ before_install:
   - sudo apt-get -y install libtiff-dev
   
 addons:
+apt:
+  packages:
+  - cmake
+  
+  
+  
   homebrew:
     packages:
     - libgeotiff
