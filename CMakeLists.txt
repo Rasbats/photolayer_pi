@@ -32,7 +32,7 @@ set(PACKAGE "photolayer")
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "0")
-set(VERSION_TWEAK "44")
+set(VERSION_TWEAK "45")
 set(VERSION_DATE "10/07/2020")
 set(OCPN_MIN_VERSION "ov50")
 set(OCPN_API_VERSION_MAJOR "1")
@@ -155,21 +155,20 @@ SET(SRC_PHOTOLAYER
             src/wximgkap.h
             )
             
-IF (UNIX)
- set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+IF(NOT WIN32)
+ INCLUDE("cmake/FindGeoTIFF.cmake")
+ FIND_PACKAGE(GeoTIFF QUIET)
+ INCLUDE("cmake/FindTinyXML.cmake")
  FIND_PACKAGE(TinyXML QUIET)
-ENDIF (UNIX)
+ENDIF(NOT WIN32)
 
-IF(UNIX)
-
- set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
- find_package(GeoTIFF REQUIRED)
- include_directories(${GEOTIFF_INCLUDE_DIR})
- set(LIBS ${LIBS} ${GEOTIFF_LIBRARY})
- target_link_libraries(${PACKAGE_NAME} ${LIBS})
- 
-ENDIF(UNIX)
+IF(GEOTIFF_FOUND)
+  message (STATUS "Building with system libGeoTIFF")
+  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+ELSE(GEOTIFF_FOUND)
+  message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+ENDIF(GEOTIFF_FOUND)
 
 
 IF(TINYXML_FOUND)
