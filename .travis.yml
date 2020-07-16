@@ -1,18 +1,14 @@
 language: cpp
 
-apt:
-sources:
-    packages:
-      - libproj-dev
-      - libgeos-dev
-      - libspatialite-dev
-      - libgdal-dev
-      - gdal-bin
-      - pkg-config
+before_install:
+  - sudo apt-get -y install libgeotiff-dev
+  - sudo apt-get -y install libtiff-dev
+  
+addons:
   homebrew:
     packages:
-      - pkg-config
-      - gdal
+    - libgeotiff
+    - libtiff
 
 matrix:
   include:
