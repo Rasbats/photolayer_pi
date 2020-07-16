@@ -7,7 +7,11 @@ before_install:
 addons:
 apt:
   packages:
-  - cmake
+  - libproj-dev
+  - libgeos-dev
+  - libspatialite-dev
+  - libgdal-dev
+  - gdal-bin
   
   
   
@@ -15,6 +19,7 @@ apt:
     packages:
     - libgeotiff
     - libtiff
+    - gdal
 
 matrix:
   include:
