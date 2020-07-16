@@ -75,7 +75,7 @@ set(TIFF_INCLUDE_DIRS ${TIFF_INCLUDE_DIR})
 
 # handle the QUIETLY and REQUIRED arguments and set TIFF_FOUND to TRUE if
 # all listed variables are TRUE
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(TIFF
   REQUIRED_VARS TIFF_LIBRARY TIFF_INCLUDE_DIRS
   VERSION_VAR TIFF_VERSION_STRING
