@@ -1,15 +1,36 @@
 language: cpp
 
 before_install:
-  - sudo apt-get -y install libgeotiff-dev
-  - sudo apt-get -y install libtiff-dev
+ 
+ 
   
 addons:
+
+apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-6
+      - g++-6
+      - libproj-dev
+      - libgeos-dev
+      - libspatialite-dev
+      - libgdal-dev
+      - gdal-bin
+      - pkg-config
   homebrew:
     packages:
-    - libgeotiff
-    - libtiff
+      - pkg-config
+      - gdal
+      - netcdf
+      - sqlite
+      - curl
+      - libgit2
+      - udunits
+    update: true
 
+ 
+    
 matrix:
   include:
   
