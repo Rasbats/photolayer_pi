@@ -1,9 +1,7 @@
 language: cpp
 
 before_install:
- 
- 
-  
+   
 addons:
 
 apt:
