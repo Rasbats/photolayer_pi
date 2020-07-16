@@ -3,8 +3,6 @@ language: cpp
 apt:
 sources:
     packages:
-      - gcc-6
-      - g++-6
       - libproj-dev
       - libgeos-dev
       - libspatialite-dev
@@ -15,16 +13,7 @@ sources:
     packages:
       - pkg-config
       - gdal
-      - netcdf
-      - sqlite
-      - curl
-      - libgit2
-      - udunits
-      - libgeotiff
-      - libtiff
 
-    update: true
-    
 matrix:
   include:
   
