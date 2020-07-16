@@ -53,11 +53,7 @@ IF(WIN32)
   
 ELSEIF(UNIX)
 
-MESSAGE("FindGeoTIFF.cmake: Searching")
-
-     find_path( GEOTIFF_INCLUDE_DIR geotiff.h
-           PATH_SUFFIXES geotiff libgeotiff )
-
+    FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff PATH /usr/include/geotiff)
 
     FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
 
