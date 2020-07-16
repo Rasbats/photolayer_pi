@@ -35,7 +35,6 @@
 #include "icons.h"
 
 #include "version.h"
-#include "wxWTranslateCatalog.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
 
