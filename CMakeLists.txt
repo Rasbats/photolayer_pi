@@ -14,7 +14,7 @@ SET(TITLE_NAME photolayer)
 SET(CPACK_PACKAGE_CONTACT "Mike Rossiter")
 
 SET(VERSION_MAJOR "3")
-SET(VERSION_MINOR "7")
+SET(VERSION_MINOR "8")
 
 SET(NAME_SUFFIX "ov50")
 
@@ -97,13 +97,13 @@ ELSE(GEOTIFF_FOUND)
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 ENDIF(GEOTIFF_FOUND)
 
-IF(LIBTIFF_FOUND)
+IF(TIFF_FOUND)
   message (STATUS "Building with system libTIFF")
-  INCLUDE_DIRECTORIES(${LIBTIFF_INCLUDE_DIR})
+  INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIRS})
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
-ELSE(LIBTIFF_FOUND)
+ELSE(TIFF_FOUND)
   message (STATUS "libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(LIBTIFF_FOUND)
+ENDIF(TIFF_FOUND)
 
 
 IF(WIN32)
