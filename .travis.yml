@@ -12,8 +12,8 @@ apt:
   - libspatialite-dev
   - libgdal-dev
   - gdal-bin
-  
-  
+  - libgeotiff-dev
+  - libtiff-dev
   
   homebrew:
     packages:
