@@ -7,9 +7,14 @@ install:
         sudo apt-get -qq update;       
         sudo apt-get install libgeotiff-dev;
         sudo apt install libtiff-dev;
-    
-        brew install libgeotiff;
-        brew install libtiff;
+
+addons:
+  homebrew:
+    packages:
+    - libgeotiff;
+    - libtiff
+    update: true   
+      
       
 
 include:
