@@ -6,11 +6,11 @@ before_install:
   
 addons:
 apt:
+  update: true
+  
   packages:
   - cmake
-  
-  
-  
+   
   homebrew:
     packages:
     - libgeotiff
