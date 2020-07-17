@@ -8,8 +8,8 @@ matrix:
 before_install:
 
         sudo apt-get update;       
-        sudo apt-get -y install libgeotiff-dev;
-        sudo apt -y libtiff-dev
+        sudo apt-get  install libgeotiff-dev;
+        sudo apt  libtiff-dev
        	
    
 
