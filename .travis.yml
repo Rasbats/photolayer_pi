@@ -1,5 +1,10 @@
 language: cpp
 
+      
+      
+
+matrix:
+
 before_install:
 
         sudo apt-get update;       
@@ -12,10 +17,7 @@ addons:
     packages:
     - libgeotiff;
     update: true   
-      
-      
 
-matrix:
 
 
 include:
