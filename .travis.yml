@@ -6,12 +6,11 @@ language: cpp
 matrix:
 
 before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]];
-      then
+    
        - sudo apt-get update;       
        - sudo apt-get -y install libgeotiff-dev;
        - sudo apt-get -y install libtiff-dev;
-       fi
+       
               
 
 
