@@ -1,26 +1,21 @@
 language: cpp
 
 before_install:
-    
+
+        sudo apt-get update;       
+        sudo apt-get -y install libgeotiff-dev;
+       	
+   
 
 addons:
   homebrew:
     packages:
     - libgeotiff;
-    - libtiff;
     update: true   
       
       
 
 matrix:
-
-install:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]];
-      then
-        sudo apt-get update;       
-        sudo apt-get -y install libgeotiff-dev;
-        sudo apt -y install libtiff-dev;
-      fi	
 
 
 include:
