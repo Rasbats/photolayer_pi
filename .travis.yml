@@ -4,8 +4,17 @@ before_install:
 
        - sudo apt-get update;       
        - sudo apt-get -y install libgeotiff-dev;
-       - sudo apt-get -y install libtiff-dev
-       	
+       - sudo apt-get -y install libtiff-dev;
+addons:
+apt:
+  packages:
+  - libgeotiff-dev
+  - libtiff-dev
+  
+  homebrew:
+    packages:
+    - libgeotiff
+    - libtiff    	
     
       
 
