@@ -2,11 +2,6 @@ language: cpp
 
 matrix:
 
-include:
-    - dist: trusty
-      compiler: gcc
-    - os: osx
-      compiler: clang
 
 install:
   - sudo apt-get update
