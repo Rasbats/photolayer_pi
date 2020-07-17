@@ -1,12 +1,10 @@
 language: cpp
 
-matrix:
-
-install:
+before_install:
     
-        sudo apt-get -qq update;       
-        sudo apt-get install libgeotiff-dev;
-        sudo apt install libtiff-dev;
+        sudo apt-get update;       
+        sudo apt-get -y install libgeotiff-dev;
+        sudo apt-get -y install libtiff-dev;
 
 addons:
   homebrew:
@@ -16,6 +14,10 @@ addons:
     update: true   
       
       
+
+matrix:
+
+
 
 include:
   
