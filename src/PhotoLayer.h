@@ -28,8 +28,6 @@
 
 #include "PhotoLayerUI.h"
 
-#include "/usr/include/geotiff/geovalues.h"
-#include "/usr/include/geotiff/xtiffio.h"
 
 	#include "geotiffio.h"
 	#include "xtiffio.h"
