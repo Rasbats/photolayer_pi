@@ -29,8 +29,8 @@
 #include "PhotoLayerUI.h"
 
 
-#include <libgeotiff/geotiffio.h>
-#include <libgeotiff/xtiffio.h>
+#include "libgeotiff/geotiffio.h"
+#include "libgeotiff/xtiffio.h"
 
 
 	#include "geotiffio.h"
