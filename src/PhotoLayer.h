@@ -28,6 +28,11 @@
 
 #include "PhotoLayerUI.h"
 
+#if not defined WIN32
+#include <tiffio.h>
+#include <geotiff/xtiffio.h>
+#include <geotiff/geotiffio.h>
+#endif
 
 	#include "geotiffio.h"
 	#include "xtiffio.h"
