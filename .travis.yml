@@ -9,7 +9,7 @@ before_install:
 
         sudo apt-get update;       
         sudo apt-get  install libgeotiff-dev;
-        sudo apt  libtiff-dev
+        sudo apt-get  install libtiff-dev
        	
    
 
