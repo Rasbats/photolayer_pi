@@ -31,11 +31,11 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-set(TIFF_NAMES ${TIFF_NAMES} tiff libtiff tiff3 libtiff3)
+set(TIFF_NAMES ${TIFF_NAMES} tiff libtiff tiff5 libtiff5)
 
 find_path(TIFF_INCLUDE_DIR tiff.h
     HINTS ENV TIFF_DIR
-    PATH_SUFFIXES include/libtiff include
+    PATH_SUFFIXES include/libtiff5 include
     PATHS
     ~/Library/Frameworks
     /Library/Frameworks
