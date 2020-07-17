@@ -1,23 +1,18 @@
 language: cpp
 
-addons:
-apt:
-  update: true
-  
-  packages:
-  - cmake
-  - libgeotiff-dev
-  - libtiff-dev 
-  homebrew:
-    packages:
-    - libgeotiff
-    - libtiff
-
-      
-
 matrix:
 
 include:
+    - dist: trusty
+      compiler: gcc
+    - os: osx
+      compiler: clang
+
+install:
+  - sudo apt-get update
+  - sudo apt-get -y install libgeotiff-dev
+  - sudo apt-get -y install libtiff-dev
+
   
 # The following 2 env: sections are now being done in circleci but are left here for examples
 #  - env:
