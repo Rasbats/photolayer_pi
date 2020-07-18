@@ -7,6 +7,12 @@ before_install:
         sudo apt-get install libgeotiff-dev;
         sudo apt install libtiff-dev;
       fi
+      
+      - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
+      then
+        brew install libgeotiff;
+        brew install libtiff;        
+      fi
 
 matrix:
 
