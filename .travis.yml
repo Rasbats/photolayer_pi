@@ -1,10 +1,4 @@
 language: cpp
-  include:
-    - dist: trusty
-      compiler: gcc
-    - os: osx
-      compiler: clang
-
 
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]];
@@ -12,13 +6,7 @@ before_install:
         sudo apt-get -qq update;       
         sudo apt-get install libgeotiff-dev;
         sudo apt install libtiff-dev;
-      fi
-      
-      - if [[ "$TRAVIS_OS_NAME" == "osx" ]];
-      then
-        brew install libgeotiff;
-        brew install libtiff;        
-      fi
+      fi      
 
 matrix:
 
