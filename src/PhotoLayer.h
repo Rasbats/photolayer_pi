@@ -29,9 +29,10 @@
 #include "PhotoLayerUI.h"
 
 #if not defined WIN32
+#define __int64 long int
 #include <tiffio.h>
-#include <geotiff/xtiffio.h>
-#include <geotiff/geotiffio.h>
+#include <xtiffio.h>
+#include <geotiffio.h>
 #endif
 
 	#include "geotiffio.h"

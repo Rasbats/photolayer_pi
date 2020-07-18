@@ -35,7 +35,7 @@
 #include "wximgkap.h"
 
 /* XPM */
-static char *photolayer_xpm[] = {
+static const char *photolayer_xpm[] = {
 	"32 32 4 1 0 0",
 	"  c #E6E6E6",
 	"! c #FF0080",
