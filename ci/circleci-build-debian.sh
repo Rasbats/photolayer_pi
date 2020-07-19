@@ -6,6 +6,10 @@
 set -xe
 sudo apt-get -qq update
 sudo apt-get install devscripts equivs
+     
+sudo apt-get install libgeotiff-dev
+sudo apt install libtiff-dev
+
 
 rm -rf build && mkdir build && cd build
 mk-build-deps ../ci/control
