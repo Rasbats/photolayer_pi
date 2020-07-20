@@ -49,10 +49,7 @@ echo $CIRCLE_BRANCH
 docker logs $DOCKER_CONTAINER_ID
 if [ -n "$CIRCLECI" ]; then
   docker exec -ti $DOCKER_CONTAINER_ID /bin/bash -xec \
-    "
-    sudo apt-get install libgeotiff-dev;
-	sudo apt-get install libtiff-dev;    
-    export CIRCLECI=$CIRCLECI;
+    "export CIRCLECI=$CIRCLECI;
     export CIRCLE_BRANCH=\"$CIRCLE_BRANCH\";
     export CIRCLE_TAG=\"$CIRCLE_TAG\";
     export CIRCLE_PROJECT_USERNAME=\"$CIRCLE_PROJECT_USERNAME\";
