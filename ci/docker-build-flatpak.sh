@@ -8,6 +8,9 @@ set -xe
 
 df -h
 cd $TOPDIR
+
+su -c "dnf install -y libgeotiff-devel"
+su -c "dnf install -y libtiff-devel" 
 	
 su -c "dnf install -y sudo cmake gcc-c++ flatpak-builder flatpak make tar"
 flatpak remote-add --user --if-not-exists flathub \
