@@ -7,6 +7,9 @@ set -xe
 sudo apt-get -qq update
 sudo apt-get install devscripts equivs gdebi libglu1-mesa-dev
 
+sudo apt-get install libgeotiff-dev
+sudo apt-get install libtiff-dev
+
 rm -rf build && mkdir build && cd build
 mk-build-deps ../ci/control
 sudo gdebi -n ./*all.deb  || :
