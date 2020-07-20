@@ -31,7 +31,7 @@ set(PACKAGE "photolayer")
 
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "1")
-set(VERSION_PATCH "16")
+set(VERSION_PATCH "17")
 set(VERSION_TWEAK "0")
 set(VERSION_DATE "18/07/2020")
 set(OCPN_MIN_VERSION "ov50")
