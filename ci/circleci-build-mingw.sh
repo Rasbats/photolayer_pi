@@ -6,8 +6,8 @@
 
 set -xe
 
-su -c "dnf install -y libgeotiff-devel"
-su -c "dnf install -y libtiff-devel" 
+sudo dnf install -y libgeotiff-devel
+sudo dnf install -y libtiff-devel 
 
 su -c "dnf install -q -y sudo dnf-plugins-core"
 sudo dnf builddep -y mingw/fedora/opencpn-deps.spec
