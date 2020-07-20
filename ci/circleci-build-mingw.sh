@@ -6,9 +6,9 @@
 
 set -xe
 
-sudo apt-get -qq update;     
-sudo apt-get install libgeotiff-dev;
-sudo apt-get install libtiff-dev;  
+su apt-get -qq update     
+su apt-get install libgeotiff-dev
+su apt-get install libtiff-dev  
 
 su -c "dnf install -q -y sudo dnf-plugins-core"
 sudo dnf builddep -y mingw/fedora/opencpn-deps.spec

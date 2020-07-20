@@ -9,9 +9,9 @@ set -xe
 df -h
 cd $TOPDIR
 
-sudo apt-get -qq update;     
-sudo apt-get install libgeotiff-dev;
-sudo apt-get install libtiff-dev;  
+su apt-get -qq update     
+su apt-get install libgeotiff-dev
+su apt-get install libtiff-dev  
 	
 su -c "dnf install -y sudo cmake gcc-c++ flatpak-builder flatpak make tar"
 flatpak remote-add --user --if-not-exists flathub \

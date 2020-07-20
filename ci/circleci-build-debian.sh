@@ -8,7 +8,7 @@ sudo apt-get -qq update
 sudo apt-get install devscripts equivs
      
 sudo apt-get install libgeotiff-dev
-sudo apt install libtiff-dev
+sudo apt-get install libtiff-dev
 
 
 rm -rf build && mkdir build && cd build
