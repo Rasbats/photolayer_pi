@@ -8,8 +8,7 @@ set -xe
 
 df -h
 cd $TOPDIR
-
-su apt-get -qq update     
+   
 su apt-get install libgeotiff-dev
 su apt-get install libtiff-dev  
 	
