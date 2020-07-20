@@ -196,6 +196,8 @@ jobs:
         steps:
         - run: su -c "dnf install -q -y git openssh-clients openssh-server"
         - checkout
+        - run: su apt-get install libgeotiff-dev
+        - run: su apt-get install libtiff-dev  
         - run: chmod a+x ci/*.sh
         - run: bash ci/circleci-build-mingw.sh
         - run: bash ci/cloudsmith-upload.sh
