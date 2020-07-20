@@ -473,7 +473,7 @@ void PhotoLayer::Goto(int selection)
     double distance;
     DistanceBearingMercator_Plugin(lat0, lon0, lat1, lon1, NULL, &distance);
 
-    if(!isnan(distance))
+    if(!std::isnan(distance))
         JumpToPosition((lat0 + lat1) / 2, (lon0 + lon1) / 2, .5/distance);
 }
 

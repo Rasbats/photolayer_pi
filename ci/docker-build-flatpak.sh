@@ -8,9 +8,6 @@ set -xe
 
 df -h
 cd $TOPDIR
-
-su yum -y install libgeotiff-devel
-su yum -y install libtiff-devel 
 	
 su -c "dnf install -y sudo cmake gcc-c++ flatpak-builder flatpak make tar"
 flatpak remote-add --user --if-not-exists flathub \
