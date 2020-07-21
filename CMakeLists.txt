@@ -31,7 +31,7 @@ set(PACKAGE "photolayer")
 
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "1")
-set(VERSION_PATCH "19")
+set(VERSION_PATCH "20")
 set(VERSION_TWEAK "0")
 set(VERSION_DATE "18/07/2020")
 set(OCPN_MIN_VERSION "ov50")
@@ -49,7 +49,7 @@ set(PROD "prod") # Standard Repos
 set(BETA "beta") # Standard Repos
 set(ALPHA "alpha") # Standard Repos
 
-set(CLOUDSMITH_USER "mike-rossiter")
+set(CLOUDSMITH_USER "opencpn")
 # set this if your cloudsmith repository name does not match your git repository name set(CLOUDSMITH_BASE_REPOSITORY "testplugin_pi")
 set(CLOUDSMITH_BASE_REPOSITORY "photolayer")
 

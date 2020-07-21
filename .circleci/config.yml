@@ -187,18 +187,6 @@ jobs:
         - run: chmod a+x ci/*.sh
         - run: ci/circleci-build-fedora.sh
         - run: ci/cloudsmith-upload.sh
-    build-mingw:
-        docker:
-        - image: fedora:29
-        environment:
-        - OCPN_TARGET:  mingw
-        - CLOUDSMITH_PKG_EXT: exe
-        steps:
-        - run: su -c "dnf install -q -y git openssh-clients openssh-server"
-        - checkout
-        - run: chmod a+x ci/*.sh
-        - run: bash ci/circleci-build-mingw.sh
-        - run: bash ci/cloudsmith-upload.sh
     build-macos:
         macos:
             xcode: "10.0.0"
@@ -316,14 +304,6 @@ workflows:
 #                    - tmp
 #                tags:
 #                    only: /.*/
-        - build-mingw:
-            filters:
-                branches:
-                    ignore:
-                    - devel
-                    - tmp
-                tags:
-                    only: /.*/
         - build-macos:
             filters:
                 branches:
