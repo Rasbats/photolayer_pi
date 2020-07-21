@@ -289,8 +289,7 @@ bool PhotoLayer_pi::LoadConfig(void)
 {
     wxFileConfig *pConf = GetOCPNConfigObject();
 
-    if(!pConf)
-        return false;
+    if(!pConf){return false;}
 
 	wxString m_export_colors;
 
@@ -311,8 +310,7 @@ bool PhotoLayer_pi::SaveConfig(void)
 {
     wxFileConfig *pConf = GetOCPNConfigObject();
 
-    if(!pConf)
-        return false;
+    if(!pConf){return false;}
 
 	pConf->SetPath(_T("/Settings/PhotoLayer"));
 	pConf->Write(_T("Path"), m_path);
