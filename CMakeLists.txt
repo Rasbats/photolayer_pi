@@ -31,7 +31,7 @@ set(PACKAGE "photolayer")
 
 set(VERSION_MAJOR "3")
 set(VERSION_MINOR "1")
-set(VERSION_PATCH "20")
+set(VERSION_PATCH "21")
 set(VERSION_TWEAK "0")
 set(VERSION_DATE "18/07/2020")
 set(OCPN_MIN_VERSION "ov50")
@@ -54,7 +54,7 @@ set(CLOUDSMITH_USER "opencpn")
 set(CLOUDSMITH_BASE_REPOSITORY "photolayer")
 
 set(XML_INFO_URL "https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:developer_manual:plugins:beta_plugins:photolayer")
-set(XML_SUMMARY "Plugin to overlay satellite geotiff photo overlay files with tranparency on the navigation chart")
+set(XML_SUMMARY "Plugin to read geotiffs and adjust tranparency")
 set(XML_DESCRIPTION "PhotoLayer reads satellite geotiff photo overlay files with tranparency")
 
 ##
