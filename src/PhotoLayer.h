@@ -52,6 +52,8 @@
 #include <wchar.h>
 #include <bitset>
 
+#include <cmath>
+
 enum { VERSION = 0, MAJOR, MINOR };
 
 extern const char * box_xpm[];
