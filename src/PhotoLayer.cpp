@@ -470,10 +470,10 @@ void PhotoLayer::Goto(int selection)
     if(lon0 - lon1 > 180)
         lon1 += 360;
 
-    double distance = 0;
+    double distance;
     DistanceBearingMercator_Plugin(lat0, lon0, lat1, lon1, NULL, &distance);
 
-    if(distance != 0)
+    if(!isnan(distance))
         JumpToPosition((lat0 + lat1) / 2, (lon0 + lon1) / 2, .5/distance);
 }
 

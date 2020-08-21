@@ -41,7 +41,7 @@ WX_DEFINE_LIST(PhotoLayerImageCoordinateList);
 #define GL_TEXTURE_RECTANGLE_ARB          0x84F5
 #endif
 
-
+using namespace std;
 
 static int texture_format;
 

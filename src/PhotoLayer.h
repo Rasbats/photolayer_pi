@@ -53,14 +53,13 @@
 #include <bitset>
 
 #include <cmath>
-#include <math.h>
 
 enum { VERSION = 0, MAJOR, MINOR };
 
 extern const char * box_xpm[];
 extern const char * check_xpm[];
 
-
+using namespace std;
 
 class PhotoLayer_pi;
 
