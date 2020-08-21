@@ -26,6 +26,7 @@
 
 #include "ocpn_plugin.h"
 #include <cmath>
+#include <math.h>
 
 struct PhotoLayerImageCoordinates
 {

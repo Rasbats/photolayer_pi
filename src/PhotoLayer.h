@@ -53,6 +53,7 @@
 #include <bitset>
 
 #include <cmath>
+#include <math.h>
 
 enum { VERSION = 0, MAJOR, MINOR };
 
