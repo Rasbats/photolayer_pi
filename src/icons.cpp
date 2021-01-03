@@ -10,12 +10,12 @@
 wxBitmap *_img_photolayer;
 wxBitmap *_img_photolayer_pi;
 
-#ifdef PHOTOLAYER_USE_SVG
+
 #include "ocpn_plugin.h"
 wxString _svg_photolayer;
 wxString _svg_photolayer_rollover;
 wxString _svg_photolayer_toggled;
-#endif
+
 
 
 
