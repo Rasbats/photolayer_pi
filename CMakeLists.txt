@@ -42,22 +42,22 @@ set(OCPN_TEST_REPO
     "opencpn/photolayer-alpha"
     CACHE STRING "Default repository for untagged builds"
 )
-set(OCPN_BETA_REPO
-    "opencpn/photolayer-beta"
-    CACHE STRING 
-    "Default repository for tagged builds matching 'beta'"
+# --set(OCPN_BETA_REPO
+    # --"opencpn/photolayer-beta"
+    # --CACHE STRING 
+    # --"Default repository for tagged builds matching 'beta'"
+# --)
+# --set(OCPN_RELEASE_REPO
+    # --"opencpn/photolayer-prod"
+    # --CACHE STRING 
+    # --"Default repository for tagged builds not matching 'beta'"
 )
-set(OCPN_RELEASE_REPO
-    "opencpn/photolayer-prod"
-    CACHE STRING 
-    "Default repository for tagged builds not matching 'beta'"
-)
-option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
+# --option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 
 
 # -------  Plugin setup --------
 #
-project(photolayer_pi VERSION 3.2.0)
+project(photolayer_pi VERSION 3.3.0)
 
 set(DISPLAY_NAME Photolayer)    # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME photolayer) # As of GetCommonName() in plugin API
