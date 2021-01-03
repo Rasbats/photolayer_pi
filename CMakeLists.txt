@@ -51,7 +51,7 @@ set(OCPN_TEST_REPO
     # --"opencpn/photolayer-prod"
     # --CACHE STRING 
     # --"Default repository for tagged builds not matching 'beta'"
-# --)
+)
 # --option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 
 
