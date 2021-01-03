@@ -52,7 +52,7 @@ set(OCPN_TEST_REPO
     # --CACHE STRING 
     # --"Default repository for tagged builds not matching 'beta'"
 # --)
-option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
+# --option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 
 
 # -------  Plugin setup --------
