@@ -104,9 +104,6 @@ set(SRC
             src/wximgkap.h
 )
 
-include("cmake/FindGeoTIFF.cmake") 
-find_package(GeoTIFF QUIET)
-
 
 
 # -------- Setup completed, build the plugin --------
@@ -152,6 +149,11 @@ endif ()
 if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   # Build package as required (flatpak already dealt with).
   #
+  include("cmake/FindGeoTIFF.cmake") 
+  find_package(GeoTIFF QUIET)
+
+
+  
   include(PluginCompiler)
   include(PluginLibs)
   include(PluginLocalization)
