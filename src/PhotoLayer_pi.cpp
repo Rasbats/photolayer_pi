@@ -34,6 +34,7 @@
 #include "PhotoLayer.h"
 #include "icons.h"
 
+#include "version.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -88,17 +89,17 @@ PhotoLayer_pi::~PhotoLayer_pi(void)
 
 int PhotoLayer_pi::Init(void)
 {
-    AddLocaleCatalog("opencpn-photolayer_pi");
+    AddLocaleCatalog(PLUGIN_CATALOG_NAME);
     
     m_pPhotoLayer = NULL;
 
 	m_bShowPhoto = false;
 
-	#ifdef PHOTOLAYER_USE_SVG
+	
 	m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), _svg_photolayer, _svg_photolayer, _svg_photolayer_toggled, 
 			wxITEM_CHECK, _("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
 
-    #endif
+
 
     return (WANTS_OVERLAY_CALLBACK |
             WANTS_OPENGL_OVERLAY_CALLBACK |
@@ -151,6 +152,11 @@ int PhotoLayer_pi::GetPlugInVersionMinor()
 wxBitmap *PhotoLayer_pi::GetPlugInBitmap()
 {
     return &m_panelBitmap;
+}
+
+wxString PhotoLayer_pi::GetCommonName()
+{
+    return PLUGIN_COMMON_NAME;
 }
 
 wxString PhotoLayer_pi::GetShortDescription()
