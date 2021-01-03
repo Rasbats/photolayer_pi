@@ -52,7 +52,7 @@ set(OCPN_RELEASE_REPO
     CACHE STRING 
     "Default repository for tagged builds not matching 'beta'"
 )
-option(SHIPDRIVER_USE_SVG "Use SVG graphics" ON)
+option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 
 
 # -------  Plugin setup --------
@@ -72,6 +72,21 @@ GeoTiff files can be downloaded from 'VentureFarther.com' or converted from kaps
 set(PKG_RELEASE "1")
 set(PKG_AUTHOR "Mike Rossiter")
 
+if(WIN32)
+	set(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+	set(geotiff "${PARENT}.lib")
+	set(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+	set(libtiff "${PARENT}.lib")
+
+	link_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+	link_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+
+	include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/include)
+	include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
+	include_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
+
+endif ()
+
 set(SRC
             src/PhotoLayer_pi.cpp
 	        src/PhotoLayer_pi.h
@@ -89,26 +104,8 @@ set(SRC
             src/wximgkap.h
 )
 
-if(NOT WIN32)
- include("cmake/FindGeoTIFF.cmake")
- find_package(GeoTIFF QUIET)
-endif ()
-
-if(WIN32)
-	set(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-	set(geotiff "${PARENT}.lib")
-	set(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
-	set(libtiff "${PARENT}.lib")
-
-	link_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-	link_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
-
-	include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/include)
-	include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
-	include_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
-
-endif ()
-
+include("cmake/FindGeoTIFF.cmake") 
+find_package(GeoTIFF QUIET)
 
 if(GEOTIFF_FOUND)
   message (STATUS "Building with system libGeoTIFF")
@@ -135,10 +132,16 @@ set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
 string(REGEX REPLACE "\([0-9]\)\.\([0-9]\).*" "ov\\1\\2"
        OCPN_MIN_VERSION ${API_OCPN_MIN_VERSION})
 
-if (SHIPDRIVER_USE_SVG)
-  add_definitions(-DSHIPDRIVER_USE_SVG)
+if (PHOTOLAYER_USE_SVG)
+  add_definitions(-DPHOTOLAYER_USE_SVG)
 endif ()
 
+if(WIN32)
+find_library(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+find_library(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+
+target_link_libraries(${PACKAGE_NAME} geotiff libtiff)
+endif ()
 
 # Set up targets. Targets sets up a recursive call with BUILD_TYPE set to
 # 'flatpak', 'pkg' or 'tarball'. The initial call without BUILD_TYPE ends

@@ -94,11 +94,11 @@ int PhotoLayer_pi::Init(void)
 
 	m_bShowPhoto = false;
 
-	
+	#ifdef PHOTOLAYER_USE_SVG
 	m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), _svg_photolayer, _svg_photolayer, _svg_photolayer_toggled, 
 			wxITEM_CHECK, _("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
 
-
+    #endif
 
     return (WANTS_OVERLAY_CALLBACK |
             WANTS_OPENGL_OVERLAY_CALLBACK |
