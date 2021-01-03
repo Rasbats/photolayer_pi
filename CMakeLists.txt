@@ -30,8 +30,8 @@ set(PACKAGE_CONTACT "Mike Rossiter")
 set(PACKAGE "photolayer")
 
 set(VERSION_MAJOR "3")
-set(VERSION_MINOR "2")
-set(VERSION_PATCH "0")
+set(VERSION_MINOR "1")
+set(VERSION_PATCH "27")
 set(VERSION_TWEAK "0")
 set(VERSION_DATE "18/07/2020")
 set(OCPN_MIN_VERSION "ov50")
@@ -45,8 +45,8 @@ set(PARENT "opencpn")
 set(GIT_REPOSITORY_SERVER "github.com")
 
 # Specifies cloudsmith repository sufficies
-#set(PROD "prod") # Standard Repos
-#set(BETA "beta") # Standard Repos
+set(PROD "prod") # Standard Repos
+set(BETA "beta") # Standard Repos
 set(ALPHA "alpha") # Standard Repos
 
 set(CLOUDSMITH_USER "opencpn")
