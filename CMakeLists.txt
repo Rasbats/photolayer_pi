@@ -107,7 +107,13 @@ set(SRC
 include("cmake/FindGeoTIFF.cmake") 
 find_package(GeoTIFF QUIET)
 
-
+if(GEOTIFF_FOUND)
+  message (STATUS "Building with system libGeoTIFF")
+  include_directories(${GEOTIFF_INCLUDE_DIR})
+  target_link_libraries(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+else()
+  message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+endif ()
 
 # -------- Setup completed, build the plugin --------
 #
@@ -166,14 +172,6 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   
   add_subdirectory("libs/wxJSON")
   target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
-  
-  if(GEOTIFF_FOUND)
-  message (STATUS "Building with system libGeoTIFF")
-  include_directories(${GEOTIFF_INCLUDE_DIR})
-  target_link_libraries(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
-  else()
-	message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-  endif ()
 endif ()
 
 configure_file(
