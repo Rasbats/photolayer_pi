@@ -176,6 +176,15 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   else()
 	message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
   endif ()
+  
+  if(TIFF_FOUND)
+    message (STATUS "${CMLOC}Building with system libTIFF")
+    include_directories(${TIFF_INCLUDE_DIRS})
+    target_link_libraries(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
+  else()
+    message (STATUS "${CMLOC}libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
+  endif()
+
 endif ()
 
 configure_file(
