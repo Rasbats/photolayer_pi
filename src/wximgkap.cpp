@@ -27,12 +27,12 @@
 #define VERS   "1.0b"
 
 #include <stdint.h>
-#include <cmath>
+#include <math.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>		/* for malloc() */
 #include <string.h>		/* for strncmp() */
-
+#include <math.h>
 
 #include <time.h>       /* for date in kap */
 
@@ -932,7 +932,7 @@ int wximgtokap(PhotoLayerImage &image, int colors, int units, const char *sd, co
 
     /* Header comment file outut */
     fprintf(out,"! 2013 opencpn PhotoLayer %d.%d file generator\r\n",
-            PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR);
+            MY_PLUGIN_VERSION_MAJOR, MY_PLUGIN_VERSION_MINOR);
     fprintf(out,"! Map created at %s\r\n",datej);
 
     /* calculate size */
