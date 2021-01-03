@@ -32,14 +32,20 @@
 #include <wx/fileconf.h>
 
 #include "ocpn_plugin.h"
-#include "version.h"
+
+
+#define PLUGIN_VERSION_MAJOR 3
+#define PLUGIN_VERSION_MINOR 2
+
+#define OCPN_API_VERSION_MAJOR    1
+#define OCPN_API_VERSION_MINOR    16
 
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
 
 
 #include "defs.h"
 
-#include "version.h"
+
 
 
 //----------------------------------------------------------------------------------------------------------
@@ -66,7 +72,6 @@ public:
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
       wxBitmap *GetPlugInBitmap();
-      wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
 

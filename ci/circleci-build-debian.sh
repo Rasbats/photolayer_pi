@@ -4,31 +4,26 @@
 # Build the Debian artifacts
 #
 set -xe
-sudo apt-get -qq update
-sudo apt-get install devscripts equivs
-     
-sudo apt-get install libgeotiff-dev
-sudo apt-get install libtiff-dev
+sudo apt -qq update || apt update
+sudo apt-get -q install  devscripts equivs
 
+mkdir  build
+cd build
+sudo mk-build-deps -ir ../ci/control
+sudo apt-get -q --allow-unauthenticated install -f
 
-rm -rf build && mkdir build && cd build
-mk-build-deps ../ci/control
-sudo apt-get --allow-unauthenticated install ./*all.deb  || :
-sudo apt-get --allow-unauthenticated install -f
-rm -f ./*all.deb
-
-tag=$(git tag --contains HEAD)
-
-if [ -n "$BUILD_GTK3" ] && [ "$BUILD_GTK3" = "true" ]; then
-  sudo update-alternatives --set wx-config /usr/lib/*-linux-*/wx/config/gtk3-unicode-3.0
+if [ -n "$BUILD_GTK3" ]; then
+    sudo update-alternatives --set wx-config \
+        /usr/lib/*-linux-*/wx/config/gtk3-unicode-3.0
 fi
 
-if [ -n "$tag" ]; then
-  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
-else
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr/local ..
-fi
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j $(nproc) VERBOSE=1 tarball
 
-make -j2
-make package
-ls -l
+sudo apt-get install \
+    python3-pip python3-setuptools python3-dev python3-wheel \
+    build-essential libssl-dev libffi-dev 
+
+python3 -m pip install --user --upgrade pip
+python3 -m pip install --user -q cloudsmith-cli
+python3 -m pip install --user -q cryptography
