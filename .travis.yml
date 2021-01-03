@@ -1,49 +1,21 @@
 language: cpp
-
-before_install:
-    
-        sudo apt-get -qq update;       
-        sudo apt-get install libgeotiff-dev;
-        sudo apt install libtiff-dev;
-           
-
-matrix:
-
-
   
-# The following 2 env: sections are now being done in circleci but are left here for examples
-#  - env:
-#    - OCPN_TARGET=stretch-armhf
-#    - DOCKER_IMAGE=raspbian/stretch
-#    - BUILD_FLAGS="-j2"
-#    - BUILD_ENV=raspbian
-#    services:
-#    - docker
-#    before_script:
-#    - travis_wait 120 sleep infinity & bash ./ci/travis-build-raspbian-armhf-part1.sh
-#    script:
-#    - travis_wait 120 sleep infinity & bash ./ci/travis-build-raspbian-armhf-part2.sh
-#  - env:
-#    - OCPN_TARGET=buster-armhf
-#    - DOCKER_IMAGE=jongough/raspbian-buster:plugin_build_tooling_current
-#    - BUILD_FLAGS=-j2
-#    - BUILD_ENV=raspbian
-#    services:
-#    - docker
-#    before_script:
-#    - travis_wait 120 sleep infinity & bash ./ci/travis-build-raspbian-armhf-part1.sh
-#    script:
-#    - travis_wait 120 sleep infinity & bash ./ci/travis-build-raspbian-armhf-part2.sh
-# The following env: section is for arm64 and cannot yet be run in circleci
+matrix:
+  include:
   - env:
-    - OCPN_TARGET=bionic-armh64
-    - DOCKER_IMAGE=arm64v8/ubuntu:18.04
-    - BUILD_FLAGS=-j2
-    - BUILD_ENV=ubuntu
+    - OCPN_TARGET=stretch-armhf
+    - OCPN_BRANCH=master
+    - DOCKER_IMAGE=raspbian/stretch
     services:
     - docker
-    before_script:
-    - travis_wait 120 sleep infinity & bash ./ci/travis-build-raspbian-armhf-part1.sh
     script:
-    - travis_wait 120 sleep infinity & bash ./ci/travis-build-raspbian-armhf-part2.sh
-    - bash ./ci/cloudsmith-upload.sh
+    - "./ci/travis-build-raspbian-armhf.sh"
+    - "cd build; bash < upload.sh"
+    os: Linux
+    dist: focal
+
+branches:
+  only:
+    - master
+    - build
+
