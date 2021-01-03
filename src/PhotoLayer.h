@@ -27,13 +27,22 @@
 #include <vector>
 
 #include "PhotoLayerUI.h"
-#include "geotiffio.h"
-#include "xtiffio.h"
-#include "geo_normalize.h"
-#include "geo_simpletags.h"
-#include "geovalues.h"
-#include "tiffio.h"
-#include "cpl_serv.h"
+
+#if not defined WIN32
+#define __int64 long int
+#include <tiffio.h>
+#include <xtiffio.h>
+#include <geotiffio.h>
+#endif
+
+	#include "geotiffio.h"
+	#include "xtiffio.h"
+	#include "geo_normalize.h"
+	#include "geo_simpletags.h"
+	#include "geovalues.h"
+	#include "tiffio.h"
+	#include "cpl_serv.h"
+
 
 #include <wx/dynarray.h>
 #include <ctype.h>
@@ -42,6 +51,8 @@
 #include <cstring>
 #include <wchar.h>
 #include <bitset>
+
+#include <cmath>
 
 enum { VERSION = 0, MAJOR, MINOR };
 
