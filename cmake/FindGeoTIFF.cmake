@@ -25,7 +25,7 @@ IF(WIN32)
     IF(MINGW)
         FIND_PATH(GEOTIFF_INCLUDE_DIR
             geotiff.h
-            PATH_PREFIXES geotiff
+            PATH_PREFIXES geotiff libgeotiff
             PATHS
             /usr/local/include
             /usr/include
@@ -53,7 +53,7 @@ IF(WIN32)
   
 ELSEIF(UNIX)
 
-    FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff PATH /usr/include/geotiff)
+  FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_SUFFIXES geotiff libgeotiff)
 
     FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
 
@@ -68,4 +68,4 @@ ENDIF()
 # Handle the QUIETLY and REQUIRED arguments and set SPATIALINDEX_FOUND to TRUE
 # if all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GeoTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
