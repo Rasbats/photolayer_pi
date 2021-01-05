@@ -25,7 +25,7 @@
  */
 
 #include <list>
-#include "tinyxml/tinyxml.h"
+#include "tinyxml.h"
 #include "PhotoLayer_pi.h"
 #include "PhotoLayerImage.h"
 #include "PhotoLayer.h"
