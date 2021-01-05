@@ -23,7 +23,7 @@ install:
   - cmd: SET PATH=%PATH%;%WXWIN%;%wxWidgets_LIB_DIR%;C:\Program Files (x86)\Poedit\Gettexttools\bin;
 
   # install dependencies:
-  - choco install poedit
+  - choco install -y poedit
 
   # Download and unzip wxwidgets
   - ps: Start-FileDownload https://download.opencpn.org/s/E2p4nLDzeqx4SdX/download -FileName wxWidgets-3.1.2.7z
