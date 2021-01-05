@@ -111,8 +111,8 @@ set(SRC
 
 
 if(UNIX)
- INCLUDE("cmake/FindGeoTIFF.cmake")
- FIND_PACKAGE(GeoTIFF QUIET)
+ include("cmake/FindGeoTIFF.cmake")
+ find_package(GeoTIFF QUIET)
 endif(UNIX)
 
 
@@ -120,7 +120,7 @@ endif(UNIX)
 if(GEOTIFF_FOUND)
   message (STATUS "Building with system libGeoTIFF")
   include_directories(${GEOTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
+  target_link_libraries(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
 else ()
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
 endif ()
