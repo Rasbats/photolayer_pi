@@ -148,8 +148,13 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   target_link_libraries(${PACKAGE_NAME} ocpn::geotiff)
 
   find_package(OpenGL)
-  if (OpenGL)
-    target_link_libraries(${PACKAGE_NAME} OpenGL::GL)
+  if (OPENGL_FOUND)
+    # Linking to OPENGL:GL should make it, but fails on Windows.
+    target_link_libraries(${PACKAGE_NAME} ${OPENGL_LIBRARIES})
+    message(STATUS "OPENGL_INCLUDE_DIR: ${OPENGL_INCLUDE_DIR}")
+    if (OPENGL_INCLUDE_DIR)
+      include_directories(${OPENGL_INCLUDE_DIR})
+    endif ()
   endif ()
 endif ()
 
