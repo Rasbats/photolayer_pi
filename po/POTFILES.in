@@ -1,0 +1,10 @@
+src/AboutDialog.cpp
+src/AboutDialog.h
+src/PhotoLayer.cpp
+src/PhotoLayer.h
+src/PhotoLayerImage.cpp
+src/PhotoLayerImage.h
+src/PhotoLayer_pi.cpp
+src/PhotoLayer_pi.h
+src/wximgkap.h
+src/wximgkap.cpp

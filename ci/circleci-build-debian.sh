@@ -4,47 +4,26 @@
 # Build the Debian artifacts
 #
 set -xe
-sudo apt-get -qq update
-sudo apt-get install devscripts equivs
+sudo apt -qq update || apt update
+sudo apt-get -q install  devscripts equivs
 
-rm -rf build && mkdir build && cd build
+mkdir  build
+cd build
+sudo mk-build-deps -ir ../ci/control
+sudo apt-get -q --allow-unauthenticated install -f
 
-# Install extra libs
-ME=$(echo ${0##*/} | sed 's/\.sh//g')
-EXTRA_LIBS=../ci/extras/extra_libs.txt
-if test -f "$EXTRA_LIBS"; then
-    while read line; do
-        sudo apt-get install $line
-    done < $EXTRA_LIBS
-fi
-EXTRA_LIBS=../ci/extras/${ME}_extra_libs.txt
-if test -f "$EXTRA_LIBS"; then
-    while read line; do
-        sudo apt-get install $line
-    done < $EXTRA_LIBS
+if [ -n "$BUILD_GTK3" ]; then
+    sudo update-alternatives --set wx-config \
+        /usr/lib/*-linux-*/wx/config/gtk3-unicode-3.0
 fi
 
-mk-build-deps ../ci/control
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j $(nproc) VERBOSE=1 tarball
 
-sudo apt-get --allow-unauthenticated install ./*all.deb  || :
-sudo apt-get --allow-unauthenticated install -f
-rm -f ./*all.deb
+sudo apt-get install \
+    python3-pip python3-setuptools python3-dev python3-wheel \
+    build-essential libssl-dev libffi-dev 
 
-tag=$(git tag --contains HEAD)
-
-CMAKE_GTK3=""
-
-if [ -n "$BUILD_GTK3" ] && [ "$BUILD_GTK3" = "true" ]; then
-  sudo update-alternatives --set wx-config /usr/lib/*-linux-*/wx/config/gtk3-unicode-3.0
-  CMAKE_GTK3="-DBUILD_GTK3=true"
-fi
-
-if [ -n "$tag" ]; then
-  cmake -DCMAKE_BUILD_TYPE=Release $CMAKE_GTK3 -DCMAKE_INSTALL_PREFIX=/usr/local ..
-else
-  cmake -DCMAKE_BUILD_TYPE=Debug $CMAKE_GTK3 -DCMAKE_INSTALL_PREFIX=/usr/local ..
-fi
-
-make -j2
-make package
-ls -l
+python3 -m pip install --user --upgrade pip
+python3 -m pip install --user -q cloudsmith-cli
+python3 -m pip install --user -q cryptography
