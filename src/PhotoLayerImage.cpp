@@ -29,7 +29,12 @@
 
 #include "defs.h"
 #include "PhotoLayerImage.h"
+
+#if __APPLE__
+#include <gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 WX_DEFINE_LIST(PhotoLayerImageCoordinateList);
 
