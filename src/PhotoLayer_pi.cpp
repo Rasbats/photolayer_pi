@@ -135,9 +135,9 @@ int PhotoLayer_pi::GetAPIVersionMajor()
 
 int PhotoLayer_pi::GetAPIVersionMinor()
 {
-	std::string v(API_VERSION);
-	size_t dotpos = v.find('.');
-	return atoi(v.substr(dotpos + 1).c_str());
+    std::string v(API_VERSION);
+    size_t dotpos = v.find('.');
+    return atoi(v.substr(dotpos + 1).c_str());
 }
 
 int PhotoLayer_pi::GetPlugInVersionMajor()
