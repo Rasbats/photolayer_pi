@@ -36,7 +36,7 @@
 #define PLUGIN_VERSION_MAJOR 3
 #define PLUGIN_VERSION_MINOR 3
 
-
+#define PLUGIN_CATALOG_NAME "opencpn-PhotoLayer_pi"
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
 
 
