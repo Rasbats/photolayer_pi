@@ -36,6 +36,7 @@ sudo apt-get -y install --no-install-recommends \
    build-essential cmake file gettext git \
    libarchive-dev libbz2-dev libcairo2-dev \
    libcurl4-openssl-dev libexif-dev libexpat1-dev \
+   libtiff-dev libgeotiff-dev \
    libgtk2.0-dev libjsoncpp-dev libtinyxml-dev liblzma-dev \
    libwxgtk3.0-dev lsb-release wx-common
 
