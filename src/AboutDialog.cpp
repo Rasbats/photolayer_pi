@@ -31,6 +31,7 @@
 #include <cmath>
 #include <time.h>
 
+#include "config.h"
 #include "AboutDialog.h"
 #include "PhotoLayer_pi.h"
 

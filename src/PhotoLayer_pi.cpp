@@ -29,6 +29,7 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+#include "config.h"
 #include "PhotoLayer_pi.h"
 #include "PhotoLayerImage.h"
 #include "PhotoLayer.h"

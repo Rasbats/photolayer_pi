@@ -36,6 +36,7 @@
 
 #include <time.h>       /* for date in kap */
 
+#include "config.h"
 #include "PhotoLayer_pi.h"
 #include "PhotoLayerImage.h"
 #include "wximgkap.h"
