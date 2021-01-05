@@ -34,8 +34,6 @@
 #include "PhotoLayer.h"
 #include "icons.h"
 
-#include "version.h"
-
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
