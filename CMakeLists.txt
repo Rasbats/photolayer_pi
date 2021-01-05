@@ -131,7 +131,6 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   include(PluginLocalization)
   include(PluginInstall)
   include(PluginPackage)
-  include ("cmake/PluginGL.cmake")
 
   add_subdirectory("libs/jsoncpp")
   target_link_libraries(${PACKAGE_NAME} ocpn::jsoncpp)
