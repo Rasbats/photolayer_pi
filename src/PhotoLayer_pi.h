@@ -32,7 +32,7 @@
 #include <wx/fileconf.h>
 
 #include "ocpn_plugin.h"
-#include "version.h"
+
 
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
 
