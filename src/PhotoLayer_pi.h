@@ -32,6 +32,9 @@
 #include <wx/fileconf.h>
 
 #include "ocpn_plugin.h"
+#define API_VERSION       "1.16"
+#define PLUGIN_VERSION_MAJOR 3
+#define PLUGIN_VERSION_MINOR 3
 
 
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"

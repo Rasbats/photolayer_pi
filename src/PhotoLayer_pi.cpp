@@ -87,7 +87,7 @@ PhotoLayer_pi::~PhotoLayer_pi(void)
 
 int PhotoLayer_pi::Init(void)
 {
-    AddLocaleCatalog(PLUGIN_CATALOG_NAME);
+    AddLocaleCatalog("opencpn-Photolayer_pi");
     
     m_pPhotoLayer = NULL;
 
@@ -129,12 +129,14 @@ bool PhotoLayer_pi::DeInit(void)
 
 int PhotoLayer_pi::GetAPIVersionMajor()
 {
-    return OCPN_API_VERSION_MAJOR;
+    return atoi(API_VERSION);
 }
 
 int PhotoLayer_pi::GetAPIVersionMinor()
 {
-    return OCPN_API_VERSION_MINOR;
+	std::string v(API_VERSION);
+	size_t dotpos = v.find('.');
+	return atoi(v.substr(dotpos + 1).c_str());
 }
 
 int PhotoLayer_pi::GetPlugInVersionMajor()
@@ -154,12 +156,12 @@ wxBitmap *PhotoLayer_pi::GetPlugInBitmap()
 
 wxString PhotoLayer_pi::GetCommonName()
 {
-    return PLUGIN_COMMON_NAME;
+    return "Photolayer";
 }
 
 wxString PhotoLayer_pi::GetShortDescription()
 {
-    return _("PhotoLayer PlugIn for OpenCPN");
+    return "PhotoLayer PlugIn for OpenCPN";
 }
 
 wxString PhotoLayer_pi::GetLongDescription()
