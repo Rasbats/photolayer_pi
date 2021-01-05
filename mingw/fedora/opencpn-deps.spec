@@ -24,6 +24,7 @@ BuildRequires: mingw32-freetype
 BuildRequires: mingw32-gcc
 BuildRequires: mingw32-gcc-c++
 BuildRequires: mingw32-cpp
+BuildRequires: mingw32-geotiff
 BuildRequires: mingw32-gettext
 BuildRequires: mingw32-headers
 BuildRequires: mingw32-glib2
