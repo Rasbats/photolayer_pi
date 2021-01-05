@@ -115,7 +115,7 @@ if(UNIX)
  find_package(GeoTIFF QUIET)
 endif(UNIX)
 
-
+include ("cmake/PluginGL.cmake")
 
 if(GEOTIFF_FOUND)
   message (STATUS "Building with system libGeoTIFF")
