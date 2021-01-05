@@ -146,6 +146,11 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
 
   add_subdirectory("libs/libgeotiff")
   target_link_libraries(${PACKAGE_NAME} ocpn::geotiff)
+
+  find_package(OpenGL)
+  if (OpenGL)
+    target_link_libraries(${PACKAGE_NAME} OpenGL::GL)
+  endif ()
 endif ()
 
 configure_file(
