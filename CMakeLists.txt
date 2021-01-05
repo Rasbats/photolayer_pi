@@ -15,9 +15,12 @@ if (POLICY CMP0077)
 endif ()
 
 # Prefer libGL.so to libOpenGL.so, see CMP0072
-#set(OpenGL_GL_PREFERENCE "LEGACY")
+set(OpenGL_GL_PREFERENCE "LEGACY")
 # Don't use local version of GLU library
-#set(USE_LOCAL_GLU FALSE)
+set(USE_LOCAL_GLU FALSE)
+
+option(USE_GL "Enable OpenGL support" ON)
+message(STATUS "${CMLOC}USE_GL: ${USE_GL}")
 
 # Locations where cmake looks for cmake modules.
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build ${CMAKE_SOURCE_DIR}/cmake)
