@@ -72,21 +72,6 @@ Display geotiff files with adjustable transparency, as an overlay.
 set(PKG_RELEASE "1")
 set(PKG_AUTHOR "Mike Rossiter")
 
-if (WIN32)
-  set(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-  set(geotiff "${PARENT}.lib")
-  set(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
-  set(libtiff "${PARENT}.lib")
-
-  link_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-  link_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
-
-  include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/include)
-  include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
-  include_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
-
-endif (WIN32)
-
 set(SRC
     src/PhotoLayer_pi.cpp
     src/PhotoLayer_pi.h
@@ -104,37 +89,10 @@ set(SRC
     src/wximgkap.h
 )
 
-if (UNIX)
-  include("cmake/FindGeoTIFF.cmake")
-  find_package(GeoTIFF QUIET)
-endif (UNIX)
-
-if (GEOTIFF_FOUND)
-  message(STATUS "Building with system libGeoTIFF")
-  include_directories(${GEOTIFF_INCLUDE_DIR})
-  target_link_libraries(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
-else (GEOTIFF_FOUND)
-  message(
-    STATUS
-      "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it"
-  )
-endif (GEOTIFF_FOUND)
-
-if (LIBTIFF_FOUND)
-  message(STATUS "Building with system libTIFF")
-  include_directories(${LIBTIFF_INCLUDE_DIR})
-  target_link_libraries(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
-else (LIBTIFF_FOUND)
-  message(
-    STATUS
-      "libTIFF not found, either disable the support for it or fail ro use an embedded version of it"
-  )
-endif (LIBTIFF_FOUND)
-
 # -------- Setup completed, build the plugin --------
 #
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC})
-include_directories(${CMAKE_BINARY_DIR}/include)
+include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
 
 add_subdirectory("libs/api-16")
 target_link_libraries(${CMAKE_PROJECT_NAME} ocpn::api)
@@ -143,13 +101,6 @@ set(VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-
-if (WIN32)
-  find_library(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-  find_library(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
-
-  target_link_libraries(${PACKAGE_NAME} geotiff libtiff)
-endif (WIN32)
 
 # Create the minimim ocpn version id string like ov50
 string(REGEX REPLACE "\([0-9]\)\.\([0-9]\).*" "ov\\1\\2" OCPN_MIN_VERSION
@@ -190,7 +141,17 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   add_subdirectory("libs/wxJSON")
   target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
 
+  add_subdirectory("libs/libtiff")
+  target_link_libraries(${PACKAGE_NAME} ocpn::tiff)
+
+  add_subdirectory("libs/libgeotiff")
+  target_link_libraries(${PACKAGE_NAME} ocpn::geotiff)
 endif ()
+
+configure_file(
+  ${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/include/config.h
+  @ONLY
+)
 
 configure_file(
   # The cloudsmith upload script
