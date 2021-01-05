@@ -75,22 +75,22 @@ Display geotiff files with adjustable transparency, as an overlay.
 set(PKG_RELEASE "1")
 set(PKG_AUTHOR "Mike Rossiter")
 
-IF(WIN32)
-	SET(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-	SET(geotiff "${PARENT}.lib")
-	SET(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
-	SET(libtiff "${PARENT}.lib")
+if(WIN32)
+	set(geotiff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+	set(geotiff "${PARENT}.lib")
+	set(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+	set(libtiff "${PARENT}.lib")
 
-	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+	link_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+	link_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 
-	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/include)
-	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
-	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
+	include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/include)
+	include_directories(${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2/libxtiff)
+	include_directories(${CMAKE_SOURCE_DIR}/src/tiff-4.0.10/include)
 
 
 
-ENDIF(WIN32)
+endif()
 
 set(SRC
             src/PhotoLayer_pi.cpp
@@ -110,28 +110,28 @@ set(SRC
 )
 
 
-IF(UNIX)
+if(UNIX)
  INCLUDE("cmake/FindGeoTIFF.cmake")
  FIND_PACKAGE(GeoTIFF QUIET)
-ENDIF(UNIX)
+endif(UNIX)
 
 
 
-IF(GEOTIFF_FOUND)
+if(GEOTIFF_FOUND)
   message (STATUS "Building with system libGeoTIFF")
-  INCLUDE_DIRECTORIES(${GEOTIFF_INCLUDE_DIR})
+  include_directories(${GEOTIFF_INCLUDE_DIR})
   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${GEOTIFF_LIBRARY})
-ELSE(GEOTIFF_FOUND)
+else ()
   message (STATUS "libGeoTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(GEOTIFF_FOUND)
+endif ()
 
-IF(LIBTIFF_FOUND)
+if(LIBTIFF_FOUND)
   message (STATUS "Building with system libTIFF")
-  INCLUDE_DIRECTORIES(${LIBTIFF_INCLUDE_DIR})
-  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
-ELSE(LIBTIFF_FOUND)
+  include_directories(${LIBTIFF_INCLUDE_DIR})
+  target_link_libraries(${PACKAGE_NAME} ${LIBTIFF_LIBRARY})
+else ()
   message (STATUS "libTIFF not found, either disable the support for it or fail ro use an embedded version of it")
-ENDIF(LIBTIFF_FOUND)
+endif ()
 
 
   
@@ -150,12 +150,12 @@ set(VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
 
-  IF(WIN32)
-FIND_LIBRARY(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
-FIND_LIBRARY(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
+if(WIN32)
+find_library(geotff ${CMAKE_SOURCE_DIR}/src/libgeotiff-1.4.2)
+find_library(libtiff ${CMAKE_SOURCE_DIR}/src/tiff-4.0.10)
 
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME} geotiff libtiff)
-ENDIF(WIN32)
+target_link_libraries(${PACKAGE_NAME} geotiff libtiff)
+endif ()
   
 
 
@@ -178,8 +178,6 @@ include(Targets)
 create_targets(
   ${PROJECT_SOURCE_DIR}/flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml
 )
-
-
 
 if ("${BUILD_TYPE}" STREQUAL "")
   return ()
