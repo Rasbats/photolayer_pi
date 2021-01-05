@@ -23,11 +23,18 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include "wx/wxprec.h"
+
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
 
 #include "PhotoLayer_pi.h"
 #include "PhotoLayerImage.h"
 #include "PhotoLayer.h"
 #include "icons.h"
+
+#include "version.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -48,20 +55,30 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //---------------------------------------------------------------------------------------------------------
 
 PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
-    : opencpn_plugin_113(ppimgr)
+    :opencpn_plugin_116(ppimgr)
 {
     // Create the PlugIn icons
     initialize_images();
+	wxFileName fn;
+	wxString tmp_path;
 
-	wxString shareLocn = *GetpSharedDataLocation() +
-		_T("plugins") + wxFileName::GetPathSeparator() +
-		_T("photolayer_pi") + wxFileName::GetPathSeparator()
-		+ _T("data") + wxFileName::GetPathSeparator();
-	wxImage panelIcon(shareLocn + _T("photolayer_panel_icon.png"));
+	tmp_path = GetPluginDataDir("photolayer_pi");
+	fn.SetPath(tmp_path);
+	fn.AppendDir(_T("data"));
+	fn.SetFullName("photolayer_panel_icon.png");
+
+	wxString shareLocn = fn.GetFullPath();
+
+	wxImage panelIcon(shareLocn);
 	if (panelIcon.IsOk())
 		m_panelBitmap = wxBitmap(panelIcon);
 	else
 		wxLogMessage(_T("    PhotoLayer panel icon NOT loaded"));
+}
+
+PhotoLayer_pi::~PhotoLayer_pi(void)
+{
+
 }
 
 //---------------------------------------------------------------------------------------------------------
@@ -72,33 +89,15 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
 
 int PhotoLayer_pi::Init(void)
 {
-    AddLocaleCatalog( _T("opencpn-PhotoLayer_pi") );
-    //m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_photolayer,
-    //                                        _img_photolayer, wxITEM_NORMAL,
-    //                                        _("PhotoLayer"), _T(""), NULL,
-    //                                        PHOTOLAYER_TOOL_POSITION, 0, this);
+    AddLocaleCatalog(PLUGIN_CATALOG_NAME);
+    
     m_pPhotoLayer = NULL;
 
 	m_bShowPhoto = false;
 
-		wxString shareLocn = *GetpSharedDataLocation() +
-			_T("plugins") + wxFileName::GetPathSeparator() +
-			_T("photolayer_pi") + wxFileName::GetPathSeparator()
-			+ _T("data") + wxFileName::GetPathSeparator();
-
-		wxString normalIcon = shareLocn + _T("photolayer.svg");
-		wxString toggledIcon = shareLocn + _T("photolayer_toggled.svg");
-
-		//  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
-	/*	if (GetActiveStyleName().Lower() != _T("traditional")) {
-			normalIcon = _T("");
-			toggledIcon = _T("");
-			rolloverIcon = _T("");
-		}
-		*/
-		wxLogMessage(normalIcon);
-		m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), normalIcon, normalIcon, toggledIcon, wxITEM_CHECK,
-			_("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
+	
+	m_leftclick_tool_id = InsertPlugInToolSVG(_T(""), _svg_photolayer, _svg_photolayer, _svg_photolayer_toggled, 
+			wxITEM_CHECK, _("PhotoLayer"), _T(""), NULL, PHOTOLAYER_TOOL_POSITION, 0, this);
 
 
 
@@ -132,22 +131,22 @@ bool PhotoLayer_pi::DeInit(void)
 
 int PhotoLayer_pi::GetAPIVersionMajor()
 {
-    return MY_API_VERSION_MAJOR;
+    return OCPN_API_VERSION_MAJOR;
 }
 
 int PhotoLayer_pi::GetAPIVersionMinor()
 {
-    return MY_API_VERSION_MINOR;
+    return OCPN_API_VERSION_MINOR;
 }
 
 int PhotoLayer_pi::GetPlugInVersionMajor()
 {
-    return MY_PLUGIN_VERSION_MAJOR;
+    return PLUGIN_VERSION_MAJOR;
 }
 
 int PhotoLayer_pi::GetPlugInVersionMinor()
 {
-    return MY_PLUGIN_VERSION_MINOR;
+    return PLUGIN_VERSION_MINOR;
 }
 
 wxBitmap *PhotoLayer_pi::GetPlugInBitmap()
@@ -157,7 +156,7 @@ wxBitmap *PhotoLayer_pi::GetPlugInBitmap()
 
 wxString PhotoLayer_pi::GetCommonName()
 {
-    return _("PhotoLayer");
+    return PLUGIN_COMMON_NAME;
 }
 
 wxString PhotoLayer_pi::GetShortDescription()
@@ -272,37 +271,17 @@ bool PhotoLayer_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 
 wxString PhotoLayer_pi::StandardPath()
 {
-    wxStandardPathsBase& std_path = wxStandardPathsBase::Get();
-    wxString s = wxFileName::GetPathSeparator();
+   
+	wxString stdPath(*GetpPrivateApplicationDataLocation());
+	wxString s = wxFileName::GetPathSeparator();
 
-#if defined(__WXMSW__)
-    wxString stdPath  = std_path.GetConfigDir();
-#elif defined(__WXGTK__) || defined(__WXQT__)
-    wxString stdPath  = std_path.GetUserDataDir();
-#elif defined(__WXOSX__)
-    wxString stdPath  = (std_path.GetUserConfigDir() + s + _T("opencpn"));
-#endif
-
-    stdPath += s + _T("plugins");
-    if (!wxDirExists(stdPath))
-      wxMkdir(stdPath);
-
-    stdPath += s + _T("PhotoLayer");
-
-#ifdef __WXOSX__
-    // Compatibility with pre-OCPN-4.2; move config dir to
-    // ~/Library/Preferences/opencpn if it exists
-    wxString oldPath = (std_path.GetUserConfigDir() + s + _T("plugins") + s + _T("PhotoLayer"));
-    if (wxDirExists(oldPath) && !wxDirExists(stdPath)) {
-	wxLogMessage("PhotoLayer_pi: moving config dir %s to %s", oldPath, stdPath);
-	wxRenameFile(oldPath, stdPath);
-    }
-#endif
-
-    if (!wxDirExists(stdPath))
-      wxMkdir(stdPath);
-
-    stdPath += s; // is this necessary?
+	stdPath += s + _T("plugins") + s + _T("photolayer_pi");
+	if (!wxDirExists(stdPath))
+		wxMkdir(stdPath);
+	stdPath += s + _T("data");
+	if (!wxDirExists(stdPath))
+		wxMkdir(stdPath);
+	
     return stdPath;
 }
 
@@ -310,8 +289,7 @@ bool PhotoLayer_pi::LoadConfig(void)
 {
     wxFileConfig *pConf = GetOCPNConfigObject();
 
-    if(!pConf)
-        return false;
+    if(!pConf){return false;}
 
 	wxString m_export_colors;
 
@@ -332,8 +310,7 @@ bool PhotoLayer_pi::SaveConfig(void)
 {
     wxFileConfig *pConf = GetOCPNConfigObject();
 
-    if(!pConf)
-        return false;
+    if(!pConf){return false;}
 
 	pConf->SetPath(_T("/Settings/PhotoLayer"));
 	pConf->Write(_T("Path"), m_path);

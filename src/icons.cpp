@@ -10,12 +10,12 @@
 wxBitmap *_img_photolayer;
 wxBitmap *_img_photolayer_pi;
 
-#ifdef PHOTOLAYER_USE_SVG
+
 #include "ocpn_plugin.h"
 wxString _svg_photolayer;
 wxString _svg_photolayer_rollover;
 wxString _svg_photolayer_toggled;
-#endif
+
 
 
 
@@ -32,10 +32,12 @@ void initialize_images(void)
 
 #ifdef PHOTOLAYER_USE_SVG
 	wxFileName fn;
-	fn.SetPath(*GetpSharedDataLocation());
-	fn.AppendDir(_T("plugins"));
-	fn.AppendDir(_T("photolayer_pi"));
+	wxString tmp_path;
+
+	tmp_path = GetPluginDataDir("photolayer_pi");
+	fn.SetPath(tmp_path);
 	fn.AppendDir(_T("data"));
+
 	fn.SetFullName(_T("photolayer.svg"));
 	_svg_photolayer = fn.GetFullPath();
 	fn.SetFullName(_T("photolayer_rollover.svg"));
