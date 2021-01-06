@@ -29,6 +29,7 @@
 
 #include "defs.h"
 #include "PhotoLayerImage.h"
+#include <GL/gl.h>
 
 WX_DEFINE_LIST(PhotoLayerImageCoordinateList);
 
