@@ -39,9 +39,8 @@ modules:
           - -DBUILD_TYPE:STRING=tarball
           - -Uplugin_target
       build-options:
-          cxxflags: -DFLATPAK -O3
-          cflags: -DFLATPAK -O3
-          # The flatpak-builder default CFLAGS adds -g
+          cxxflags: -DFLATPAK
+          cflags: -DFLATPAK
       sources:
           - type: git
             url: ..
