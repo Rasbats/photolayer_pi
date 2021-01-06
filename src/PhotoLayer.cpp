@@ -25,7 +25,7 @@
  */
 
 #include <list>
-#include "tinyxml/tinyxml.h"
+#include "tinyxml.h"
 #include "PhotoLayer_pi.h"
 #include "PhotoLayerImage.h"
 #include "PhotoLayer.h"
@@ -35,7 +35,7 @@
 #include "wximgkap.h"
 
 /* XPM */
-static char *photolayer_xpm[] = {
+static const char *photolayer_xpm[] = {
 	"32 32 4 1 0 0",
 	"  c #E6E6E6",
 	"! c #FF0080",
@@ -234,8 +234,9 @@ void PhotoLayer::SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, 
 	}
 
 	wxString layer_path = PhotoLayer_pi::StandardPath();
+	wxString s = wxFileName::GetPathSeparator();
 
-	if (!doc.SaveFile((layer_path +  filename).mb_str()))
+	if (!doc.SaveFile((layer_path + s + filename).mb_str()))
 		wxLogMessage(_("PhotoLayer") + wxString(_T(": ")) + _("Failed to save xml file: ") + filename);
 }
 
@@ -245,8 +246,9 @@ void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords
 	wxString name;
     wxString error;
     wxString coordinatesets_path = PhotoLayer_pi::StandardPath();
+	wxString s = wxFileName::GetPathSeparator();
 
-    if(!doc.LoadFile((coordinatesets_path + coordinatesets).mb_str()))
+    if(!doc.LoadFile((coordinatesets_path + s + coordinatesets).mb_str()))
         FAIL(_("Failed to load data sets"));
     else {
 		TiXmlElement* root = doc.RootElement();
@@ -469,11 +471,8 @@ void PhotoLayer::Goto(int selection)
         lon1 += 360;
 
     double distance;
-#if 0 // for opencpn 3.3 and later
     DistanceBearingMercator_Plugin(lat0, lon0, lat1, lon1, NULL, &distance);
-#else
-    WFDistanceBearingMercator(lat0, lon0, lat1, lon1, NULL, &distance);
-#endif
+
     if(!isnan(distance))
         JumpToPosition((lat0 + lat1) / 2, (lon0 + lon1) / 2, .5/distance);
 }
