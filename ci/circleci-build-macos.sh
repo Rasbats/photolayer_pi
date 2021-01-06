@@ -16,7 +16,7 @@ pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 brew list --versions libexif || brew update-reset
 
 # install packaged dependencies
-for pkg in cairo cmake gettext libarchive libgeotiff libtiff python wget
+for pkg in cmake gettext libgeotiff libtiff python wget
 do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || brew install $pkg
