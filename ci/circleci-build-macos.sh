@@ -15,9 +15,9 @@ pkg_version() { brew list --versions $2 $1 | tail -1 | awk '{print $2}'; }
 # Check if the cache is with us. If not, re-install brew.
 brew list --versions libexif || brew update-reset
 
-# install packaged dependencies
-for pkg in cmake gettext libgeotiff libtiff python wget
-do
+# Install packaged dependencies
+here=$(cd "$(dirname "$0")"; pwd)
+for pkg in $(sed '/#/d' < $here/../build-deps/macos-deps);  do
     brew list --versions $pkg || brew install $pkg || brew install $pkg || :
     brew link --overwrite $pkg || brew install $pkg
 done
@@ -46,6 +46,13 @@ cmake \
   -DCMAKE_INSTALL_PREFIX= \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
+
+if [ -z "$CLOUDSMITH_API_KEY" ]; then
+    echo 'No $CLOUDSMITH_API_KEY found, assuming local setup'
+    echo "Complete build using 'cd build; make tarball' or so."
+    exit 0 
+fi
+
 make -j $(sysctl -n hw.physicalcpu) VERBOSE=1 tarball
 
 make create-pkg
