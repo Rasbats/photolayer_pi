@@ -21,12 +21,3 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   GeoTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR
 )
-
-if (GeoTIFF_FOUND)
-  set(GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR})
-  set(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY} )
-  add_library(_GEOTIFF INTERFACE)
-  target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
-  target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
-  add_library(ocpn::geotiff ALIAS _GEOTIFF)
-endif ()
