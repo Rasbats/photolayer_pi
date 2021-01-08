@@ -14,7 +14,11 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries" OFF)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+set(_install_root ${CMAKE_CURRENT_SOURCE_DIR}/root)
 add_library(_GEOTIFF INTERFACE)
+
 if (WIN32)
   file(GLOB geotiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/libgeotiff-*-msvc")
   add_library(GEOTIFF STATIC IMPORTED)
@@ -27,7 +31,7 @@ if (WIN32)
   target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/libxtiff)
   add_library(ocpn::geotiff ALIAS _GEOTIFF)
 elseif (USE_SYSTEM_GEOTIFF)
-  find_package(GeoTIFF REQUIRED)
+  find_package(GeoTIFF)
   if (GeoTIFF_FOUND)
     set(GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR})
     set(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY} )
@@ -36,19 +40,20 @@ elseif (USE_SYSTEM_GEOTIFF)
   endif ()
 endif ()
 
-set(_install_root ${CMAKE_CURRENT_SOURCE_DIR}/root)
 if (NOT GeoTIFF_FOUND AND NOT WIN32)
   ProcessorCount(NPROC)
+
   ExternalProject_Add(
     _proj
     SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/proj-7.2.1
-    CONFIGURE_COMMAND autoreconf -fi && ./configure --prefix=${_install_root}
+    CONFIGURE_COMMAND  autoreconf -fi &&
+      ./configure CFLAGS=-fPIC --prefix=${_install_root}
     BUILD_COMMAND make -j${NPROC}
     INSTALL_COMMAND make install
     BUILD_IN_SOURCE 1
   )
   string(CONCAT _proj_implib_path
-    ${install_root}/usr/local/lib
+    ${_install_root}/lib
     /${CMAKE_STATIC_LIBRARY_PREFIX}proj${CMAKE_STATIC_LIBRARY_SUFFIX}
   )  
   add_library(_proj_implib STATIC IMPORTED)
@@ -63,14 +68,14 @@ if (NOT GeoTIFF_FOUND AND NOT WIN32)
   ExternalProject_Add(
     _libgeotiff
     SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/libgeotiff-1.6.0
-    CONFIGURE_COMMAND autoreconf -fi &&
-      ./configure --with-proj=${_install_root} --prefix=${_install_root}
+    CONFIGURE_COMMAND autoreconf -fi && ./configure
+      CFLAGS=-fPIC --with-proj=${_install_root} --prefix=${_install_root}
     BUILD_COMMAND make -j${NPROC}
     INSTALL_COMMAND make install
     BUILD_IN_SOURCE 1
   )
   string(CONCAT _geotiff_implib_path
-    ${install_root}/usr/local/lib
+    ${_install_root}/lib
     /${CMAKE_STATIC_LIBRARY_PREFIX}geotiff${CMAKE_STATIC_LIBRARY_SUFFIX}
   )  
   add_library(_geotiff_implib STATIC IMPORTED)
