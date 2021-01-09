@@ -128,9 +128,11 @@ std-filters: &std-filters
 workflows:
   version: 2
   build_all:
-    jobs:
-      - build-mingw:
-          <<: *std-filters
+    jobs:       
+      
+      #- build-mingw:
+      #    <<: *std-filters
+      # Missing libtiff and libgeotiff dependencies 
 
       - build-flatpak:
           <<: *std-filters

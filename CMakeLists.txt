@@ -57,7 +57,7 @@ option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 
 # -------  Plugin setup --------
 #
-project(photolayer_pi VERSION 3.2.1)
+project(photolayer_pi VERSION 3.3.0)
 
 set(DISPLAY_NAME Photolayer) # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME photolayer) # As of GetCommonName() in plugin API
