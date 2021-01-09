@@ -25,6 +25,7 @@ BuildRequires: mingw32-headers
 BuildRequires: mingw32-gtk2
 BuildRequires: mingw32-libffi
 BuildRequires: mingw32-libtiff
+BuildRequires: mingw32-libgeotiff
 BuildRequires: mingw32-nsiswrapper
 BuildRequires: mingw32-win-iconv
 BuildRequires: mingw32-wxWidgets3 >= 3.0.2
