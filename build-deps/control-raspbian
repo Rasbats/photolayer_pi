@@ -1,18 +1,22 @@
 Source: opencpn
 Build-Depends: debhelper (>= 9),
+ autoconf, automake, autotools-dev,
  build-essential,
  cmake,
  file,
  gettext,
  git,
- libtiff-dev,
+ libcurl4-openssl-dev,
  libgeotiff-dev,
  libgtk2.0-dev,
  libjsoncpp-dev,
+ libsqlite3-dev,
+ libtiff-dev,
  libtinyxml-dev,
  libwxgtk3.0-dev,
  lsb-release,
- wx-common
+ wx-common,
+ sqlite3
 
 Standards-Version: 4.3.0
 Homepage: https://opencpn.org

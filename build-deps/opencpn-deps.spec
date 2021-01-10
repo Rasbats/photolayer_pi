@@ -6,6 +6,8 @@ Summary:	Empty package with opencpn plugin build dependencies
 License:	MIT
 URL:		https://github.com/leamas/opencpn
 
+BuildRequires: autoconf
+BuildRequires: automake
 BuildRequires: binutils
 BuildRequires: cmake
 BuildRequires: gettext

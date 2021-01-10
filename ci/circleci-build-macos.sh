@@ -47,15 +47,16 @@ cmake \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
 
+export PATH=/usr/local/Cellar/sqlite:$PATH
+make -j $(sysctl -n hw.physicalcpu) VERBOSE=1 tarball
+make create-pkg
+
 if [ -z "$CLOUDSMITH_API_KEY" ]; then
     echo 'No $CLOUDSMITH_API_KEY found, assuming local setup'
     echo "Complete build using 'cd build; make tarball' or so."
     exit 0 
 fi
 
-make -j $(sysctl -n hw.physicalcpu) VERBOSE=1 tarball
-
-make create-pkg
 
 # Install cloudsmith needed by upload script
 python3 -m pip install --user cloudsmith-cli
