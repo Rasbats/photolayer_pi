@@ -7,7 +7,7 @@ set -xe
 sudo apt -qq update || apt update
 sudo apt-get -q install  devscripts equivs
 
-mkdir  build
+rm -rf build && mkdir  build
 cd build
 sudo mk-build-deps -ir ../build-deps/control
 sudo apt-get -q --allow-unauthenticated install -f
@@ -17,7 +17,12 @@ if [ -n "$BUILD_GTK3" ]; then
         /usr/lib/*-linux-*/wx/config/gtk3-unicode-3.0
 fi
 
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake \
+  -DCMAKE_BUILD_TYPE=Release .. \
+  -DCMAKE_INSTALL_PREFIX= \
+  -DGEOTIFF_INSTALL_PREFIX="$HOME/.local" \
+  -DUSE_SYSTEM_GEOTIFF:BOOL="ON"
+
 make -j ${MAX_JOBS:-$(nproc)} VERBOSE=1 tarball
 
 sudo apt-get install \
