@@ -24,7 +24,7 @@ ExternalProject_Add(
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND 
     autoreconf -fi && ./configure CFLAGS=-fPIC --prefix=${_install_root}
-  BUILD_COMMAND   make -j${NPROC}
+  BUILD_COMMAND   make
   INSTALL_COMMAND make install
 )
 set(_obj_filename
