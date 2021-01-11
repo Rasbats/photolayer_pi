@@ -20,6 +20,13 @@ else ()
   message(FATAL_ERROR "Required variable GEOTIFF_INSTALL_PREFIX missing")
 endif ()
 
+if ("$ENV{MAX_JOBS}" STREQUAL "")
+  set(MAX_JOBS ${NPROC})
+else ()
+  set(MAX_JOBS $ENV{MAX_JOBS})
+endif ()
+
+
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
 ExternalProject_Add(
@@ -29,7 +36,7 @@ ExternalProject_Add(
     --with-proj=${_install_root}
     --prefix=${_install_root}
     --disable-shared
-  BUILD_COMMAND make
+  BUILD_COMMAND make -j${MAX_JOBS}
   INSTALL_COMMAND make install
   BUILD_IN_SOURCE 1
   DEPENDS EXT_PROJ

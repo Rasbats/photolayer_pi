@@ -18,7 +18,7 @@ if [ -n "$BUILD_GTK3" ]; then
 fi
 
 cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j $(nproc) VERBOSE=1 tarball
+make -j ${MAX_JOBS:-$(nproc)} VERBOSE=1 tarball
 
 sudo apt-get install \
     python3-pip python3-setuptools python3-dev python3-wheel \
