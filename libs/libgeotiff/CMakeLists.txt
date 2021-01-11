@@ -12,7 +12,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
 option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries" OFF)
 
-set(GEOTIFF_INSTALL_ROOT ${CMAKE_BINARY_DIR}/geotiff-root)
+set(GEOTIFF_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/geotiff-root CACHE STRING
+  "libgeotiff build dependencies installation location"
+)
 
 add_library(_GEOTIFF INTERFACE)
 if (WIN32)
