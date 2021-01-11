@@ -10,6 +10,13 @@ include(ExternalProject)
 include(ProcessorCount)
 ProcessorCount(NPROC)
 
+if ("$ENV{MAX_JOBS}" STREQUAL "")
+  set(MAX_JOBS ${NPROC})
+else ()
+  set(MAX_JOBS $ENV{MAX_JOBS})
+endif ()
+
+
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
 if (GEOTIFF_INSTALL_PREFIX)
@@ -24,7 +31,7 @@ ExternalProject_Add(
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND 
     autoreconf -fi && ./configure CFLAGS=-fPIC --prefix=${_install_root}
-  BUILD_COMMAND   make
+  BUILD_COMMAND   make -j${MAX_JOBS}
   INSTALL_COMMAND make install
 )
 set(_obj_filename

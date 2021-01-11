@@ -65,6 +65,7 @@ jobs:
       - image: circleci/buildpack-deps:xenial-scm
     environment:
       - OCPN_TARGET: xenial
+      - MAX_JOBS: 1
     <<: *debian-steps
 
   build-bionic:
@@ -72,6 +73,7 @@ jobs:
       - image: circleci/buildpack-deps:bionic-scm
     environment:
       - OCPN_TARGET: bionic
+      - MAX_JOBS: 1
     <<: *debian-steps
 
   build-bionic-gtk3:
@@ -80,6 +82,7 @@ jobs:
     environment:
       - BUILD_GTK3: true
       - OCPN_TARGET: bionic-gtk3
+      - MAX_JOBS: 1
     <<: *debian-steps
 
   build-focal:
@@ -87,6 +90,7 @@ jobs:
       - image: circleci/buildpack-deps:focal-scm
     environment:
       - OCPN_TARGET: focal
+      - MAX_JOBS: 1
     <<: *debian-steps
 
   build-buster:
@@ -94,6 +98,7 @@ jobs:
       - image: circleci/buildpack-deps:buster-scm
     environment:
       - OCPN_TARGET: buster
+      - MAX_JOBS: 1
     <<: *debian-steps
 
   build-armhf-stretch:
