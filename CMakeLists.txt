@@ -37,7 +37,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 message(STATUS "Building: ${BUILD_TYPE}")
+
 
 # -------- Options ----------
 
@@ -118,6 +120,9 @@ endmacro()
 # -------- Setup completed, build the plugin --------
 #
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC})
+set_target_properties(${CMAKE_PROJECT_NAME}
+  LINKER_FLAGS  "-Wl,--unresolved-symbols=ignore-all"
+)
 include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
 
 add_subdirectory("libs/api-16")
