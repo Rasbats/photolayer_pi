@@ -29,7 +29,7 @@ ExternalProject_Add(
     --with-proj=${_install_root}
     --prefix=${_install_root}
     --disable-shared
-  BUILD_COMMAND make -j${NPROC}
+  BUILD_COMMAND make
   INSTALL_COMMAND make install
   BUILD_IN_SOURCE 1
   DEPENDS EXT_PROJ
