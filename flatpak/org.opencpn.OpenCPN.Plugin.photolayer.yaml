@@ -37,6 +37,7 @@ modules:
           - -DCMAKE_BUILD_TYPE:STRING=Release
           - -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
           - -DBUILD_TYPE:STRING=tarball
+          - -DUSE_SYSTEM_GEOTIFF:BOOL=ON
           - -Uplugin_target
       build-options:
           cxxflags: -DFLATPAK
