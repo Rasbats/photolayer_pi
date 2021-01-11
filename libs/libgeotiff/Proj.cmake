@@ -12,10 +12,10 @@ ProcessorCount(NPROC)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
-if (GEOTIFF_INSTALL_ROOT)
-  set(_install_root ${GEOTIFF_INSTALL_ROOT})
+if (GEOTIFF_INSTALL_PREFIX)
+  set(_install_root ${GEOTIFF_INSTALL_PREFIX})
 else ()
-  message(FATAL_ERROR "Required variable GEOTIFF_INSTALL_ROOT missing")
+  message(FATAL_ERROR "Required variable GEOTIFF_INSTALL_PREFIX missing")
 endif ()
 
 ExternalProject_Add(
