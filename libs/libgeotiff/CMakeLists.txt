@@ -26,6 +26,10 @@ elseif (USE_SYSTEM_GEOTIFF)
   if (GeoTIFF_FOUND)
     target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
     target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
+    if (UNIX AND NOT APPLE)
+      # we need to use the Debian hardening flags to be able to link
+      target_compile_options(_GEOTIFF INTERFACE -fPIE -pie -D_FORTIFY_SOURCE=2)
+    endif ()
   endif ()
 endif ()
 
