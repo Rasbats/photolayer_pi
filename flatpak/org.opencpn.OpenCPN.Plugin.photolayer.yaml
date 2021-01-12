@@ -1,7 +1,7 @@
 id: org.opencpn.OpenCPN.Plugin.photolayer
 runtime: org.opencpn.OpenCPN
 # runtime-version: stable   # official build at flathub
-runtime-version: master   # for nightly builds
+runtime-version: master     # for nightly builds
 sdk: org.freedesktop.Sdk//18.08
 build-extension: true
 separate-locales: false
@@ -38,6 +38,7 @@ modules:
           - -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
           - -DBUILD_TYPE:STRING=tarball
           - -DUSE_SYSTEM_GEOTIFF:BOOL=ON
+          - -DwxWidgets_CONFIG_EXECUTABLE=/app/bin/wx-config
           - -Uplugin_target
       build-options:
           cxxflags: -DFLATPAK
