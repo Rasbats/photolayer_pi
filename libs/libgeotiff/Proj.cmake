@@ -6,23 +6,22 @@
 # PROJ_INCLUDE_DIRS  Public header files
 
 include(ExternalProject)
-
 include(ProcessorCount)
-ProcessorCount(NPROC)
-
-if ("$ENV{MAX_JOBS}" STREQUAL "")
-  set(MAX_JOBS ${NPROC})
-else ()
-  set(MAX_JOBS $ENV{MAX_JOBS})
-endif ()
 
 
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
 if (GEOTIFF_INSTALL_PREFIX)
-  set(_install_root ${GEOTIFF_INSTALL_PREFIX})
+  string(REPLACE "~" "$ENV{HOME}" _install_root ${GEOTIFF_INSTALL_PREFIX})
 else ()
   message(FATAL_ERROR "Required variable GEOTIFF_INSTALL_PREFIX missing")
+endif ()
+
+ProcessorCount(NPROC)
+if ("$ENV{MAX_JOBS}" STREQUAL "")
+  set(MAX_JOBS ${NPROC})
+else ()
+  set(MAX_JOBS $ENV{MAX_JOBS})
 endif ()
 
 ExternalProject_Add(

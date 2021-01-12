@@ -11,14 +11,13 @@
 #
 
 
-find_path(GEOTIFF_INCLUDE_DIR geotiff.h PATH_SUFFIXES geotiff libgeotiff)
+find_path(
+  GEOTIFF_INCLUDE_DIR geotiff.h
+  PATH_SUFFIXES geotiff libgeotiff
+  HINTS ${GEOTIFF_INSTALL_PREFIX}/include $ENV{HOME}/.local/include
+)
 
-if (UNIX AND NOT APPLE)
-  file(GLOB _extension_dir /app/extensions/*/lib)   # flatpak-builder
-  set(LINUX_HINTS "HINTS $ENV{HOME}/.local/lib ${_extension_dir}")
-endif ()
-
-find_library(GEOTIFF_LIBRARY NAMES geotiff ${LINUX_HINTS})
+find_library(GEOTIFF_LIBRARY NAMES geotiff HINTS $ENV{HOME}/.local/lib)
 
 set(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
 set(GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR})
