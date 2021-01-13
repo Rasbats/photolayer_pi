@@ -37,7 +37,7 @@ pyenv local $(pyenv versions | sed 's/*//' | awk '{print $1}' | tail -1)
 cp .python-version $HOME
 
 # Configure and build the plugin tarball and metadata.
-mkdir build; cd build
+rm -rf build && mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc) VERBOSE=1 flatpak
 
