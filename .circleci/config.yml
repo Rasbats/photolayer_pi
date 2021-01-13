@@ -43,14 +43,16 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - fp-v3-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
+            - fp-v1-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
       - run: ci/circleci-build-flatpak.sh
       - save_cache:
-          key: fp-v3-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
+          key: fp-v1-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
           paths:
-            - /home/circleci/.local/share/flatpak/repo
-            - /home/circleci/.local/lib
-            - /home/circleci/.local/include
+            - build/.flatpak-builder/cache
+            - build/.flatpak-builder/ccache
+            - build/.flatpak-builder/checksums
+            - build/.flatpak-builder/downloads
+            - build/.flatpak-builder/rofiles
       - run: cd build; /bin/bash < upload.sh
       - run: python3 ci/git-push
 
