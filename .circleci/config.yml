@@ -12,10 +12,10 @@ debian-steps: &debian-steps
     - checkout
     - restore_cache:
         keys:
-          - v3-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
+          - v4-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
     - run: ci/circleci-build-debian.sh
     - save_cache:
-        key: v3-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
+        key: v4-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
         paths:
           - /home/circleci/.local/lib
           - /home/circleci/.local/include
