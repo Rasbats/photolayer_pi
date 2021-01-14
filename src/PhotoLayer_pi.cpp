@@ -57,22 +57,31 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
     :opencpn_plugin_116(ppimgr)
 {
     // Create the PlugIn icons
+    
     initialize_images();
-	wxFileName fn;
-	wxString tmp_path;
 
-	tmp_path = GetPluginDataDir("photolayer_pi");
-	fn.SetPath(tmp_path);
-	fn.AppendDir(_T("data"));
-	fn.SetFullName("photolayer_panel_icon.png");
+    wxFileName fn;
 
-	wxString shareLocn = fn.GetFullPath();
+    auto path = GetPluginDataDir("photolayer_pi");
+    fn.SetPath(path);
+    fn.AppendDir("data");
+    fn.SetFullName("photolayer_panel_icon.png");
 
-	wxImage panelIcon(shareLocn);
-	if (panelIcon.IsOk())
-		m_panelBitmap = wxBitmap(panelIcon);
-	else
-		wxLogMessage(_T("    PhotoLayer panel icon NOT loaded"));
+    path = fn.GetFullPath();
+
+    wxInitAllImageHandlers();
+
+    wxLogDebug(wxString("Using icon path: ") + path);
+    if (!wxImage::CanRead(path)) {
+        wxLogDebug("Initiating image handlers.");
+        wxInitAllImageHandlers();
+    }
+    wxImage panelIcon(path);
+    if (panelIcon.IsOk())
+        m_panelBitmap = wxBitmap(panelIcon);
+    else
+        wxLogWarning("Photolayer panel icon has NOT been loaded");
+        
 }
 
 PhotoLayer_pi::~PhotoLayer_pi(void)
