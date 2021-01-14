@@ -32,15 +32,15 @@ ExternalProject_Add(
   DOWNLOAD_DIR    ${PROJECT_SOURCE_DIR}/cache
   SOURCE_DIR      ${PROJECT_SOURCE_DIR}/proj-7.2.1
   BUILD_IN_SOURCE 1
-  CONFIGURE_COMMAND 
-    autoreconf -fi && ./configure CFLAGS=-fPIC --prefix=${_install_root}
+  CONFIGURE_COMMAND autoreconf -fi &&
+    ./configure CFLAGS="${CMAKE_C_FLAGS}" --prefix=${_install_root}
   BUILD_COMMAND   make -j${MAX_JOBS}
   INSTALL_COMMAND make install
 )
-set(_obj_filename
+set(_proj_obj_filename
   ${CMAKE_STATIC_LIBRARY_PREFIX}proj${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-set(_proj_obj_path ${_install_root}/lib/${_obj_filename})
+set(_proj_obj_path ${_install_root}/lib/${_proj_obj_filename})
 
 add_library(_proj_implib STATIC IMPORTED)
 set_property(
