@@ -17,24 +17,23 @@ set(GEOTIFF_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/geotiff-root CACHE STRING
 )
 
 add_library(_GEOTIFF INTERFACE)
+add_library(ocpn::geotiff ALIAS _GEOTIFF)
+
 if (WIN32)
   include(${CMAKE_CURRENT_LIST_DIR}/GeoTiff-msvc.cmake)
-  target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
-  target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
-elseif (USE_SYSTEM_GEOTIFF)
-  find_package(GeoTIFF)
-  if (GeoTIFF_FOUND)
-    target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
-    target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
-  endif ()
+  target_link_libraries(_GEOTIFF INTERFACE  msvc::geotiff)
+  return ()
 endif ()
 
-if (NOT GeoTIFF_FOUND AND NOT WIN32)
+if (USE_SYSTEM_GEOTIFF)
+  find_package(GeoTIFF)
+endif ()
+
+if (NOT GeoTIFF_FOUND)
   include(${CMAKE_CURRENT_LIST_DIR}/Proj.cmake)
   include(${CMAKE_CURRENT_LIST_DIR}/LibGeotiff.cmake)
-
-  target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
-  target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
 endif ()
 
-add_library(ocpn::geotiff ALIAS _GEOTIFF)
+target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
+target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
+
