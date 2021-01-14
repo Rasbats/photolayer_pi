@@ -33,7 +33,7 @@ ExternalProject_Add(
   SOURCE_DIR      ${PROJECT_SOURCE_DIR}/proj-7.2.1
   BUILD_IN_SOURCE 1
   CONFIGURE_COMMAND autoreconf -fi &&
-    ./configure CFLAGS="${CMAKE_C_FLAGS}" --prefix=${_install_root}
+    ./configure CFLAGS=-fPIC --prefix=${_install_root}
   BUILD_COMMAND   make -j${MAX_JOBS}
   INSTALL_COMMAND make install
 )
