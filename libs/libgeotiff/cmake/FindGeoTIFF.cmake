@@ -17,7 +17,10 @@ find_path(
   HINTS ${GEOTIFF_INSTALL_PREFIX}/include $ENV{HOME}/.local/include
 )
 
-find_library(GEOTIFF_LIBRARY NAMES geotiff HINTS $ENV{HOME}/.local/lib)
+find_library(GEOTIFF_LIBRARY
+  NAMES libgeotiff.a geotiff
+  HINTS $ENV{HOME}/.local/lib
+)
 
 set(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
 set(GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR})
