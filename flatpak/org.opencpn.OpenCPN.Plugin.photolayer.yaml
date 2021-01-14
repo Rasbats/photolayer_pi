@@ -20,6 +20,10 @@ modules:
             sha256: cb776a70f40c35579ae4ba04fb4a388c1d1ce025a1df6171350dc19f25b80311
       config-opts:
           - --prefix=/app/extensions/photolayer
+      build-options:
+          cppflags: -fPIC -DPIC
+          cxxflags: -fPIC -DPIC
+          cflags: -fPIC -DPIC
     - name: libgeotiff
       sources:
           - type: archive
@@ -29,6 +33,10 @@ modules:
       config-opts:
           - --with-proj=/app/extensions/photolayer
           - --prefix=/app/extensions/photolayer
+      build-options:
+          cppflags: -fPIC -DPIC
+          cxxflags: -fPIC -DPIC
+          cflags: -fPIC -DPIC
     - name: photolayer
       no-autogen: true
       buildsystem: cmake
