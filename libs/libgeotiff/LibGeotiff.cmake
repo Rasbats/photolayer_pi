@@ -35,7 +35,7 @@ ExternalProject_Add(
     SHA256=9311017e5284cffb86f2c7b7a9df1fb5ebcdc61c30468fb2e6bca36e4272ebca
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/libgeotiff-1.6.0
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/cache
-  CONFIGURE_COMMAND autoreconf -fi && ./configure CFLAGS="${CMAKE_C_FLAGS}"
+  CONFIGURE_COMMAND autoreconf -fi && ./configure CFLAGS=-fPIC
     --with-proj=${_install_root}
     --prefix=${_install_root}
     --disable-shared
