@@ -20,9 +20,6 @@ sudo systemctl daemon-reload
 sudo add-apt-repository -y ppa:alexlarsson/flatpak
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     | sudo apt-key add -
-sudo apt-key adv \
-    --keyserver keyserver.ubuntu.com --recv-keys 5DC22404A6F9F1CA \
-    || :
 sudo apt update
 
 # Install the dependencies: openpcn and the flatpak SDK.
@@ -39,10 +36,8 @@ sed -i '/^runtime-version/s/:.*/: stable/' flatpak/$MANIFEST
 pyenv local $(pyenv versions | sed 's/*//' | awk '{print $1}' | tail -1)
 cp .python-version $HOME
 
-# Configure and build the plugin tarball and metadata. Preserve state in
-# build/.flatpak-builder if cached.
-mkdir build 2>/dev/null || rm -rf build/*
-cd build
+# Configure and build the plugin tarball and metadata.
+mkdir build; cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc) VERBOSE=1 flatpak
 
@@ -54,12 +49,12 @@ git checkout ../flatpak/$MANIFEST
 echo -n "Waiting for apt_daily lock..."
 sudo flock /var/lib/apt/daily_lock echo done
 
-# Install cloudsmith, required by upload script
+# Install cloudsmith, requiered by upload script
 python3 -m pip install --user --upgrade pip
 python3 -m pip install --user cloudsmith-cli
 
 # Required by git-push
 python3 -m pip install --user cryptography
 
-# python install scripts in ~/.local/bin, teach upload.sh to use it in PATH
+# python install scripts in ~/.local/bin, teach upload.sh to use this in PATH
 echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.uploadrc

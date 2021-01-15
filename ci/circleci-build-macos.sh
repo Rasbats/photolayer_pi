@@ -44,14 +44,8 @@ cmake \
   -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx312B_opencpn50_macos109/bin/wx-config \
   -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312B_opencpn50_macos109" \
   -DCMAKE_INSTALL_PREFIX= \
-  -DGEOTIFF_INSTALL_PREFIX="/usr/local" \
-  -DUSE_SYSTEM_GEOTIFF:BOOL="ON" \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
-
-export PATH=/usr/local/Cellar/sqlite:$PATH
-make -j $(sysctl -n hw.physicalcpu) VERBOSE=1 tarball
-make create-pkg
 
 if [ -z "$CLOUDSMITH_API_KEY" ]; then
     echo 'No $CLOUDSMITH_API_KEY found, assuming local setup'
@@ -59,6 +53,9 @@ if [ -z "$CLOUDSMITH_API_KEY" ]; then
     exit 0 
 fi
 
+make -j $(sysctl -n hw.physicalcpu) VERBOSE=1 tarball
+
+make create-pkg
 
 # Install cloudsmith needed by upload script
 python3 -m pip install --user cloudsmith-cli

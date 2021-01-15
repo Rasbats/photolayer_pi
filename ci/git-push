@@ -24,15 +24,11 @@ import time
 from glob import glob
 from shutil import copy
 
-if not  os.environ.get('CLOUDSMITH_API_KEY'):
-    print('git-push: CLOUDSMITH_API_KEY not found in environment')
-    print('Assuming local build, giving up.')
-    sys.exit(0)
-
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
 
 def cipherFernet(password):
     key = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=b'abcd',

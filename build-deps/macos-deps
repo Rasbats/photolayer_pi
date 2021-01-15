@@ -1,11 +1,8 @@
 # brew packages installed in macos ci build
-autoconf
-automake
 cmake
 gettext
-libtool
+libgeotiff
+libtiff
 libexif
-pkg-config
 python
-sqlite
 wget
