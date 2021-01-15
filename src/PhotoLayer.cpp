@@ -300,7 +300,7 @@ PhotoLayer::PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent)
 	m_sWhiteTransparency->SetValue(0);
 	m_cInvert->SetValue(false);
 
-	this->SetMenuBar(m_menubar1);
+	SetMenuBar(m_menubar1);
 
 	return;
 }

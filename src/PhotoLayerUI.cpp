@@ -114,7 +114,7 @@ PhotoLayerBase::PhotoLayerBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_menubar1->Append( m_menu3, _("&Help") );
 
-	SetMenuBar( m_menubar1 );
+	this->SetMenuBar( m_menubar1 );
 
 
 	this->Centre( wxBOTH );
