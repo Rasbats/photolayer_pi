@@ -5,12 +5,17 @@
 #   EXT_GEOTIFF           The external project
 #   GEOTIFF_LIBRARIES     The static library built
 #   GEOTIFF_INCLUDE_DIRS  Public header files
-#
 # Depends
 #   EXT_PROJ              The proj external project
+# Enviroment:
+#   MAX_JOBS              Max number of concurrent jobs (make -j MAX_JOBS)
 
 include(ExternalProject)
 include(ProcessorCount)
+
+include(${CMAKE_SOURCE_DIR}/build-deps/external_deps.cmake)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
 if (GEOTIFF_INSTALL_PREFIX)
   string(REPLACE "~" "$ENV{HOME}" _install_root ${GEOTIFF_INSTALL_PREFIX})
@@ -25,14 +30,10 @@ else ()
   set(MAX_JOBS $ENV{MAX_JOBS})
 endif ()
 
-
-set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
-
 ExternalProject_Add(
   EXT_GEOTIFF
-  URL http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-1.6.0.tar.gz
-  URL_HASH
-    SHA256=9311017e5284cffb86f2c7b7a9df1fb5ebcdc61c30468fb2e6bca36e4272ebca
+  URL ${EXT_GEOTIFF_URL}
+  URL_HASH ${EXT_GEOTIFF_HASH}
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/libgeotiff-1.6.0
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/cache
   CONFIGURE_COMMAND autoreconf -fi && ./configure CFLAGS=-fPIC
@@ -45,10 +46,10 @@ ExternalProject_Add(
   DEPENDS EXT_PROJ
 )
 
-set(_obj_filename 
+set(_geo_obj_filename 
   ${CMAKE_STATIC_LIBRARY_PREFIX}geotiff${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-set(_geotiff_implib_path ${_install_root}/lib/${_obj_filename})
+set(_geotiff_implib_path ${_install_root}/lib/${_geo_obj_filename})
 
 add_library(_geotiff_implib STATIC IMPORTED)
 set_property(
