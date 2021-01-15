@@ -1,7 +1,7 @@
 id: org.opencpn.OpenCPN.Plugin.photolayer
 runtime: org.opencpn.OpenCPN
-# runtime-version: stable   # official build at flathub
-runtime-version: master   # for nightly builds
+# runtime-version: stable       # official build at flathub
+runtime-version: master         # for nightly builds
 sdk: org.freedesktop.Sdk//18.08
 build-extension: true
 separate-locales: false
@@ -20,6 +20,10 @@ modules:
             sha256: cb776a70f40c35579ae4ba04fb4a388c1d1ce025a1df6171350dc19f25b80311
       config-opts:
           - --prefix=/app/extensions/photolayer
+      build-options:
+          cppflags: -fPIC -DPIC
+          cxxflags: -fPIC -DPIC
+          cflags: -fPIC -DPIC
     - name: libgeotiff
       sources:
           - type: archive
@@ -29,6 +33,10 @@ modules:
       config-opts:
           - --with-proj=/app/extensions/photolayer
           - --prefix=/app/extensions/photolayer
+      build-options:
+          cppflags: -fPIC -DPIC
+          cxxflags: -fPIC -DPIC
+          cflags: -fPIC -DPIC
     - name: photolayer
       no-autogen: true
       buildsystem: cmake
@@ -37,7 +45,9 @@ modules:
           - -DCMAKE_BUILD_TYPE:STRING=Release
           - -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
           - -DBUILD_TYPE:STRING=tarball
+          - -DwxWidgets_CONFIG_EXECUTABLE=/app/bin/wx-config
           - -Uplugin_target
+          - -DUSE_SYSTEM_GEOTIFF:BOOL=ON
       build-options:
           cxxflags: -DFLATPAK
           cflags: -DFLATPAK

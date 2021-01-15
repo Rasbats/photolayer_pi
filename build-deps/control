@@ -1,13 +1,15 @@
 Source: opencpn
 Build-Depends: debhelper (>= 9),
+ autoconf, automake, autotools-dev,
  base-files (>>8) | mesa-common-dev,
  base-files (>>8) | libgl1-mesa-dev,
  cmake3 | cmake (>> 3.5.0),
- libgeotiff-dev,
+ libcurl4-openssl-dev,
  libgtk2.0-dev,
- libjsoncpp-dev,
+ libsqlite3-dev,
  libtiff-dev,
  libtinyxml-dev,
+ libtool,
  libwxgtk3.0-dev | libwxgtk3.0-gtk3-dev,
  libwxgtk3.0-0v5 | libwxgtk3.0-0 | libwxgtk3.0-gtk3-0v5,
  libwxgtk3.0-gtk3-dev | base-files (<< 10),
@@ -15,7 +17,9 @@ Build-Depends: debhelper (>= 9),
  libwxsvg-dev | base-files (<< 11),
  python3-pip,
  python3-setuptools,
- python3-wheel
+ python3-wheel,
+ sqlite3,
+ sqlite3
 
 Standards-Version: 4.3.0
 Homepage: https://opencpn.org

@@ -37,7 +37,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 message(STATUS "Building: ${BUILD_TYPE}")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # Use Debian hardening flags to stay compatible with Debian static libs
+  add_compile_options(-fPIE -pie -D_FORTIFY_SOURCE=2)
+endif ()
+
 
 # -------- Options ----------
 

@@ -54,7 +54,7 @@
 
 #include <cmath>
 
-enum { VERSION = 0, MAJOR, MINOR };
+//enum { PHO_VERSION = 0, PHO_MAJOR, PHO_MINOR };
 
 extern const char * box_xpm[];
 extern const char * check_xpm[];
