@@ -301,8 +301,8 @@ PhotoLayer::PhotoLayer( PhotoLayer_pi &_PhotoLayer_pi, wxWindow* parent)
 	m_cInvert->SetValue(false);
 
 	this->SetMenuBar(m_menubar1);
-	this->Show();
 
+	return;
 }
 
 PhotoLayer::~PhotoLayer()
