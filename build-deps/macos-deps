@@ -3,6 +3,7 @@ autoconf
 automake
 cmake
 gettext
+libtiff
 libtool
 libexif
 pkg-config
