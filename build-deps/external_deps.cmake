@@ -1,0 +1,16 @@
+set(
+  EXT_GEOTIFF_URL
+  http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-1.6.0.tar.gz
+)
+set(
+  EXT_GEOTIFF_HASH
+  SHA256=9311017e5284cffb86f2c7b7a9df1fb5ebcdc61c30468fb2e6bca36e4272ebca
+)
+set(
+  EXT_PROJ_URL
+  https://github.com/OSGeo/PROJ/releases/download/7.2.1/proj-7.2.1.tar.gz
+)
+set(
+  EXT_PROJ_HASH
+  SHA256=b384f42e5fb9c6d01fe5fa4d31da2e91329668863a684f97be5d4760dbbf0a14
+)
