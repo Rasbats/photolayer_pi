@@ -44,7 +44,7 @@ apt install \
     ./libgeotiff-dev*_armhf.deb \
     ./libproj1*_armhf.deb \
     ./libproj-dev_*_armhf.deb
-
+apt-mark hold libproj-dev libgeotiff-dev
 
 sudo apt install devscripts equivs
 sudo mk-build-deps -ir /ci-source/build-deps/control-raspbian
