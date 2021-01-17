@@ -30,5 +30,5 @@ sudo apt-get install \
     build-essential libssl-dev libffi-dev 
 
 python3 -m pip install --user --upgrade pip
-python3 -m pip install --user -q cloudsmith-cli
-python3 -m pip install --user -q cryptography
+python3 -m pip install -I --user -q cloudsmith-cli
+python3 -m pip install -I --user -q cryptography
