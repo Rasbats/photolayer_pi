@@ -173,6 +173,9 @@ if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
   add_subdirectory("libs/wxJSON")
   target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
 
+  add_subdirectory("libs/libtiff")
+  target_link_libraries(${PACKAGE_NAME} ocpn::tiff)
+
   add_subdirectory("libs/libgeotiff")
   target_link_libraries(${PACKAGE_NAME} ocpn::geotiff)
 
