@@ -8,7 +8,7 @@
 #    ocpn:glu       Interface link library (empty).
 #
 # Bundles:
-#    libGLU.so on Debian/armhf
+#    libGLU.so on raspbian
 
 cmake_minimum_required(VERSION 3.1)
 

@@ -22,8 +22,6 @@ add_library(ocpn::geotiff ALIAS _GEOTIFF)
 if (WIN32)
   include(${CMAKE_CURRENT_LIST_DIR}/GeoTiff-msvc.cmake)
   target_link_libraries(_GEOTIFF INTERFACE  msvc::geotiff)
-  include(${CMAKE_CURRENT_LIST_DIR}/Tiff-msvc.cmake)
-  target_link_libraries(_GEOTIFF INTERFACE  msvc::tiff)
   return ()
 endif ()
 
@@ -35,9 +33,6 @@ if (NOT GeoTIFF_FOUND)
   include(${CMAKE_CURRENT_LIST_DIR}/Proj.cmake)
   include(${CMAKE_CURRENT_LIST_DIR}/LibGeotiff.cmake)
 endif ()
-
-include(${CMAKE_CURRENT_LIST_DIR}/Tiff.cmake)
-target_link_libraries(_GEOTIFF INTERFACE  ocpn::tiff)
 
 target_link_libraries(_GEOTIFF INTERFACE ${GEOTIFF_LIBRARIES})
 target_include_directories(_GEOTIFF INTERFACE ${GEOTIFF_INCLUDE_DIRS})
