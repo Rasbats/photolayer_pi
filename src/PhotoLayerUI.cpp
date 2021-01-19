@@ -73,6 +73,7 @@ PhotoLayerBase::PhotoLayerBase( wxWindow* parent, wxWindowID id, const wxString&
 	this->Layout();
 	fgSizer8->Fit( this );
 	m_menubar1 = new wxMenuBar( 0 );
+	m_menubar0 = new wxMenuBar(0);
 	m_menu1 = new wxMenu();
 	wxMenuItem* m_mOpen;
 	m_mOpen = new wxMenuItem( m_menu1, wxID_ANY, wxString( _("&Open") ) + wxT('\t') + wxT("Ctrl+o"), wxEmptyString, wxITEM_NORMAL );
@@ -114,8 +115,7 @@ PhotoLayerBase::PhotoLayerBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	m_menubar1->Append( m_menu3, _("&Help") );
 
-	this->SetMenuBar( m_menubar1 );
-
+	//this->SetMenuBar( m_menubar1 );
 
 	this->Centre( wxBOTH );
 

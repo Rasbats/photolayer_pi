@@ -43,8 +43,7 @@ class PhotoLayerBase : public wxFrame
 	private:
 
 	protected:
-		wxCheckBox* m_cInvert;
-		wxMenuBar* m_menubar1;
+		wxCheckBox* m_cInvert;		
 		wxMenu* m_menu1;
 		wxMenuItem* m_mSaveAs;
 		wxMenuItem* m_mEdit;
@@ -71,6 +70,10 @@ class PhotoLayerBase : public wxFrame
 
 
 	public:
+
+		wxMenuBar* m_menubar1;
+		wxMenuBar* m_menubar0;
+
 		wxStaticBoxSizer* sbFax;
 		wxListBox* m_lFaxes;
 		wxSlider* m_sTransparency;
