@@ -58,7 +58,9 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     
-    initialize_images();
+	wxInitAllImageHandlers();
+	
+	initialize_images();
 
     wxFileName fn;
 
@@ -68,8 +70,6 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
     fn.SetFullName("photolayer_panel_icon.png");
 
     path = fn.GetFullPath();
-
-    wxInitAllImageHandlers();
 
     wxLogDebug(wxString("Using icon path: ") + path);
     if (!wxImage::CanRead(path)) {
