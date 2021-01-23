@@ -230,23 +230,11 @@ void PhotoLayer_pi::OnToolbarToolCallback(int id)
 
 	//    Toggle dialog?
 	if (m_bShowPhoto) {
-
-		m_parent_window->Lower();
-
-		m_pPhotoLayer->Raise();  // bring window to front
-		m_pPhotoLayer->SetMenuBar(m_pPhotoLayer->m_menubar1);
-
 		m_pPhotoLayer->Show();
-
+		RequestRefresh(m_parent_window); // refresh main window
 	}
 	else {
-		m_pPhotoLayer->SetMenuBar(m_pPhotoLayer->m_menubar0);
-		m_pPhotoLayer->Lower();
 		m_pPhotoLayer->Hide();
-
-		m_parent_window->Raise();  // bring window to front
-		RequestRefresh(m_parent_window); // refresh main window
-
 	}
 
 
