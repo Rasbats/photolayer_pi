@@ -6,7 +6,7 @@
 #   PROJ_LIBRARIES     The static library built
 #   PROJ_INCLUDE_DIRS  Public header files
 #
-# Enviroment:
+# Environment:
 #   MAX_JOBS           Max number of concurrent jobs (make -j MAX_JOBS)
 #
 
@@ -16,17 +16,14 @@ include(ProcessorCount)
 include(${CMAKE_SOURCE_DIR}/build-deps/external_deps.cmake)
 
 
-set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
-
 if (GEOTIFF_INSTALL_PREFIX)
   string(REPLACE "~" "$ENV{HOME}" _install_root ${GEOTIFF_INSTALL_PREFIX})
 else ()
   message(FATAL_ERROR "Required variable GEOTIFF_INSTALL_PREFIX missing")
 endif ()
 
-ProcessorCount(NPROC)
 if ("$ENV{MAX_JOBS}" STREQUAL "")
-  set(MAX_JOBS ${NPROC})
+  ProcessorCount(MAX_JOBS)
 else ()
   set(MAX_JOBS $ENV{MAX_JOBS})
 endif ()
@@ -43,10 +40,10 @@ ExternalProject_Add(
   BUILD_COMMAND       make -j${MAX_JOBS}
   INSTALL_COMMAND     make install
 )
-set(_proj_obj_filename
+set(_proj_obj_path
   ${CMAKE_STATIC_LIBRARY_PREFIX}proj${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-set(_proj_obj_path ${_install_root}/lib/${_proj_obj_filename})
+string(PREPEND _proj_obj_path ${_install_root}/lib/)
 
 add_library(_proj_implib STATIC IMPORTED)
 set_property(
