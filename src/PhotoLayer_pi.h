@@ -30,6 +30,7 @@
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/fileconf.h>
+#include <wx/image.h> 
 
 #include "ocpn_plugin.h"
 #define API_VERSION       "1.16"
