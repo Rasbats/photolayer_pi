@@ -40,10 +40,13 @@ ExternalProject_Add(
   BUILD_COMMAND       make -j${MAX_JOBS}
   INSTALL_COMMAND     make install
 )
+
+# Set up _proj_obj_path, static library path.
 set(_proj_obj_path
   ${CMAKE_STATIC_LIBRARY_PREFIX}proj${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-string(PREPEND _proj_obj_path ${_install_root}/lib/)
+string(PREPEND _proj_obj_path ${PROJECT_SOURCE_DIR}/proj-*/src/.libs/)
+file(GLOB _proj_obj_path  ${_proj_obj_path})
 
 add_library(_proj_implib STATIC IMPORTED)
 set_property(
