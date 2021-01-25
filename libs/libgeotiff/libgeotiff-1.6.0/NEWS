@@ -1,0 +1,38 @@
+libgeotiff 1.6.0
+----------------
+
+New features:
+* Add support for OGC GeoTIFF 1.1
+* Expose GTIFGetPCSInfoEx(), GTIFGetProjTRFInfoEx(), GTIFGetGCSInfoEx(), GTIFGetDatumInfoEx(), GTIFGetEllipsoidInfoEx(), GTIFGetPMInfoEx(), GTIFGetUOMLengthInfoEx() and GTIFGetUOMAngleInfoEx() so that users can specify their own PROJ context
+* Add GTIFKeyGetASCII(), GTIFKeyGetSHORT() and GTIFKeyGetDOUBLE() as safer variants of GTIFKeyGet() with type checking
+* autotools build: enable build in a separate tree from source (#37) (fixes #28)
+* Use pkg-config for libtiff detection
+
+Bug fixes:
+* GTIFDecToDMS(): fix rounding issue (refs #16)
+* geo_names.c: Silence warning in GetNameFromDatabase
+* cpl_serv.h: add parenthesis in macro definitions
+* Fix spelling errors
+* geo_normalize.c: set UOMLength from GeogLinearUnits (for geocentic CRS) (GDAL #1595)
+* testlistgeo: remove hardcoded path in test output (fixes https://github.com/OSGeo/libgeotiff/issues/16#issuecomment-502267406)
+* Adapt test script for PROJ 6.2 EPSG database (fixes #22)
+* Use unix EOL for cmake related files (fixes #14)
+* configure.ac: drop dead code
+* geo_normalize.c: avoid look up of user-defined geokeys that cause PROJ warnings (fixes GDAL #2321)
+* listgeo: fix corner coordinates for images with RasterPixelIsPoint (#36)
+
+libgeotiff 1.5.1
+----------------
+
+* re-add #define SetCSVFilenameHook gtSetCSVFilenameHook for compatibility with GDAL 2.4.x
+
+libgeotiff 1.5.0
+----------------
+
+* Require PROJ >= 6 dependency
+* Remove all CSV files used by geo_normalize API, since libgeotiff now relies
+  on PROJ database for EPSG CRS definitions.
+* geo_normalize.c: SetGTParmIds(): use ProjStraightVertPoleLongGeoKey for CT_PolarStereographic
+* geo_normalize.c: report StdParallel1 for Mercator_2SP when a PCS code is used
+* geo_normalize.c: fix support for Laborde Oblique Mercator
+* listgeo: use PROJ database to display non-hardcoded values of a number of keys
