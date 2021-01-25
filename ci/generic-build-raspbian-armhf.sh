@@ -33,26 +33,13 @@ curl http://mirrordirector.raspbian.org/raspbian.public.key  | apt-key add -
 curl http://archive.raspbian.org/raspbian.public.key  | apt-key add -
 sudo apt -q update
 
-if [[ "$OCPN_TARGET" == stretch* ]]; then
-    cd /ci-source/build-rpi-armhf/stretch
-else
-    cd /ci-source/build-rpi-armhf/buster
-fi
-
-apt install \
-    ./libgeotiff2*_armhf.deb \
-    ./libgeotiff-dev*_armhf.deb \
-    ./libproj1*_armhf.deb \
-    ./libproj-dev_*_armhf.deb
-apt-mark hold libproj-dev libgeotiff-dev
-
 sudo apt install devscripts equivs
 sudo mk-build-deps -ir /ci-source/build-deps/control-raspbian
 sudo apt-get -q --allow-unauthenticated install -f
 
 cd /ci-source
 rm -rf build; mkdir build; cd build
-cmake -DCMAKE_BUILD_TYPE=Release  -DUSE_SYSTEM_GEOTIFF:BOOL="ON" ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc) VERBOSE=1 tarball
 EOF
 
