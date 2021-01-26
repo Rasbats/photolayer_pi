@@ -6,6 +6,8 @@ gettext
 libtiff
 libtool
 libexif
+libgeotiff
+proj
 pkg-config
 python
 sqlite
