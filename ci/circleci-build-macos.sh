@@ -45,7 +45,7 @@ cmake \
   -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx312B_opencpn50_macos109" \
   -DCMAKE_INSTALL_PREFIX= \
   -DGEOTIFF_INSTALL_PREFIX="/usr/local" \
-  -DUSE_SYSTEM_GEOTIFF:BOOL="OFF" \
+  -DUSE_SYSTEM_GEOTIFF:BOOL="ON" \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
 
