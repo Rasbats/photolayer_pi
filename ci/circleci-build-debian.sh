@@ -29,6 +29,7 @@ sudo apt-get install \
     python3-pip python3-setuptools python3-dev python3-wheel \
     build-essential libssl-dev libffi-dev 
 
-python3 -m pip install --user --upgrade pip
+# Latest pip 21.0.0 is broken:
+python3 -m pip install --force-reinstall pip==20.3.4
 python3 -m pip install -I --user -q cloudsmith-cli
 python3 -m pip install -I --user -q cryptography
