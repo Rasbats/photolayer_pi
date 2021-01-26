@@ -1,0 +1,6 @@
+wkt1_generated_parser.lo: wkt1_generated_parser.c wkt1_parser.h \
+  wkt1_generated_parser.h
+
+wkt1_parser.h:
+
+wkt1_generated_parser.h:
