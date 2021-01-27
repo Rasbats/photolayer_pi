@@ -19,6 +19,7 @@ debian-steps: &debian-steps
         paths:
           - /home/circleci/.local/lib
           - /home/circleci/.local/include
+    - run: sh -c "ldd  build/app/*/lib/opencpn/*.so"
     - run: cd build; /bin/bash < upload.sh
     - run: python3 ci/git-push
 
@@ -76,6 +77,7 @@ jobs:
             - /usr/local/Cellar
             - /usr/local/lib
             - /usr/local/include
+      - run: sh -c "otool -L build/app/*/OpenCPN.app/Contents/PlugIns/*.dylib"
       - run: cd build; /bin/bash < upload.sh
       - run: python3 ci/git-push
 
