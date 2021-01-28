@@ -34,9 +34,9 @@ if (NOT QT_ANDROID)
     endif ()
   endif ()
 
-  set(wxWidgets_USE_LIBS base core net xml html)
+  set(wxWidgets_USE_LIBS base core net xml html adv stc)
 
-  find_package(wxWidgets REQUIRED base core net xml html)
+  find_package(wxWidgets REQUIRED base core net xml html adv stc)
   if (MSYS)
     # This is just a hack. I think the bug is in FindwxWidgets.cmake
     string(
