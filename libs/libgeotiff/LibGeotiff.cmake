@@ -39,6 +39,7 @@ ExternalProject_Add(
   CONFIGURE_COMMAND autoreconf -fi && ./configure CFLAGS=-fPIC
     --with-proj=${_install_root}
     --prefix=${_install_root}
+    --without-jpeg
     --disable-shared
   BUILD_COMMAND make -j${MAX_JOBS}
   INSTALL_COMMAND make install

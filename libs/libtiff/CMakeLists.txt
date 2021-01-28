@@ -28,7 +28,10 @@ if (WIN32)
 elseif (APPLE)
   find_package(TIFF REQUIRED)
   find_library(_STATIC_TIFF_LIB NAMES libtiff.a REQUIRED)
-  target_link_libraries(_TIFF INTERFACE ${_STATIC_TIFF_LIB})
+  find_library(_STATIC_JPEG_LIB NAMES libjpeg.a REQUIRED)
+  target_link_libraries(
+    _TIFF INTERFACE ${_STATIC_TIFF_LIB} ${_STATIC_JPEG_LIB}
+  )
   target_include_directories(_TIFF INTERFACE ${TIFF_INCLUDE_DIRS})
 else ()
   find_package(TIFF REQUIRED)
