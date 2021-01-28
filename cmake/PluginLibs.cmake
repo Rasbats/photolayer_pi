@@ -19,7 +19,7 @@ if (NOT QT_ANDROID)
     target_link_libraries(${PACKAGE_NAME} OpenGL::GL)
   else ()
     message(WARNING "Cannot locate usable OpenGL libs and headers.")
-  endif ()
+  endif ()  
   if (NOT OPENGL_GLU_FOUND)
     message(WARNING "Cannot find OpenGL GLU extension.")
   endif ()
@@ -33,19 +33,25 @@ if (NOT QT_ANDROID)
       message(WARNING "Cannot locate OpenGL header file gl.h")
     endif ()
   endif ()
+ 
+  set(wxWidgets_USE_LIBS base core net xml html)
+  set(BUILD_SHARED_LIBS TRUE)
 
-  set(wxWidgets_USE_LIBS base core net xml html adv stc)
+  find_package(wxWidgets REQUIRED base core net xml html)
 
-  find_package(wxWidgets REQUIRED base core net xml html adv stc)
-  if (MSYS)
-    # This is just a hack. I think the bug is in FindwxWidgets.cmake
-    string(
-      REGEX REPLACE "/usr/local" "\\\\;C:/MinGW/msys/1.0/usr/local"
-      wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS}
-    )
-  endif ()
+  if(MSYS)
+  # this is just a hack. I think the bug is in FindwxWidgets.cmake
+    string( REGEX REPLACE "/usr/local" "\\\\;C:/MinGW/msys/1.0/usr/local" wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} )
+  endif()
+
   include(${wxWidgets_USE_FILE})	
+	
 endif ()
+
+if (MINGW)
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L../buildwin")
+endif ()
+
 
 # On Android, PlugIns need a specific linkage set....
 if (QT_ANDROID)
