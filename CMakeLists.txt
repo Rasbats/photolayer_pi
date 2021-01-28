@@ -6,7 +6,7 @@
 
 # -------- Cmake setup ---------
 #
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.12.0)
 
 cmake_policy(SET CMP0042 NEW)
 
@@ -59,7 +59,7 @@ option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 
 # -------  Plugin setup --------
 #
-project(photolayer_pi VERSION 3.4.1)
+project(photolayer_pi VERSION 3.5.0)
 
 set(DISPLAY_NAME Photolayer) # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME photolayer) # As of GetCommonName() in plugin API
