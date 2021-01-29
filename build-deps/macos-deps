@@ -5,6 +5,8 @@ cmake
 gettext
 libtiff
 libtool
+libexif
 pkg-config
 python
+sqlite
 wget
