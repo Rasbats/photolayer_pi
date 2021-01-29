@@ -45,7 +45,12 @@ ExternalProject_Add(
 set(_proj_obj_path
   ${CMAKE_STATIC_LIBRARY_PREFIX}proj${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-string(PREPEND _proj_obj_path ${PROJECT_SOURCE_DIR}/proj-*/src/.libs/)
+if (${CMAKE_MAJOR_VERSION} LESS 3 OR ${CMAKE_MINOR_VERSION} LESS 10)
+  set(_proj_obj_path ${PROJECT_SOURCE_DIR}/proj-*/src/.libs/${_proj_obj_path})
+else ()
+  string(PREPEND _proj_obj_path ${PROJECT_SOURCE_DIR}/proj-*/src/.libs/)
+endif ()
+
 file(GLOB _proj_obj_path  ${_proj_obj_path})
 
 add_library(_proj_implib STATIC IMPORTED)
