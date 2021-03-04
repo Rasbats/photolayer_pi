@@ -30,12 +30,11 @@ if (USE_SYSTEM_GEOTIFF)
 endif ()
 
 if (NOT GeoTIFF_FOUND)
-  include(${CMAKE_CURRENT_LIST_DIR}/Proj.cmake)
   include(${CMAKE_CURRENT_LIST_DIR}/LibGeotiff.cmake)
 endif ()
 
 target_link_libraries(_GEOTIFF
-  INTERFACE ${PROJ_LIBRARIES} ${GEOTIFF_LIBRARIES}
+  INTERFACE ${GEOTIFF_LIBRARIES}
 )
 target_include_directories(_GEOTIFF
   INTERFACE ${PROJ_INCLUDE_DIRS} ${GEOTIFF_INCLUDE_DIRS}
