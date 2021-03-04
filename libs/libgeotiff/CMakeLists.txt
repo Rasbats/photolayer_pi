@@ -10,7 +10,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
-option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries" OFF)
+option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries" ON)
 
 set(GEOTIFF_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/geotiff-root CACHE STRING
   "libgeotiff build dependencies installation location"
@@ -30,11 +30,12 @@ if (USE_SYSTEM_GEOTIFF)
 endif ()
 
 if (NOT GeoTIFF_FOUND)
+  include(${CMAKE_CURRENT_LIST_DIR}/Proj.cmake)
   include(${CMAKE_CURRENT_LIST_DIR}/LibGeotiff.cmake)
 endif ()
 
 target_link_libraries(_GEOTIFF
-  INTERFACE ${GEOTIFF_LIBRARIES}
+  INTERFACE ${PROJ_LIBRARIES} ${GEOTIFF_LIBRARIES}
 )
 target_include_directories(_GEOTIFF
   INTERFACE ${PROJ_INCLUDE_DIRS} ${GEOTIFF_INCLUDE_DIRS}
