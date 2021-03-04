@@ -4,7 +4,6 @@
 
 import subprocess
 import glob
-
 dumpbin = glob.glob(
   "C:/Program Files (x86)/*Visual Studio/2017/Community/VC/Tools/MSVC/*/bin/Hostx64/x64")[0]
 dumpbin += "/dumpbin"
