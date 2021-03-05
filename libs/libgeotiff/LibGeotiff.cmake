@@ -37,7 +37,7 @@ ExternalProject_Add(
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/libgeotiff-1.6.0
   DOWNLOAD_DIR ${PROJECT_SOURCE_DIR}/cache
   CONFIGURE_COMMAND autoreconf -fi && ./configure CFLAGS=-fPIC
-    --with-proj=${_install_root}
+    
     --prefix=${_install_root}
     --disable-shared
   BUILD_COMMAND make -j${MAX_JOBS}
