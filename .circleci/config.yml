@@ -1,15 +1,63 @@
 ---
 version: 2.1
 
+debian-params: &debian-params
+  parameters:
+    target:
+      description: Build OS target name
+      type: string
+
 debian-steps: &debian-steps
   steps:
     - checkout
+    - restore_cache:
+        keys:
+          - v4-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
     - run: ci/circleci-build-debian.sh
+    - save_cache:
+        key: v4-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
+        paths:
+          - /home/circleci/.local/lib
+          - /home/circleci/.local/include
     - run: sh -c "ldd  build/app/*/lib/opencpn/*.so"
     - run: cd build; /bin/bash < upload.sh
     - run: python3 ci/git-push
 
 jobs:
+  build-mingw:
+    machine:
+      image: circleci/classic:201808-01
+    environment:
+      - OCPN_TARGET: mingw
+    steps:
+      - checkout
+      - run: ci/circleci-build-mingw.sh
+      - run: cd build; /bin/bash < upload.sh
+      - run: python3 ci/git-push
+
+  build-flatpak:
+    machine:
+      image: ubuntu-1604:201903-01
+    environment:
+      - OCPN_TARGET: flatpak
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - fp-v2-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
+      - run: ci/circleci-build-flatpak.sh
+      - save_cache:
+          key: fp-v2-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
+          paths:
+            - /home/circleci/.local/share/flatpak/repo
+            - build/.flatpak-builder/cache
+            - build/.flatpak-builder/ccache
+            - build/.flatpak-builder/checksums
+            - build/.flatpak-builder/downloads
+            - build/.flatpak-builder/rofiles
+      - run: cd build; /bin/bash < upload.sh
+      - run: python3 ci/git-push
+
   build-macos:
     macos:
       xcode: "11.0.0"
@@ -38,7 +86,8 @@ jobs:
       - image: circleci/buildpack-deps:xenial-scm
     environment:
       - OCPN_TARGET: xenial
-      - USE_DEADSNAKES_PY37: 1
+      - MAX_JOBS: 1
+    <<: *debian-params
     <<: *debian-steps
 
   build-bionic:
@@ -46,6 +95,8 @@ jobs:
       - image: circleci/buildpack-deps:bionic-scm
     environment:
       - OCPN_TARGET: bionic
+      - MAX_JOBS: 1
+    <<: *debian-params
     <<: *debian-steps
 
   build-bionic-gtk3:
@@ -54,6 +105,8 @@ jobs:
     environment:
       - BUILD_GTK3: true
       - OCPN_TARGET: bionic-gtk3
+      - MAX_JOBS: 1
+    <<: *debian-params
     <<: *debian-steps
 
   build-focal:
@@ -61,6 +114,8 @@ jobs:
       - image: circleci/buildpack-deps:focal-scm
     environment:
       - OCPN_TARGET: focal
+      - MAX_JOBS: 1
+    <<: *debian-params
     <<: *debian-steps
 
   build-buster:
@@ -68,33 +123,76 @@ jobs:
       - image: circleci/buildpack-deps:buster-scm
     environment:
       - OCPN_TARGET: buster
+      - MAX_JOBS: 1
+    <<: *debian-params
     <<: *debian-steps
+
+  build-armhf-stretch:
+    machine: true
+    environment:
+      - OCPN_TARGET=stretch-armhf
+      - DOCKER_IMAGE=balenalib/raspberry-pi-debian:stretch
+    steps:
+      - checkout
+      - run: ci/generic-build-raspbian-armhf.sh
+      - run: cd build; /bin/bash < upload.sh
+      - run: python3 ci/git-push
+
+  build-armhf-buster:
+    machine: true
+    environment:
+      - OCPN_TARGET=buster-armhf
+      - DOCKER_IMAGE=balenalib/raspberry-pi-debian:buster
+    steps:
+      - checkout
+      - run: ci/generic-build-raspbian-armhf.sh
+      - run: cd build; /bin/bash < upload.sh
+      - run: python3 ci/git-push
 
 std-filters: &std-filters
   filters:
     branches:
-      ignore:
-        - tmp
-        - /tmp-.*/
+      only:
+        - master
+        - build
 
 workflows:
   version: 2
   build_all:
     jobs:
+
+      #- build-mingw:
+      #    <<: *std-filters
+      # Missing libtiff and libgeotiff dependencies
+
+      - build-flatpak:
+          <<: *std-filters
+
       - build-macos:
           <<: *std-filters
 
       - build-xenial:
+          target: xenial
           <<: *std-filters
 
       - build-bionic-gtk3:
+          target: bionic-gtk3
           <<: *std-filters
 
       - build-bionic:
+          target: bionic
           <<: *std-filters
 
       - build-focal:
+          target: focal
           <<: *std-filters
 
       - build-buster:
+          target: buster
+          <<: *std-filters
+
+      - build-armhf-stretch:
+          <<: *std-filters
+
+      - build-armhf-buster:
           <<: *std-filters
