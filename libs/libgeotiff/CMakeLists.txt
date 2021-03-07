@@ -26,11 +26,15 @@ if (WIN32)
 endif ()
 
 if (USE_SYSTEM_GEOTIFF)
+  find_package(Proj)
   find_package(GeoTIFF)
 endif ()
 
-if (NOT GeoTIFF_FOUND)
+if (NOT Proj_FOUND)
   include(${CMAKE_CURRENT_LIST_DIR}/Proj.cmake)
+endif ()
+
+if (NOT GeoTIFF_FOUND) 
   include(${CMAKE_CURRENT_LIST_DIR}/LibGeotiff.cmake)
 endif ()
 
