@@ -10,7 +10,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE "ON")
 
-option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries" OFF)
+if (UNIX AND NOT "${BUILD_TYPE}" STREQUAL "flatpak" AND NOT APPLE)
+  # Debian
+  option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries [ON]" ON)
+else ()
+  option(USE_SYSTEM_GEOTIFF "Use system libgeotiff libraries [OFF]" OFF)
+endif ()
 
 set(GEOTIFF_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/geotiff-root CACHE STRING
   "libgeotiff build dependencies installation location"
@@ -26,7 +31,8 @@ if (WIN32)
 endif ()
 
 if (USE_SYSTEM_GEOTIFF)
-  find_package(GeoTIFF)
+  message(STATUS "Using system libgeotiff")
+  find_package(GeoTIFF REQUIRED)
 endif ()
 
 if (NOT GeoTIFF_FOUND)
@@ -40,3 +46,12 @@ target_link_libraries(_GEOTIFF
 target_include_directories(_GEOTIFF
   INTERFACE ${PROJ_INCLUDE_DIRS} ${GEOTIFF_INCLUDE_DIRS}
 )
+
+if (USE_SYSTEM_GEOTIFF)
+  # Bundle required runtime libs in tarball, typically on Debian.
+  message(STATUS "Bundling geotiff libraries: ${_geotiff_libs}")
+  file(GLOB _geotiff_libs /usr/lib/*/libgeotiff.so.* /usr/lib/*/libproj.so.*)
+  install(CODE
+    "execute_process(COMMAND cmake -E copy ${_geotiff_libs} app/files/lib)"
+  )
+endif ()
