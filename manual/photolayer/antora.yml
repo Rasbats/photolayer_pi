@@ -1,0 +1,4 @@
+name: photolayer
+title: PhotoLayer
+version: '0.1'
+start_page: ROOT:photolayer.adoc 
