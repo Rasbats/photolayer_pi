@@ -1,25 +1,10 @@
 ---
 version: 2.1
 
-debian-params: &debian-params
-  parameters:
-    target:
-      description: Build OS target name
-      type: string
-
 debian-steps: &debian-steps
   steps:
     - checkout
-    - restore_cache:
-        keys:
-          - v5-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
     - run: ci/circleci-build-debian.sh
-    - save_cache:
-        key: v5-<<parameters.target>>-{{checksum "ci/circleci-build-debian.sh"}}
-        paths:
-          - /home/circleci/.local/lib
-          - /home/circleci/.local/include
-    - run: sh -c "ldd  build/app/*/lib/opencpn/*.so"
     - run: cd build; /bin/bash < upload.sh
     - run: python3 ci/git-push
 
@@ -44,17 +29,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - fp-v2-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
+            - fp-v1-{{ checksum "ci/circleci-build-flatpak.sh" }}
       - run: ci/circleci-build-flatpak.sh
       - save_cache:
-          key: fp-v2-{{checksum "flatpak/org.opencpn.OpenCPN.Plugin.photolayer.yaml"}}
+          key: fp-v1-{{ checksum "ci/circleci-build-flatpak.sh" }}
           paths:
             - /home/circleci/.local/share/flatpak/repo
-            - build/.flatpak-builder/cache
-            - build/.flatpak-builder/ccache
-            - build/.flatpak-builder/checksums
-            - build/.flatpak-builder/downloads
-            - build/.flatpak-builder/rofiles
       - run: cd build; /bin/bash < upload.sh
       - run: python3 ci/git-push
 
@@ -77,7 +57,6 @@ jobs:
             - /usr/local/Cellar
             - /usr/local/lib
             - /usr/local/include
-      - run: sh -c "otool -L build/app/*/OpenCPN.app/Contents/PlugIns/*.dylib"
       - run: cd build; /bin/bash < upload.sh
       - run: python3 ci/git-push
 
@@ -86,8 +65,6 @@ jobs:
       - image: circleci/buildpack-deps:xenial-scm
     environment:
       - OCPN_TARGET: xenial
-      - MAX_JOBS: 1
-    <<: *debian-params
     <<: *debian-steps
 
   build-bionic:
@@ -95,8 +72,6 @@ jobs:
       - image: circleci/buildpack-deps:bionic-scm
     environment:
       - OCPN_TARGET: bionic
-      - MAX_JOBS: 1
-    <<: *debian-params
     <<: *debian-steps
 
   build-bionic-gtk3:
@@ -105,8 +80,6 @@ jobs:
     environment:
       - BUILD_GTK3: true
       - OCPN_TARGET: bionic-gtk3
-      - MAX_JOBS: 1
-    <<: *debian-params
     <<: *debian-steps
 
   build-focal:
@@ -114,8 +87,6 @@ jobs:
       - image: circleci/buildpack-deps:focal-scm
     environment:
       - OCPN_TARGET: focal
-      - MAX_JOBS: 1
-    <<: *debian-params
     <<: *debian-steps
 
   build-buster:
@@ -123,8 +94,6 @@ jobs:
       - image: circleci/buildpack-deps:buster-scm
     environment:
       - OCPN_TARGET: buster
-      - MAX_JOBS: 1
-    <<: *debian-params
     <<: *debian-steps
 
   build-armhf-stretch:
@@ -159,11 +128,11 @@ std-filters: &std-filters
 workflows:
   version: 2
   build_all:
-    jobs:
-
+    jobs:       
+      
       #- build-mingw:
       #    <<: *std-filters
-      # Missing libtiff and libgeotiff dependencies
+      # Missing libtiff and libgeotiff dependencies 
 
       - build-flatpak:
           <<: *std-filters
@@ -172,23 +141,18 @@ workflows:
           <<: *std-filters
 
       - build-xenial:
-          target: xenial
           <<: *std-filters
 
       - build-bionic-gtk3:
-          target: bionic-gtk3
           <<: *std-filters
 
       - build-bionic:
-          target: bionic
           <<: *std-filters
 
       - build-focal:
-          target: focal
           <<: *std-filters
 
       - build-buster:
-          target: buster
           <<: *std-filters
 
       - build-armhf-stretch:

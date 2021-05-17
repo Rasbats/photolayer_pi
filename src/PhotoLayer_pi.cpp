@@ -35,7 +35,6 @@
 #include "PhotoLayer.h"
 #include "icons.h"
 
-
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
@@ -59,9 +58,7 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     
-	wxInitAllImageHandlers();
-	
-	initialize_images();
+    initialize_images();
 
     wxFileName fn;
 
@@ -71,6 +68,8 @@ PhotoLayer_pi::PhotoLayer_pi(void *ppimgr)
     fn.SetFullName("photolayer_panel_icon.png");
 
     path = fn.GetFullPath();
+
+    wxInitAllImageHandlers();
 
     wxLogDebug(wxString("Using icon path: ") + path);
     if (!wxImage::CanRead(path)) {

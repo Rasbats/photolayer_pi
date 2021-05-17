@@ -1,6 +1,5 @@
 #
-# Find and link general libraries to use: gettext, wxWidgets and OpenGL
-#
+# Find and link  general libraries to use, basically gettext and wxWidgets
 
 find_package(Gettext REQUIRED)
 
@@ -8,36 +7,25 @@ set(wxWidgets_USE_DEBUG OFF)
 set(wxWidgets_USE_UNICODE ON)
 set(wxWidgets_USE_UNIVERSAL OFF)
 set(wxWidgets_USE_STATIC OFF)
-
 if (NOT QT_ANDROID)
   # QT_ANDROID is a cross-build, so the native FIND_PACKAGE(OpenGL) is
   # not useful.
   find_package(OpenGL)
-  if (TARGET OpenGL::OpenGL)
-    target_link_libraries(${PACKAGE_NAME} OpenGL::OpenGL)
-  elseif (TARGET OpenGL::GL)
-    target_link_libraries(${PACKAGE_NAME} OpenGL::GL)
+  if (OPENGL_GLU_FOUND)
+    set(GL_LIB gl)
+    include_directories(${OPENGL_INCLUDE_DIR})
+    message(STATUS "Found OpenGL...")
+    message(STATUS "    Lib: " ${OPENGL_LIBRARIES})
+    message(STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+    add_definitions(-DocpnUSE_GL)
   else ()
-    message(WARNING "Cannot locate usable OpenGL libs and headers.")
-  endif ()  
-  if (NOT OPENGL_GLU_FOUND)
-    message(WARNING "Cannot find OpenGL GLU extension.")
+    message(STATUS "OpenGL not found...")
   endif ()
-  if (APPLE)
-    # As of 3.19.2, cmake's FindOpenGL does not link to the directory
-    # containing gl.h. cmake bug? Intended due to missing subdir GL/gl.h?
-    find_path(GL_H_DIR NAMES gl.h)
-    if (GL_H_DIR)
-      target_include_directories(${PACKAGE_NAME} PRIVATE "${GL_H_DIR}")
-    else ()
-      message(WARNING "Cannot locate OpenGL header file gl.h")
-    endif ()
-  endif ()
- 
-  set(wxWidgets_USE_LIBS base core net xml html)
+  
+  set(wxWidgets_USE_LIBS base core net xml html adv stc)
   set(BUILD_SHARED_LIBS TRUE)
 
-  find_package(wxWidgets REQUIRED base core net xml html)
+  find_package(wxWidgets REQUIRED base core net xml html adv stc)
 
   if(MSYS)
   # this is just a hack. I think the bug is in FindwxWidgets.cmake
@@ -48,7 +36,9 @@ if (NOT QT_ANDROID)
 	
 endif ()
 
+
 if (MINGW)
+  target_link_libraries(${PACKAGE_NAME} ${OPENGL_LIBRARIES})
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L../buildwin")
 endif ()
 
