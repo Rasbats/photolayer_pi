@@ -7,7 +7,7 @@ set -xe
 sudo apt -qq update || apt update
 sudo apt-get -q install  devscripts equivs
 
-mkdir  build
+rm -rf build && mkdir  build
 cd build
 sudo mk-build-deps -ir ../build-deps/control
 sudo apt-get -q --allow-unauthenticated install -f
