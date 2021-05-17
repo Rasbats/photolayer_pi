@@ -47,13 +47,13 @@ cmake \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
   ..
 
-if [ -z "$CLOUDSMITH_API_KEY" ]; then
-    echo 'No $CLOUDSMITH_API_KEY found, assuming local setup'
+if [[ -z "$CI" ]]; then
+    echo '$CI not found in environment, assuming local setup'
     echo "Complete build using 'cd build; make tarball' or so."
     exit 0 
 fi
 
-make -j $(sysctl -n hw.physicalcpu) VERBOSE=1 tarball
+make VERBOSE=1 tarball
 
 make create-pkg
 

@@ -5,18 +5,28 @@ debian-steps: &debian-steps
   steps:
     - checkout
     - run: ci/circleci-build-debian.sh
+    - run: sh -c "ldd  build/app/*/lib/opencpn/*.so"
     - run: cd build; /bin/bash < upload.sh
     - run: python3 ci/git-push
 
 jobs:
-  build-mingw:
+  build-flatpak-arm64:
     machine:
-      image: circleci/classic:201808-01
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
     environment:
-      - OCPN_TARGET: mingw
+      - OCPN_TARGET: flatpak-arm64
+      - FLATPAK_BRANCH: beta
     steps:
       - checkout
-      - run: ci/circleci-build-mingw.sh
+      - restore_cache:
+          keys:
+            - fp-a64-v1-{{ checksum "ci/circleci-build-flatpak.sh" }}
+      - run: ci/circleci-build-flatpak.sh
+      - save_cache:
+          key: fp-a64-v1-{{ checksum "ci/circleci-build-flatpak.sh" }}
+          paths:
+            - /home/circleci/.local/share/flatpak/repo
       - run: cd build; /bin/bash < upload.sh
       - run: python3 ci/git-push
 
@@ -25,6 +35,8 @@ jobs:
       image: ubuntu-1604:201903-01
     environment:
       - OCPN_TARGET: flatpak
+      - USE_CUSTOM_PPA: yes
+      - FLATPAK_BRANCH: stable
     steps:
       - checkout
       - restore_cache:
@@ -57,6 +69,7 @@ jobs:
             - /usr/local/Cellar
             - /usr/local/lib
             - /usr/local/include
+      - run: sh -c "otool -L build/app/*/OpenCPN.app/Contents/PlugIns/*.dylib"
       - run: cd build; /bin/bash < upload.sh
       - run: python3 ci/git-push
 
@@ -65,6 +78,7 @@ jobs:
       - image: circleci/buildpack-deps:xenial-scm
     environment:
       - OCPN_TARGET: xenial
+      - USE_DEADSNAKES_PY37: 1
     <<: *debian-steps
 
   build-bionic:
@@ -96,43 +110,19 @@ jobs:
       - OCPN_TARGET: buster
     <<: *debian-steps
 
-  build-armhf-stretch:
-    machine: true
-    environment:
-      - OCPN_TARGET=stretch-armhf
-      - DOCKER_IMAGE=balenalib/raspberry-pi-debian:stretch
-    steps:
-      - checkout
-      - run: ci/generic-build-raspbian-armhf.sh
-      - run: cd build; /bin/bash < upload.sh
-      - run: python3 ci/git-push
-
-  build-armhf-buster:
-    machine: true
-    environment:
-      - OCPN_TARGET=buster-armhf
-      - DOCKER_IMAGE=balenalib/raspberry-pi-debian:buster
-    steps:
-      - checkout
-      - run: ci/generic-build-raspbian-armhf.sh
-      - run: cd build; /bin/bash < upload.sh
-      - run: python3 ci/git-push
-
 std-filters: &std-filters
   filters:
     branches:
-      only:
-        - master
-        - build
+      ignore:
+        - tmp
+        - /tmp-.*/
 
 workflows:
   version: 2
   build_all:
-    jobs:       
-      
-      #- build-mingw:
-      #    <<: *std-filters
-      # Missing libtiff and libgeotiff dependencies 
+    jobs:
+      - build-flatpak-arm64:
+          <<: *std-filters
 
       - build-flatpak:
           <<: *std-filters
@@ -153,10 +143,4 @@ workflows:
           <<: *std-filters
 
       - build-buster:
-          <<: *std-filters
-
-      - build-armhf-stretch:
-          <<: *std-filters
-
-      - build-armhf-buster:
           <<: *std-filters

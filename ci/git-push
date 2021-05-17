@@ -29,6 +29,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+WIKI_BASE="https://github.com/Rasbats/managed_plugins/wiki"
+
 
 def cipherFernet(password):
     key = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=b'abcd',
@@ -74,7 +76,8 @@ def private_key_setup(ci, user, password):
             encrypted = f.read()
     except FileNotFoundError:
         print("No private key found, cannot push metadata to git repo.")
-        print("See the file README-git.md for more.")
+        print("See %s/OpenCPN-Plugins-Catalog-and-Github-Integration"
+                % WIKI_BASE)
         sys.exit(0)
     decrypted = decrypt1(encrypted.encode(), password.encode())
     with open(os.path.join(ci, user ), 'wb') as f:
@@ -83,7 +86,8 @@ def private_key_setup(ci, user, password):
     hostpath = os.path.normpath(os.path.join(ci, user))
     print("Using identity file: " + hostpath)
     os.environ['GIT_SSH_COMMAND'] = \
-            "ssh -o IdentitiesOnly=yes -i " + hostpath.replace("\\", "\\\\")
+        "ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i " \
+        + hostpath.replace("\\", "\\\\")
 
 
 def get_target(metadata_path):
