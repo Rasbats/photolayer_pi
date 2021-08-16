@@ -63,7 +63,7 @@ you have forgotten to install libgeotiff from homebrew?]
 === 3. Standard actions
 
 GeoTiff sources and the procedure for downloading these files is shown
-in link:photolayer#geotiff_sources[this section].
+in xref:photolayer#geotiff_sources[this section].
 
 NOTE: If making a KAP chart from a GeoTiff set the number of colours in
 'Preferences' to, say, 64. The default setting of '2' will not work.
@@ -139,6 +139,7 @@ of the photo chart. The GeoTiff must be used.
 Menu “Delete” is to remove a GeoTiff from the list of overlays that have
 been opened. It does not delete the image file.
 
+[#geotiff_sources]
 ==== GeoTiff Sources
 
 ===== VentureFarther
