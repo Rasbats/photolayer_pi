@@ -6,16 +6,15 @@ image::photolayer_pi.png[]
 
 PhotoLayer reads satellite geotiff photo overlay files (with
 tranparency) which can then be displayed over the top of navigation
-charts. The website venturefarther.com has geotiff files available.
+charts. The website https://www.venturefarther.com has geotiff files available.
 
 === Links
 
-* Source: https://github.com/Rasbats/photolayer_pi[Github Repository]
-* Releases: https://github.com/Rasbats/photolayer_pi/releases[Github
-Releases]
-* Forum:
-http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html[Photolayer
-Plugin Thread]
+* Source: https://github.com/Rasbats/photolayer_pi
+
+* Releases: https://github.com/Rasbats/photolayer_pi/releases
+
+* Forum: http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html
 
 === Aim
 
@@ -35,7 +34,6 @@ position of the breakwaters.
 
 === Requirements
 
-[source,code]
 ----
 OpenCPN 4.2.0 and above.
 ----
@@ -49,16 +47,14 @@ from other sources.
 
 === 2. Install
 
-Download the plugin installer and run the installer .exe file from here
-(Windows):
+If using OpenCPN 5.2 or later use the Plugin Manager. For older versions (Windows) use the .exe from here:
 
 https://github.com/Rasbats/photolayer_pi/releases
 
 Mac OS users note that libgeotiff is needed. See
-http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html#post2558166
+http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html#post2558166[Satellite geotiffs with transparency]
 and
-http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html#post2635911[Perhaps
-you have forgotten to install libgeotiff from homebrew?]
+http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html#post2635911[perhaps you have forgotten to install libgeotiff from homebrew?]
 
 === 3. Standard actions
 
@@ -144,11 +140,11 @@ been opened. It does not delete the image file.
 
 ===== VentureFarther
 
-The VentureFarther website https://venturefarther.com[linked here]
+The VentureFarther website https://www.venturefarther.com
 allows the selection of an area, which can be downloaded as a GeoTiff.
 
-You will need to register with VentureFarther and obtain your API key
-http://venturefarther.com[here]
+You will need to register with VentureFarther and obtain your API key:
+https://www.venturefarther.com
 
 *_Please read the 'Credits' page on the VentureFarther website. 1 Credit
 is used for each single satellite chart download. Making a 'Multi-Chart'
@@ -170,16 +166,14 @@ image::31.png[]
 
 ===== SASPlanet
 
-The SASPlanet program can be downloaded
-http://sasplanet.software.informer.com/14.12/[here] The download is a
-zip file. Extracting the zip creates a folder “SAS.Planet.xxxxxxx”, in
-which is “SASPlanet.exe” which starts the program (from the folder).
+The 
+https://sasplanet.software.informer.com/14.12/[SASPlanet] program can be downloaded The download is a zip file. Extracting the zip creates a folder “SAS.Planet.xxxxxxx”, in which is “SASPlanet.exe” which starts the program (from the folder).
 
 image::20.0.png[]
 
 Open the map which will be used to create the GeoTiff. This time a
 topographical map from
-https://opentopomap.org/#map=12/43.7116/-7.6101[OpenTopoMaps] is used.
+https://opentopomap.org/#map=12/43.7116/-7.6101[OpenTopoMap] is used.
 
 image::20.png[]
 
