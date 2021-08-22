@@ -173,7 +173,7 @@ image::20.0.png[]
 
 Open the map which will be used to create the GeoTiff. This time a
 topographical map from
-https://www.opentopomap.org/#map=12/43.7116/-7.6101  is used.
+https://www.opentopomap.org/#map=12/43.7116/-7.6101[opentopomap]  is used.
 
 image::20.png[]
 
