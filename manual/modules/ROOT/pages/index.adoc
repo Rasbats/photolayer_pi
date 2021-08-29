@@ -59,7 +59,7 @@ http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-wi
 === 3. Standard actions
 
 GeoTiff sources and the procedure for downloading these files is shown
-in xref:photolayer#geotiff_sources[this section].
+in xref:index#geotiff_sources[this section].
 
 NOTE: If making a KAP chart from a GeoTiff set the number of colours in
 'Preferences' to, say, 64. The default setting of '2' will not work.
@@ -173,7 +173,7 @@ image::20.0.png[]
 
 Open the map which will be used to create the GeoTiff. This time a
 topographical map from
-https://www.opentopomap.org/#map=12/43.7116/-7.6101[opentopomap]  is used.
+https://www.opentopomap.org/[opentopomap]  is used.
 
 image::20.png[]
 
