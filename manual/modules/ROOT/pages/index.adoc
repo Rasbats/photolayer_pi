@@ -1,6 +1,5 @@
+= PhotoLayer
 :imagesdir: ../images/
-
-== PhotoLayer
 
 image::photolayer_pi.png[]
 
@@ -8,7 +7,7 @@ PhotoLayer reads satellite geotiff photo overlay files (with
 tranparency) which can then be displayed over the top of navigation
 charts. The website https://www.venturefarther.com has geotiff files available.
 
-=== Links
+== Links
 
 * Source: https://github.com/Rasbats/photolayer_pi
 
@@ -16,7 +15,7 @@ charts. The website https://www.venturefarther.com has geotiff files available.
 
 * Forum: http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html
 
-=== Aim
+== Aim
 
 To improve the safety of navigation in inadequately surveyed areas of
 the world.
@@ -32,20 +31,20 @@ image::32.png[]
 This photo overlay is for a marina in the Canary Islands. Note the
 position of the breakwaters.
 
-=== Requirements
+== Requirements
 
 ----
 OpenCPN 4.2.0 and above.
 ----
 
-=== 1. What and Why
+== 1. What and Why
 
 In some areas of the world a satellite chart is more accurate than the
 official chart. This plugin acts as a viewer for GeoTiff files. The
 GeoTiffs are made from satellite photos and they can also be obtained
 from other sources.
 
-=== 2. Install
+== 2. Install
 
 If using OpenCPN 5.2 or later use the Plugin Manager. For older versions (Windows) use the .exe from here:
 
@@ -56,7 +55,7 @@ http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-wi
 and
 http://www.cruisersforum.com/forums/f134/photolayer-plugin-satellite-geotiffs-with-transparency-194922.html#post2635911[perhaps you have forgotten to install libgeotiff from homebrew?]
 
-=== 3. Standard actions
+== 3. Standard actions
 
 GeoTiff sources and the procedure for downloading these files is shown
 in xref:index#geotiff_sources[this section].
@@ -96,9 +95,9 @@ At maximum the overlay will disappear.
 
 image::6.png[]
 
-=== 4. Options / Warnings / Ideas
+== 4. Options / Warnings / Ideas
 
-==== Options
+== Options
 
 The menu offers other options.
 
@@ -136,9 +135,9 @@ Menu “Delete” is to remove a GeoTiff from the list of overlays that have
 been opened. It does not delete the image file.
 
 [#geotiff_sources]
-==== GeoTiff Sources
+== GeoTiff Sources
 
-===== VentureFarther
+== VentureFarther
 
 The VentureFarther website https://www.venturefarther.com
 allows the selection of an area, which can be downloaded as a GeoTiff.
@@ -164,7 +163,7 @@ overlay can be adjusted, unlike the normal kaps from VentureFarther.
 
 image::31.png[]
 
-===== SASPlanet
+== SASPlanet
 
 The 
 https://sasplanet.software.informer.com/14.12/[SASPlanet] program can be downloaded The download is a zip file. Extracting the zip creates a folder “SAS.Planet.xxxxxxx”, in which is “SASPlanet.exe” which starts the program (from the folder).
