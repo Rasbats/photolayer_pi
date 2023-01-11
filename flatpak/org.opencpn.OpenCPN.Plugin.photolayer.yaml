@@ -2,7 +2,7 @@ id: org.opencpn.OpenCPN.Plugin.photolayer
 runtime: org.opencpn.OpenCPN
 # runtime-version: stable   # official build at flathub
 runtime-version: beta
-sdk: org.freedesktop.Sdk//18.08
+sdk: org.freedesktop.Sdk//22.08
 build-extension: true
 separate-locales: false
 appstream-compose: false
