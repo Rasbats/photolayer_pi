@@ -1,10 +1,15 @@
 # ~~~
-# Author:      Pavel Kalian (Based on the work of Sean D'Epagnier)
-# Copyright:   2014
-# License:     GPLv3+
-#
-# Installation items and layout.
+# Summary       Installation items and layout
+# Author:       Pavel Kalian (Based on the work of Sean D'Epagnier)
+# License:      GPLv3+
+# Copyright (c) 2014 Pavel Kallian
+#               2021 Alec Leamas
 # ~~~
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
 
 include(Metadata)
 
@@ -24,14 +29,11 @@ elseif (WIN32)
   message(STATUS "Install Prefix: ${CMAKE_INSTALL_PREFIX}")
   if (CMAKE_CROSSCOMPILING)
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
-    set(INSTALL_DIRECTORY "plugins/${PACKAGE_NAME}")
   else ()
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
-    set(INSTALL_DIRECTORY "plugins\\\\${PACKAGE_NAME}")
   endif ()
-
   if (EXISTS ${PROJECT_SOURCE_DIR}/data)
-    install(DIRECTORY data DESTINATION "${INSTALL_DIRECTORY}")
+    install(DIRECTORY data DESTINATION "plugins/${PACKAGE_NAME}")
   endif ()
 
 elseif (UNIX)
@@ -70,7 +72,8 @@ if (CMAKE_BUILD_TYPE MATCHES "Release|MinSizeRel")
     set(_striplib OpenCPN.app/Contents/PlugIns/lib${PACKAGE_NAME}.dylib)
   elseif (MINGW)
     set(_striplib plugins/lib${PACKAGE_NAME}.dll)
-  elseif (UNIX)  # linux
+  elseif (UNIX AND NOT CMAKE_CROSSCOMPILING AND NOT DEFINED ENV{FLATPAK_ID})
+    # Plain, native linux
     set(_striplib lib/opencpn/lib${PACKAGE_NAME}.so)
   endif ()
   if (BUILD_TYPE STREQUAL "tarball" AND DEFINED _striplib)
@@ -78,14 +81,12 @@ if (CMAKE_BUILD_TYPE MATCHES "Release|MinSizeRel")
     if (APPLE)
       set(STRIP_UTIL "${STRIP_UTIL} -x")
     endif ()
-    install(CODE
-      "execute_process(COMMAND cmake -E echo Stripping ${_striplib})"
-    )
-    install(CODE
-      "execute_process(
+    install(CODE "message(STATUS \"Stripping ${_striplib}\")")
+    install(CODE "
+      execute_process(
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND ${STRIP_UTIL} app/files/${_striplib}
-      )"
-    )
+      )
+    ")
   endif ()
 endif ()
