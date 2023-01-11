@@ -3,85 +3,90 @@
 #
 # Build the flatpak artifacts.
 #
-set -e
 
+# Copyright (c) 2021 Alec Leamas
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+
+set -e
 MANIFEST=$(cd flatpak; ls org.opencpn.OpenCPN.Plugin*yaml)
 echo "Using manifest file: $MANIFEST"
 set -x
 
-# On old systems: give the apt update daemons a chance to leave the scene
-# while we build.
-if systemctl status apt-daily-upgrade.service &> /dev/null; then
-    sudo systemctl stop apt-daily.service apt-daily.timer
-    sudo systemctl kill --kill-who=all \
-        apt-daily.service apt-daily-upgrade.service
-    sudo systemctl mask apt-daily.service apt-daily-upgrade.service
-    sudo systemctl daemon-reload
-fi
+# Load local environment if it exists i. e., this is a local build
+if [ -f ~/.config/local-build.rc ]; then source ~/.config/local-build.rc; fi
+if [ -d /ci-source ]; then cd /ci-source; fi
 
-# Install the flatpak PPA so we can access a usable flatpak version
-# (not available on Ubuntu Xenial 16.04)
-if [ -n "$USE_CUSTOM_PPA" ]; then
+git submodule update --init opencpn-libs
+
+# Set up build directory and a visible link in /
+builddir=build-flatpak
+test -d $builddir || sudo mkdir $builddir && sudo rm -rf $builddir/*
+sudo chmod 777 $builddir
+if [ "$PWD" != "/"  ]; then sudo ln -sf $PWD/$builddir /$builddir; fi
+
+# Create a log file.
+exec > >(tee $builddir/build.log) 2>&1
+
+if [ -n "$TRAVIS_BUILD_DIR" ]; then cd $TRAVIS_BUILD_DIR; fi
+
+if [ -n "$CI" ]; then
+    sudo apt update
+
+    # Avoid using outdated TLS certificates, see #210.
+    sudo apt install --reinstall  ca-certificates
+
+    # Use updated flatpak (#457)
     sudo add-apt-repository -y ppa:alexlarsson/flatpak
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
-        | sudo apt-key add -
-fi
-sudo apt update
+    sudo apt update
 
-sudo apt install flatpak flatpak-builder
+    # Install or update flatpak and flatpak-builder
+    sudo apt install flatpak flatpak-builder
+fi
+
+# The flatpak checksumming needs python3:
+if ! python3 --version 2>&1 >/dev/null; then
+    pyenv local $(pyenv versions | sed 's/*//' | awk '{print $1}' | tail -1)
+    cp .python-version $HOME
+fi
+
+flatpak remote-add --user --if-not-exists flathub-beta \
+    https://flathub.org/beta-repo/flathub-beta.flatpakrepo
 flatpak remote-add --user --if-not-exists \
     flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
+    # FIXME (leamas) revert to stable when 058 is published there
+flatpak install --user -y --noninteractive \
+    flathub org.freedesktop.Sdk//22.08
 
-# For now, horrible hack: aarch 64 builds are using the updated runtime
-# 20.08 and the opencpn beta version using old 18.08 runtime.
-if [ "$FLATPAK_BRANCH" = 'beta' ]; then
-        flatpak install --user -y flathub org.freedesktop.Sdk//20.08 >/dev/null
-        flatpak remote-add --user --if-not-exists flathub-beta \
-            https://flathub.org/beta-repo/flathub-beta.flatpakrepo
-        flatpak install --user -y --or-update flathub-beta \
-            org.opencpn.OpenCPN >/dev/null
-        sed -i '/sdk:/s/18.08/20.08/'  flatpak/org.opencpn.*.yaml
-else
-        flatpak install --user -y flathub org.freedesktop.Sdk//18.08 >/dev/null
-        flatpak remote-add --user --if-not-exists flathub \
-            https://flathub.org/repo/flathub.flatpakrepo
-        flatpak install --user -y --or-update flathub \
-            org.opencpn.OpenCPN >/dev/null
-        FLATPAK_BRANCH='stable'
-fi
+set -x
+cd $builddir
 
-# Patch the runtime version so it matches the nightly builds
-# or beta as appropriate.
-sed -i "/^runtime-version/s/:.*/: $FLATPAK_BRANCH/" flatpak/$MANIFEST
+# Patch the manifest to use correct branch and runtime unconditionally
+manifest=$(ls ../flatpak/org.opencpn.OpenCPN.Plugin*yaml)
+sed -i  '/-DBUILD_TYPE/s/$/ -DOCPN_WX_ABI=wx32/' $manifest
+    # FIXME (leamas) restore beta -> stable when O58 is published
+sed -i  '/^runtime-version/s/:.*/: beta/'  $manifest
 
-# The flatpak checksumming needs python3:
-pyenv local $(pyenv versions | sed 's/*//' | awk '{print $1}' | tail -1)
-cp .python-version $HOME
-
-# Install a recent cmake, ubuntu 16.04 is too old.
-export PATH=$HOME/.local/bin:$PATH
-python -m pip install --user cmake
+flatpak install --user -y --or-update --noninteractive \
+    flathub-beta  org.opencpn.OpenCPN
+flatpak remote-add --user --if-not-exists \
+    flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # Configure and build the plugin tarball and metadata.
-mkdir build; cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j $(nproc) VERBOSE=1 flatpak
 
-# Restore patched file so the cache checksumming is ok.
-git checkout ../flatpak/$MANIFEST
+# Restore permissions and owner in build tree.
+if [ -d /ci-source ]; then sudo chown --reference=/ci-source -R . ../cache; fi
+sudo chown --reference=.. .
 
-# Wait for apt-daily to complete. apt-daily should not restart, it's masked.
-# https://unix.stackexchange.com/questions/315502
-echo -n "Waiting for apt_daily lock..."
-sudo flock /var/lib/apt/daily_lock echo done
-
-# Install cloudsmith, required by upload script
-python3 -m pip install --user --upgrade pip
-python3 -m pip install --user cloudsmith-cli
-
-# Required by git-push
-python3 -m pip install --user cryptography
+# Install cloudsmith and cryptography, required by upload script and git-push
+python3 -m pip install -q --user --upgrade pip
+python3 -m pip install -q --user cloudsmith-cli cryptography
 
 # python install scripts in ~/.local/bin, teach upload.sh to use this in PATH
 echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.uploadrc
