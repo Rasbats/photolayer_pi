@@ -28,7 +28,7 @@
 
 #include "PhotoLayerUI.h"
 
-#if not defined WIN32
+#ifndef WIN32
 #define __int64 long int
 #include <tiffio.h>
 #include <xtiffio.h>

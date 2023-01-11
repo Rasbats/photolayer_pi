@@ -72,7 +72,7 @@ set(PKG_API_LIB api-16)  #  A directory in libs/ e. g., api-17 or api-16
 macro(late_init)
   # Perform initialization after the PACKAGE_NAME library, compilers
   # and ocpn::api is available.
-  if (photolayer_USE_SVG)
+  if (PHOTOLAYER_USE_SVG)
     target_compile_definitions(${PACKAGE_NAME} PUBLIC PHOTOLAYER_USE_SVG)
   endif ()
 
