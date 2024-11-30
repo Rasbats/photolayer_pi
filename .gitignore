@@ -9,4 +9,4 @@ cache
 plugins
 *.bat
 *.bak
-*.7z
+buildwin/*.7z
