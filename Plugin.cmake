@@ -34,7 +34,7 @@ option(PHOTOLAYER_USE_SVG "Use SVG graphics" ON)
 # -------  Plugin setup --------
 #
 set(PKG_NAME photolayer_pi)
-set(PKG_VERSION  4.0.0)
+set(PKG_VERSION  4.1.0)
 set(PKG_PRERELEASE "")  # Empty, or a tag like 'beta'
 
 set(DISPLAY_NAME photolayer)    # Dialogs, installer artifacts, ...
@@ -49,7 +49,7 @@ set(PKG_IS_OPEN_SOURCE "yes")
 set(PKG_HOMEPAGE https://github.com/Rasbats/photolayer_pi)
 set(PKG_INFO_URL https://opencpn.org/OpenCPN/plugins/photolayer.html)
 
-set(SRC	
+set(SRC
      src/PhotoLayer_pi.cpp
     src/PhotoLayer_pi.h
     src/PhotoLayer.cpp
@@ -81,7 +81,7 @@ macro(late_init)
   if (QT_ANDROID)
     add_definitions(-DUSE_ANDROID_GLES2)
   endif ()
-  
+
 endmacro ()
 
 macro(add_plugin_libraries)
