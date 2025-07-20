@@ -231,29 +231,6 @@ jobs:
       - run: cd build-osx; /bin/bash < upload.sh
       - run: ci/git-push.sh  build-osx
 
-
-  build-android-arm64:
-    docker:
-      - image: cimg/android:2023.08-ndk
-    environment:
-      - OCPN_TARGET: android-aarch64
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    steps:
-      - checkout
-      - run: ci/circleci-build-android.sh
-      - run: ci/maybe-push-upload.sh
-
-  build-android-armhf:
-    docker:
-      - image: cimg/android:2023.08-ndk
-    environment:
-      - OCPN_TARGET: android-armhf
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    steps:
-      - checkout
-      - run: ci/circleci-build-android.sh
-      - run: ci/maybe-push-upload.sh
-
 std-filters: &std-filters
   filters:
     branches:
@@ -279,12 +256,6 @@ workflows:
           <<: *std-filters
 
       - build-macos:
-          <<: *std-filters
-
-      - build-android-arm64:
-          <<: *std-filters
-
-      - build-android-armhf:
           <<: *std-filters
 
       - build-bullseye-wx32:
