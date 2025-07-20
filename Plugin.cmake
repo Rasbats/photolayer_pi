@@ -84,13 +84,13 @@ macro(late_init)
 endmacro ()
 
 macro(add_plugin_libraries)
-   add_subdirectory("libs/jsoncpp")
+  add_subdirectory("${CMAKE_SOURCE_DIR}/opencpn-libs/jsoncpp")
   target_link_libraries(${PACKAGE_NAME} ocpn::jsoncpp)
 
-  add_subdirectory("libs/tinyxml")
+  add_subdirectory("opencpn-libs/tinyxml")
   target_link_libraries(${PACKAGE_NAME} ocpn::tinyxml)
 
-  add_subdirectory("libs/wxJSON")
+  add_subdirectory("${CMAKE_SOURCE_DIR}/opencpn-libs/wxJSON")
   target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
 
   add_subdirectory("libs/libtiff")
