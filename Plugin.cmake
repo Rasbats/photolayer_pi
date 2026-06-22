@@ -99,7 +99,4 @@ macro(add_plugin_libraries)
   add_subdirectory("libs/libgeotiff")
   target_link_libraries(${PACKAGE_NAME} ocpn::geotiff)
 
-  add_subdirectory("libs/gdal")
-  target_link_libraries(${PACKAGE_NAME} ocpn::gdal)
-
 endmacro ()
