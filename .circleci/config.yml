@@ -24,25 +24,6 @@ flatpak-steps: &flatpak-steps
     - run: ci/git-push.sh /build-flatpak
 
 jobs:
-  build-bullseye:
-    docker:
-      - image: circleci/buildpack-deps:bullseye-scm
-    environment:
-      - OCPN_TARGET: bullseye
-      - TARGET_TUPLE: debian-x86_64;11;x86_64
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    <<: *debian-steps
-
-  build-bullseye-wx32:
-    docker:
-      - image: circleci/buildpack-deps:bullseye-scm
-    environment:
-      - OCPN_TARGET: bullseye
-      - BUILD_WX32: true
-      - TARGET_TUPLE: debian-wx32-x86_64;11;x86_64
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    <<: *debian-steps
-
   build-bookworm:
     machine:
       image: ubuntu-2204:current
@@ -71,20 +52,6 @@ jobs:
       - run: cd build-debian; /bin/bash < upload.sh
       - run: ci/git-push.sh build-debian
 
-  build-bookworm-armhf:
-    machine:
-      image: ubuntu-2204:current
-    resource_class: arm.medium
-    environment:
-      - TARGET_TUPLE: debian-armhf;12;armhf
-      - OCPN_TARGET: bookworm
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    steps:
-      - checkout
-      - run: ci/circleci-build-debian-armhf.sh
-      - run: cd build-debian; /bin/bash < upload.sh
-      - run: ci/git-push.sh build-debian
-
   build-trixie:
     machine:
       image: ubuntu-2204:current
@@ -110,20 +77,6 @@ jobs:
     steps:
       - checkout
       - run: ci/circleci-build-debian-docker.sh
-      - run: cd build-debian; /bin/bash < upload.sh
-      - run: ci/git-push.sh build-debian
-
-  build-trixie-armhf:
-    machine:
-      image: ubuntu-2204:current
-    resource_class: arm.medium
-    environment:
-      - TARGET_TUPLE: debian-armhf;13;armhf
-      - OCPN_TARGET: bookworm
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    steps:
-      - checkout
-      - run: ci/circleci-build-debian-armhf.sh
       - run: cd build-debian; /bin/bash < upload.sh
       - run: ci/git-push.sh build-debian
 
@@ -172,6 +125,7 @@ jobs:
         default: "fp-arm25-v2"
     <<: *flatpak-steps
 
+
   build-flatpak-x86:
     machine:
       image: ubuntu-2204:current
@@ -199,6 +153,7 @@ jobs:
         # Update the last part, here v2, to invalidate cache
         default: "fp-x86-24-v2"
     <<: *flatpak-steps
+
   build-flatpak-x86-2508:
     machine:
       image: ubuntu-2204:current
@@ -212,6 +167,7 @@ jobs:
         # Update the last part, here v2, to invalidate cache
         default: "fp-x86-25-v2"
     <<: *flatpak-steps
+
 
   build-macos-universal:
     macos:
@@ -273,16 +229,7 @@ workflows:
       - build-macos-universal:
           <<: *std-filters
 
-      - build-bullseye-wx32:
-          <<: *std-filters
-
-      - build-bullseye:
-          <<: *std-filters
-
       - build-bookworm-arm64:
-          <<: *std-filters
-
-      - build-bookworm-armhf:
           <<: *std-filters
 
       - build-bookworm:
@@ -292,7 +239,4 @@ workflows:
           <<: *std-filters
 
       - build-trixie-arm64:
-          <<: *std-filters
-
-      - build-trixie-armhf:
           <<: *std-filters
