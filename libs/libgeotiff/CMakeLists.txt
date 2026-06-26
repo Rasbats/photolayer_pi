@@ -4,9 +4,9 @@ if (TARGET ocpn::geotiff)
     return ()
 endif ()
 
-if (NOT CMAKE_MODULE_PATH)
-  set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-endif ()
+
+set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 
 if (WIN32)
   file(GLOB geotiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/libgeotiff-*")
@@ -21,6 +21,7 @@ if (WIN32)
   target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/libxtiff)
   add_library(ocpn::geotiff ALIAS _GEOTIFF)
 else ()
+  include FindGeoTIFF
   find_package(GeoTIFF REQUIRED)
   add_library(_GeoTIFF INTERFACE)
   target_link_libraries(_GeoTIFF INTERFACE ${GEOTIFF_LIBRARIES})
