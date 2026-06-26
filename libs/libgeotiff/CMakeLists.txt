@@ -21,7 +21,6 @@ if (WIN32)
   target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/libxtiff)
   add_library(ocpn::geotiff ALIAS _GEOTIFF)
 else ()
-  include FindGeoTIFF
   find_package(GeoTIFF REQUIRED)
   add_library(_GeoTIFF INTERFACE)
   target_link_libraries(_GeoTIFF INTERFACE ${GEOTIFF_LIBRARIES})
