@@ -16,8 +16,8 @@ modules:
     - name: proj-6
       sources:
           - type: archive
-            url: https://download.osgeo.org/proj/proj-9.8.1.tar.gz
-            sha256: af5b731c145c1d13c4e3b4eeb7d167e94e845e440f71e3496b4ed8dae0291960 
+            url: https://download.osgeo.org/proj/proj-8.2.1.tar.gz
+            sha256: 69d881cf6e883623bd18e2a6e02ac34ef27db1a9ee68b09961d13703c0862002 
       config-opts:
           - --prefix=/app/extensions/photolayer
     - name: libgeotiff
