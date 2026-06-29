@@ -13,7 +13,7 @@ finish-args:
     - --device=all
 
 modules:
-    - name: proj-6
+    - name: proj-8
       sources:
           - type: archive
             url: https://download.osgeo.org/proj/proj-8.2.1.tar.gz
