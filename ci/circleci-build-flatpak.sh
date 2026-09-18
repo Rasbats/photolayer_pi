@@ -39,6 +39,9 @@ if [ -f ~/.config/local-build.rc ]; then source ~/.config/local-build.rc; fi
 if [ -d /ci-source ]; then cd /ci-source; fi
 
 git config --global protocol.file.allow always
+# Ensure all git objects are locally present; flatpak-builder clones this repo
+# via file:// and fails when the CI checkout is shallow or a partial clone.
+git fetch --unshallow 2>/dev/null || true
 git submodule update --init opencpn-libs
 
 # Set up build directory and a visible link in /
