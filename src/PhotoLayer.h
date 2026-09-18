@@ -22,6 +22,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
+ *
+ * CHANGES IN THIS REVISION (lat/lon + Mercator GeoTIFF support):
+ *  - ReadHeader() now takes the filename (needed for the .tfw fallback) and
+ *    records the file's GTIFDefn::Model (Geographic / Projected) in
+ *    m_ModelType, so LoadCoordinatesFromTIF() can pick the right
+ *    PhotoLayerImageCoordinates::mapping.
+ *  - Added ReadWorldFile() - a fallback that reads georeferencing from a
+ *    sidecar .tfw/.tifw/.wld file when the embedded GeoTIFF tags are
+ *    absent or degenerate (seen with some SASPlanet exports).
+ *  - GTIFReportACorner() now takes an explicit output index instead of a
+ *    shared running counter (cornerNum), removing an index-corruption bug
+ *    when a corner conversion failed partway through. cornerNum member
+ *    removed as it is no longer needed.
+ *
+ ***************************************************************************
  */
 
 #include <vector>
@@ -45,6 +60,8 @@
 
 
 #include <wx/dynarray.h>
+#include <wx/textfile.h>
+#include <wx/filename.h>
 #include <ctype.h>
 #include <string>
 #include <algorithm>
@@ -86,7 +103,7 @@ public:
     void OnAbout( wxCommandEvent& event );
 
     bool Show( bool show = true );
-	bool ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff);
+	bool ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff, wxString filename);
     void OpenImage(wxString filename, wxString station=_T(""), wxString area=_T(""), wxString contents=_T(""));
     void Goto(int selection);
 
@@ -109,7 +126,12 @@ public:
 	int m_TileLength = 0;
 	int m_TileWidth = 0;
 	int m_Width= 0;
-    
+
+	/* GTIFDefn::Model (ModelTypeGeographic / ModelTypeProjected / -1 unknown)
+	   of the file most recently read by ReadHeader(). Used by
+	   LoadCoordinatesFromTIF() to choose PLATECARREE vs MERCATOR mapping. */
+	int m_ModelType = -1;
+
 
 
 protected:
@@ -121,13 +143,17 @@ private:
 	void SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, wxString filename);
 	int GTIFReportACorner(GTIF *gtif, GTIFDefn *defn, 
 		const char * corner_name,
-		double x, double y, int inv_flag, int dec_flag);
+		double x, double y, int inv_flag, int dec_flag, int index);
 	
 	void GTIFPrintCorners(GTIF *gtif, GTIFDefn *defn, 
 		int xsize, int ysize, int inv_flag, int dec_flag);
-	
-	int cornerNum;
+
+	/* Fallback georeferencing reader: parses a .tfw/.tifw/.wld sidecar file
+	   next to 'filename' when the embedded GeoTIFF tags are missing or
+	   all-zero. Returns false if no usable world file is found. */
+	bool ReadWorldFile(wxString filename, double &A, double &Bp, double &Cp,
+	                    double &D, double &E, double &F);
+
 	int imageWidthX, imageHeightY;
 	
 };
-

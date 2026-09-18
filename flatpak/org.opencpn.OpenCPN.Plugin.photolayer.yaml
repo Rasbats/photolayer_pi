@@ -13,18 +13,18 @@ finish-args:
     - --device=all
 
 modules:
-    - name: proj-6
+    - name: proj-8
       sources:
           - type: archive
-            url: https://download.osgeo.org/proj/proj-6.3.2.tar.gz
-            sha256: cb776a70f40c35579ae4ba04fb4a388c1d1ce025a1df6171350dc19f25b80311
+            url: https://download.osgeo.org/proj/proj-8.2.1.tar.gz
+            sha256: 76ed3d0c3a348a6693dfae535e5658bbfd47f71cb7ff7eb96d9f12f7e068b1cf
       config-opts:
           - --prefix=/app/extensions/photolayer
     - name: libgeotiff
       sources:
           - type: archive
-            url: https://github.com/OSGeo/libgeotiff/releases/download/1.6.0/libgeotiff-1.6.0.tar.gz
-            sha256: 9311017e5284cffb86f2c7b7a9df1fb5ebcdc61c30468fb2e6bca36e4272ebca
+            url: https://github.com/OSGeo/libgeotiff/releases/download/1.7.4/libgeotiff-1.7.4.tar.gz
+            sha256: c598d04fdf2ba25c4352844dafa81dde3f7fd968daa7ad131228cd91e9d3dc47
             subdir: libgeotiff
       config-opts:
           - --with-proj=/app/extensions/photolayer
@@ -44,7 +44,7 @@ modules:
       sources:
           - type: git
             url: ..
-            branch: master
+            branch: flatpak-work
 # diff --git a/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml b/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml
 # index d36ebc8..99ff732 100644
 # --- a/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml

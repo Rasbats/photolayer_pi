@@ -22,6 +22,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
+ *
+ * CHANGES IN THIS REVISION:
+ *  - Added PhotoLayerImageCoordinates::PLATECARREE support to MapName(),
+ *    GetMapType(), InputToMercator() and MercatorToInput(). This models a
+ *    plain geographic (lat/lon) GeoTIFF, where source pixel rows are
+ *    linear in latitude degrees between m_Coords->lat1 (row 0) and
+ *    m_Coords->lat2 (row = source image height). It converts to/from
+ *    Mercator Y using the standard log(tan(pi/4 + lat/2)) formula, scaled
+ *    so that y=0 at lat1 and y=source-height at lat2 - independent of the
+ *    shared POLAR/CONIC/FIXED_FLAT hemisphere-spanning formula below it,
+ *    which assumes a full pole-to-equator range and produces a
+ *    vanishingly small (rounds to 0) result for a small-extent plate
+ *    carree image if reused as-is.
+ *  - Removed a duplicated, unguarded copy of the "if not mercator" Y
+ *    conversion block in InputToMercator() that was overwriting
+ *    PLATECARREE's correctly-computed y with 0 on every call (pp was never
+ *    set for PLATECARREE, so sin(0 * pi/2) => y = 0 unconditionally).
+ *  - MakeMappedImage(): the vertical extent (mh) calculation assumed a
+ *    specific corner is always the "north" extreme and another always the
+ *    "south" extreme (true for the pole-anchored POLAR/CONIC case this was
+ *    written for). For a north-up PLATECARREE image this assumption is
+ *    inverted, which could produce a negative (rounding to 0) mh. Replaced
+ *    with a genuine min/max over all six computed corner Y values.
+ *  - MakeMappedImage() now updates m_Coords->p1/p2 to the actual output
+ *    (mapped) image dimensions once they're known. lat()/lon() and overlay
+ *    placement assume p1/p2 describe m_mappedimg's own pixel corners; for
+ *    any mapping that takes the "slow" remap path (anything other than
+ *    the pure-copy MERCATOR fast path) the output size generally differs
+ *    from the source image's own dimensions, and leaving p1/p2 at the
+ *    source size caused Goto()/lat()/lon() to compute against the wrong
+ *    pixel range.
+ *
+ ***************************************************************************
  */
 
 #include <wx/wx.h>
@@ -85,10 +118,11 @@ static GLboolean QueryExtension( const char *extName )
 wxString PhotoLayerImageCoordinates::MapName(MapType type)
 {
     switch(type) {
-    case MERCATOR:   return _T("Mercator");
-    case POLAR:      return _T("Polar");
-    case CONIC:      return _T("Conic");
-    case FIXED_FLAT: return _T("FixedFlat");
+    case MERCATOR:    return _T("Mercator");
+    case POLAR:       return _T("Polar");
+    case CONIC:       return _T("Conic");
+    case FIXED_FLAT:  return _T("FixedFlat");
+    case PLATECARREE: return _T("PlateCarree");
     default: break;
     }
     return _T("");
@@ -288,6 +322,30 @@ void PhotoLayerImage::InputToMercator(double px, double py, double &mx, double &
     /* map coordinates */
     double theta, pp = 0, x = 0, y = 0;
     switch(m_Coords->mapping) {
+    case PhotoLayerImageCoordinates::PLATECARREE:
+    {
+        /* Source pixel rows are linear in latitude degrees between
+           lat1 (row 0) and lat2 (row = source image height). Convert
+           directly to Mercator Y using the standard formula, scaled so
+           y=0 at lat1 and y=source-height at lat2. This is independent
+           of the shared hemisphere-spanning "pp" formula below, which
+           this case deliberately bypasses (see the guard on that block
+           further down). */
+        double t = dy / (double)m_phasedimg.GetHeight();
+        double lat = m_Coords->lat1 + t * (m_Coords->lat2 - m_Coords->lat1);
+
+        double lat_rad  = lat            * M_PI / 180.0;
+        double lat1_rad = m_Coords->lat1 * M_PI / 180.0;
+        double lat2_rad = m_Coords->lat2 * M_PI / 180.0;
+
+        double merc  = log(tan(M_PI/4 + lat_rad /2));
+        double merc1 = log(tan(M_PI/4 + lat1_rad/2));
+        double merc2 = log(tan(M_PI/4 + lat2_rad/2));
+        double diff  = merc2 - merc1;
+
+        x = dx;
+        y = (diff != 0) ? (merc - merc1) * (m_phasedimg.GetHeight() / diff) : 0;
+    } break;
     case PhotoLayerImageCoordinates::MERCATOR:
         x = dx;
         y = dy;
@@ -312,8 +370,10 @@ void PhotoLayerImage::InputToMercator(double px, double py, double &mx, double &
     default: break;
     }
 
-    /* if not mercator, it is fixed and needs conversion here */
-    if(m_Coords->mapping != PhotoLayerImageCoordinates::MERCATOR) {
+    /* if not mercator (and not platecarree, which computes its own y
+       above), it is fixed and needs conversion here */
+    if (m_Coords->mapping != PhotoLayerImageCoordinates::MERCATOR &&
+        m_Coords->mapping != PhotoLayerImageCoordinates::PLATECARREE) {
         double s = sin(pp * (M_PI/2));
         y = .5 * log((1 + s) / (1 - s));
         y *= m_phasedimg.GetHeight();
@@ -341,9 +401,11 @@ void PhotoLayerImage::MercatorToInput(double mx, double my, double &px, double &
     x /= m_Coords->mappingmultiplier;
     y /= m_Coords->mappingmultiplier/m_Coords->mappingratio;
 
-    /* if not mercator, it is fixed and needs conversion here */
+    /* if not mercator (and not platecarree, which computes its own inverse
+       below), it is fixed and needs conversion here */
     double pp;
-    if(m_Coords->mapping != PhotoLayerImageCoordinates::MERCATOR) {
+    if (m_Coords->mapping != PhotoLayerImageCoordinates::MERCATOR &&
+        m_Coords->mapping != PhotoLayerImageCoordinates::PLATECARREE) {
         y /= m_phasedimg.GetHeight();
         pp = 4/M_PI*atan(exp(y)) - 1;
     }
@@ -351,6 +413,20 @@ void PhotoLayerImage::MercatorToInput(double mx, double my, double &px, double &
     /* unmap coordinates */
     double dx = 0, dy = 0;
     switch(m_Coords->mapping) {
+    case PhotoLayerImageCoordinates::PLATECARREE:
+    {
+        double lat1_rad = m_Coords->lat1 * M_PI / 180.0;
+        double lat2_rad = m_Coords->lat2 * M_PI / 180.0;
+        double merc1 = log(tan(M_PI/4 + lat1_rad/2));
+        double merc2 = log(tan(M_PI/4 + lat2_rad/2));
+        double diff  = merc2 - merc1;
+
+        double merc = (diff != 0) ? merc1 + y * (diff / m_phasedimg.GetHeight()) : merc1;
+        double lat  = (2.0 * atan(exp(merc)) - M_PI/2.0) * 180.0 / M_PI;
+
+        dx = x;
+        dy = (lat - m_Coords->lat1) / (m_Coords->lat2 - m_Coords->lat1) * m_phasedimg.GetHeight();
+    } break;
     case PhotoLayerImageCoordinates::MERCATOR:
         dx = x;
         dy = y;
@@ -418,18 +494,39 @@ bool PhotoLayerImage::MakeMappedImage(wxWindow *parent, bool paramsonly)
     InputToMercator(m_Coords->inputpole.x, 0, p5x, p5y);
     InputToMercator(m_Coords->inputpole.x, h, p6x, p6y);
 
-    minp = wxMin(p1y, p2y);
-    minp = wxMin(minp, p5y);
+    /* FIX: the original code assumed a fixed pairing - min(p1y,p2y,p5y) is
+       always "north" and max(p3y,p4y,p6y) is always "south" - which holds
+       for the pole-anchored POLAR/CONIC geometry this was written for, but
+       is not guaranteed for a north-up PLATECARREE image (where row 0's
+       Mercator Y can be *larger* than row h's, the opposite of what this
+       pairing assumes), which produced a negative (rounding to 0) mh.
+       Take a genuine min/max over all six computed corner Y values
+       instead - correct for both cases. */
+    double ally[6] = { p1y, p2y, p3y, p4y, p5y, p6y };
+    double minp_y = ally[0], maxp_y = ally[0];
+    for (int i = 1; i < 6; i++) {
+        minp_y = wxMin(minp_y, ally[i]);
+        maxp_y = wxMax(maxp_y, ally[i]);
+    }
+    mercatoroffset.y = -minp_y;
 
-    mercatoroffset.y = -minp;
-
-    maxp = wxMax(p3y, p4y);
-    maxp = wxMax(maxp, p6y);
-
-    if(isnan(minp) || isnan(maxp))
+    if(isnan(minp_y) || isnan(maxp_y))
         return false;
 
-    int mh = maxp - minp;
+    int mh = maxp_y - minp_y;
+
+    /* FIX: p1/p2 must describe the mapped (output) image's own pixel
+       corners, since lat()/lon() and overlay rendering index into
+       m_mappedimg pixel space, not the source image's. This matters
+       whenever remapping actually changes the pixel dimensions (any
+       mapping other than the pure-copy MERCATOR fast path below), which
+       previously left p1/p2 pointing at the *source* dimensions,
+       corrupting Goto()/lat()/lon() for PLATECARREE (and, had it ever been
+       exercised at a size other than the source's, POLAR/CONIC/FIXED_FLAT
+       too). For the MERCATOR fast path mw/mh already equal the source
+       dimensions, so this is a no-op there. */
+    m_Coords->p1 = wxPoint(0, 0);
+    m_Coords->p2 = wxPoint(mw, mh);
 
     /* only computing parameters, not the actual mapping */
     if(paramsonly)
