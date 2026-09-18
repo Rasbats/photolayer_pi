@@ -18,9 +18,6 @@ modules:
           - type: archive
             url: https://download.osgeo.org/proj/proj-8.2.1.tar.gz
             sha256: 76ed3d0c3a348a6693dfae535e5658bbfd47f71cb7ff7eb96d9f12f7e068b1cf
-      build-commands:
-          - sed -i '/^#pragma once/a #include <cstdint>' src/proj_json_streaming_writer.hpp
-          - make
       config-opts:
           - --prefix=/app/extensions/photolayer
     - name: libgeotiff
