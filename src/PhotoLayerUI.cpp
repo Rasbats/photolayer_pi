@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 26 2018)
+// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -37,25 +37,31 @@ PhotoLayerBase::PhotoLayerBase( wxWindow* parent, wxWindowID id, const wxString&
 
 	sbFax->Add( fgSizer7, 1, wxEXPAND, 5 );
 
-
-	fgSizer8->Add( sbFax, 1, wxEXPAND, 0 );
-
 	wxStaticBoxSizer* sbSizer4;
-	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Transparency") ), wxVERTICAL );
+	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( sbFax->GetStaticBox(), wxID_ANY, _("Transparency") ), wxVERTICAL );
 
 	m_sTransparency = new wxSlider( sbSizer4->GetStaticBox(), wxID_ANY, 50, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
 	m_sTransparency->SetBackgroundColour( wxColour( 128, 255, 255 ) );
 
 	sbSizer4->Add( m_sTransparency, 0, wxEXPAND, 5 );
 
-	m_sWhiteTransparency = new wxSlider( sbSizer4->GetStaticBox(), wxID_ANY, 150, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+
+	sbFax->Add( sbSizer4, 0, wxALL|wxEXPAND, 5 );
+
+	wxStaticBoxSizer* sbSizer41;
+	sbSizer41 = new wxStaticBoxSizer( new wxStaticBox( sbFax->GetStaticBox(), wxID_ANY, _("Brightness") ), wxVERTICAL );
+
+	m_sWhiteTransparency = new wxSlider( sbSizer41->GetStaticBox(), wxID_ANY, 150, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
 	m_sWhiteTransparency->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
 	m_sWhiteTransparency->SetBackgroundColour( wxColour( 128, 255, 255 ) );
 
-	sbSizer4->Add( m_sWhiteTransparency, 0, wxEXPAND, 5 );
+	sbSizer41->Add( m_sWhiteTransparency, 0, wxEXPAND, 5 );
 
 
-	fgSizer8->Add( sbSizer4, 1, wxALL|wxEXPAND, 5 );
+	sbFax->Add( sbSizer41, 0, wxEXPAND, 5 );
+
+
+	fgSizer8->Add( sbFax, 1, wxEXPAND, 0 );
 
 	wxFlexGridSizer* fgSizer24;
 	fgSizer24 = new wxFlexGridSizer( 0, 2, 0, 0 );

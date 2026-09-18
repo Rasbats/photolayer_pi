@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 26 2018)
+// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -17,8 +17,8 @@
 #include <wx/colour.h>
 #include <wx/settings.h>
 #include <wx/sizer.h>
-#include <wx/statbox.h>
 #include <wx/slider.h>
+#include <wx/statbox.h>
 #include <wx/checkbox.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
@@ -33,7 +33,6 @@
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class PhotoLayerBase
@@ -53,7 +52,7 @@ class PhotoLayerBase : public wxFrame
 		wxMenuItem* m_mDelete;
 		wxMenu* m_menu3;
 
-		// Virtual event handlers, overide them in your derived class
+		// Virtual event handlers, override them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnFaxes( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnEdit( wxCommandEvent& event ) { event.Skip(); }
@@ -105,6 +104,7 @@ class PhotoLayerPrefsDialog : public wxDialog
 		wxTextCtrl* m_tExportSoundingDatum;
 
 		PhotoLayerPrefsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("PhotoLayer Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE );
+
 		~PhotoLayerPrefsDialog();
 
 };
@@ -123,7 +123,7 @@ class AboutDialogBase : public wxDialog
 		wxButton* m_bAboutAuthor;
 		wxButton* m_bClose;
 
-		// Virtual event handlers, overide them in your derived class
+		// Virtual event handlers, override them in your derived class
 		virtual void OnAboutAuthor( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnClose( wxCommandEvent& event ) { event.Skip(); }
 
@@ -131,6 +131,7 @@ class AboutDialogBase : public wxDialog
 	public:
 
 		AboutDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About PhotoLayer"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+
 		~AboutDialogBase();
 
 };
