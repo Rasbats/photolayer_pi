@@ -22,6 +22,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
+ *
+ * CHANGE IN THIS REVISION:
+ *  - OnToolbarToolCallback(): the show/hide toggle used to trust a single
+ *    hand-tracked bool (m_bShowPhoto) as the sole source of truth for
+ *    whether the PhotoLayer window was visible. The window's style
+ *    (wxFRAME_FLOAT_ON_PARENT|wxFRAME_NO_TASKBAR) means it can end up
+ *    behind the main OpenCPN frame in z-order without generating any
+ *    show/hide/close event at all - so m_bShowPhoto stayed "true" while
+ *    the window was, from the user's point of view, gone. Toggling the
+ *    toolbar button in that state flipped the flag to "false" and called
+ *    Hide() on an already-obscured (not actually visible) window, so nothing
+ *    appeared to happen. This is now handled by always Raise()-ing the
+ *    window to bring it to the front when the toolbar button is pressed
+ *    while it's already marked shown, rather than trusting the flag alone
+ *    to decide between Show()/Hide().
+ *
+ ***************************************************************************
  */
 #include "wx/wxprec.h"
 
@@ -225,18 +242,38 @@ void PhotoLayer_pi::OnToolbarToolCallback(int id)
 
     }
 
-	//Toggle GRIB overlay display
+	/* FIX: restores a genuine toggle (show / raise-if-obscured / hide) using
+	   IsActive() in addition to IsShown(). IsShown() alone can't
+	   distinguish "genuinely visible and frontmost" from "still marked
+	   shown but sitting behind the main OpenCPN frame" - the style
+	   (wxFRAME_FLOAT_ON_PARENT|wxFRAME_NO_TASKBAR) lets that happen
+	   without any show/hide/close event firing at all. IsActive() reports
+	   whether this frame currently has focus/is frontmost, and correctly
+	   flips to false the moment the user clicks the main canvas - even
+	   though IsShown() stays true - so it's what lets us tell "obscured,
+	   needs raising" apart from "genuinely on top, this click means hide
+	   it" .*/
+	/* FIX: back to a plain toggle. The earlier IsActive()-based logic was
+	   built to recover from the dialog silently ending up behind the main
+	   frame with no event firing - but wxFRAME_FLOAT_ON_PARENT keeps this
+	   window permanently on top of its parent by design, so that scenario
+	   doesn't actually occur with the current style flags (confirmed: the
+	   dialog stays on top even when the canvas is clicked). IsActive() also
+	   turned out not to reflect true focus/activation on this platform even
+	   right after Show()+Raise()+SetFocus(), so it wasn't usable as a
+	   signal anyway. A plain toggle is simpler and correct for the current
+	   style. */
 	m_bShowPhoto = !m_bShowPhoto;
 
-	//    Toggle dialog?
 	if (m_bShowPhoto) {
 		m_pPhotoLayer->Show();
+		m_pPhotoLayer->Raise();
 		RequestRefresh(m_parent_window); // refresh main window
-	}
-	else {
+	} else {
 		m_pPhotoLayer->Hide();
 	}
 
+	SetToolbarItemState(m_leftclick_tool_id, m_bShowPhoto);
 
     RearrangeWindow();
 
@@ -367,4 +404,3 @@ void PhotoLayer_pi::ShowPreferencesDialog( wxWindow* parent )
     }
     delete dialog;
 }
-

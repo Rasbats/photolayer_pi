@@ -22,6 +22,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
+ *
+ * CHANGES IN THIS REVISION - see PhotoLayer.h for a summary. Search for
+ * "FIX:" comments below for each individual change and why it was made.
+ *
+ ***************************************************************************
  */
 
 #include <list>
@@ -78,71 +83,115 @@ static const char *photolayer_xpm[] = {
 /*
 * Report the file(s) corner coordinates in projected coordinates, and
 * if possible lat/long.
+*
+* FIX: this function now:
+*   1. Accepts an explicit 'index' into m_geoPolygon instead of relying on
+*      a shared, externally-incremented counter (cornerNum). The old
+*      counter only advanced correctly when every single corner succeeded;
+*      a single failed corner shifted every later write by one slot and
+*      silently corrupted the array. Fixed indices remove that failure
+*      mode entirely.
+*   2. Handles ModelTypeProjected as well as ModelTypeGeographic. The
+*      original code returned FALSE immediately for any projected CRS
+*      (e.g. Web Mercator, World Mercator), meaning corner extraction
+*      always failed for Mercator-projected GeoTIFFs.
+*   3. Converts projected coordinates to lon/lat without depending on
+*      GTIFProj4ToLatLong() (which needs PROJ.4 linked into libgeotiff
+*      plus populated EPSG CSV tables - neither of which can be assumed
+*      present). Instead it reads the false easting/northing and central
+*      meridian directly from the file's own GeoKeys and applies a closed
+*      form spherical (EPSG:3857/3785) or ellipsoidal (e.g. EPSG:3395)
+*      Mercator inverse, falling back to hardcoded WGS84 ellipsoid
+*      constants when the file's SemiMajor/SemiMinor come back as 0
+*      (again, a missing-CSV symptom).
 */
 
 int PhotoLayer::GTIFReportACorner(GTIF *gtif, GTIFDefn *defn,
 	const char * corner_name,
-	double x, double y, int inv_flag, int dec_flag)
+	double x, double y, int inv_flag, int dec_flag, int index)
 
 {
-	double	x_saved, y_saved;
-
-	/* Try to transform the coordinate into PCS space */
 	if (!GTIFImageToPCS(gtif, &x, &y))
 		return FALSE;
 
-	x_saved = x;
-	y_saved = y;
-
 	if (defn->Model == ModelTypeGeographic)
 	{
-		if (dec_flag)
-		{
-			m_geoPolygon[cornerNum] = x;
-			cornerNum++;
-			m_geoPolygon[cornerNum] = y;
+		/* x,y are already lon,lat degrees - nothing to do */
+	}
+	else if (defn->Model == ModelTypeProjected)
+	{
+		/* WGS84 ellipsoid constants, used whenever the file's own ellipsoid
+		   parameters are unavailable (SemiMajor/SemiMinor == 0), which
+		   happens when libgeotiff's EPSG CSV tables aren't present. */
+		const double WGS84_A = 6378137.0;
+		const double WGS84_B = 6356752.314245179;
 
-			return true;
+		double falseEasting = 0, falseNorthing = 0, lon0 = 0;
+		GTIFKeyGet(gtif, ProjFalseEastingGeoKey, &falseEasting, 0, 1);
+		GTIFKeyGet(gtif, ProjFalseNorthingGeoKey, &falseNorthing, 0, 1);
+		GTIFKeyGet(gtif, ProjNatOriginLongGeoKey, &lon0, 0, 1);
 
-		}
-		else
-		{
-			return false;
-		}
+		double dx = x - falseEasting;
+		double dy = y - falseNorthing;
+
+		double a = (defn->SemiMajor > 0) ? defn->SemiMajor : WGS84_A;
+		double b = (defn->SemiMinor > 0) ? defn->SemiMinor : WGS84_B;
+
+		double e2 = 0.0;
+		if (defn->PCS != 3857 && defn->PCS != 3785)   /* those two are spherical by spec */
+			e2 = 1.0 - (b*b)/(a*a);
+		double e = sqrt(e2);
+
+		double lon = lon0 + (dx / a) * (180.0 / M_PI);
+
+		double t = exp(-dy / a);
+		double phi = M_PI/2.0 - 2.0*atan(t);
+		for (int i = 0; i < 6; i++)   /* converges to well under 1e-9 rad in a handful of iterations */
+			phi = M_PI/2.0 - 2.0*atan(t * pow((1 - e*sin(phi))/(1 + e*sin(phi)), e/2.0));
+
+		x = lon;
+		y = phi * (180.0 / M_PI);
 	}
 	else
 	{
-		return false;
+		return FALSE;   /* e.g. Geocentric - unsupported */
 	}
 
-	return false;
+	if (!dec_flag)
+		return FALSE;
+
+	m_geoPolygon[index]     = x;
+	m_geoPolygon[index + 1] = y;
+	return true;
 }
 
 void PhotoLayer::GTIFPrintCorners(GTIF *gtif, GTIFDefn *defn,
 	int xsize, int ysize, int inv_flag, int dec_flag)
 {
-	printf("\nCorner Coordinates:\n");
-	cornerNum = 0;
+	/* FIX: clear the array first so a failed corner never leaves data from
+	   a previously opened file sitting in these slots. */
+	memset(m_geoPolygon, 0, sizeof(m_geoPolygon));
 
-	if (!GTIFReportACorner(gtif, defn,
-		"Upper Left", 0.0, 0.0, inv_flag, dec_flag))
-	{
-		wxMessageBox(_(" ... unable to transform points between pixel/line and PCS space\n"));
-		return;
+	struct { const char *name; double x, y; int idx; } corners[5] = {
+		{ "Upper Left",  0.0,               0.0,               0 },
+		{ "Lower Left",  0.0,               (double)ysize,     2 },
+		{ "Upper Right", (double)xsize,     0.0,               4 },
+		{ "Lower Right", (double)xsize,     (double)ysize,     6 },
+		{ "Center",      xsize / 2.0,       ysize / 2.0,       8 },
+	};
+
+	for (int i = 0; i < 5; i++) {
+		if (!GTIFReportACorner(gtif, defn, corners[i].name,
+		                        corners[i].x, corners[i].y, inv_flag, dec_flag, corners[i].idx)) {
+			wxLogMessage(wxString::Format("GTIFPrintCorners: corner '%s' failed", corners[i].name));
+			if (i == 0) {
+				wxMessageBox(_(" ... unable to transform points between pixel/line and PCS space\n"));
+				return;
+			}
+			/* corner slot stays zeroed (from the memset above) rather than
+			   corrupting a later index */
+		}
 	}
-	cornerNum++;
-	GTIFReportACorner(gtif, defn,  "Lower Left", 0.0, ysize,
-		inv_flag, dec_flag);
-	cornerNum++;
-	GTIFReportACorner(gtif, defn,  "Upper Right", xsize, 0.0,
-		inv_flag, dec_flag);
-	cornerNum++;
-	GTIFReportACorner(gtif, defn,  "Lower Right", xsize, ysize,
-		inv_flag, dec_flag);
-	cornerNum++;
-	GTIFReportACorner(gtif, defn,  "Center", xsize / 2.0, ysize / 2.0,
-		inv_flag, dec_flag);
-	cornerNum++;
 }
 
 
@@ -173,6 +222,45 @@ int AttributeInt(TiXmlElement *e, const char *name, int def)
 
 #define FAIL(X) do { error = X; goto failed; } while(0)
 
+/* FIX: reads a .tfw/.tifw/.wld sidecar world file when the embedded GeoTIFF
+   tags don't provide usable georeferencing (missing, or present but
+   all-zero - seen with some SASPlanet exports). World-file line order is
+   A, D, B, E, C, F (pixel-size-x, rotation, rotation, pixel-size-y,
+   origin-x, origin-y). Returns false if no sidecar file is found. */
+bool PhotoLayer::ReadWorldFile(wxString filename, double &A, double &Bp, double &Cp,
+                                double &D, double &E, double &F)
+{
+	wxFileName fn(filename);
+	wxString candidates[3] = {
+		fn.GetPathWithSep() + fn.GetName() + _T(".tfw"),
+		fn.GetPathWithSep() + fn.GetName() + _T(".tifw"),
+		fn.GetPathWithSep() + fn.GetName() + _T(".wld")
+	};
+
+	for (int i = 0; i < 3; i++) {
+		if (!wxFileExists(candidates[i]))
+			continue;
+
+		wxTextFile tf(candidates[i]);
+		if (!tf.Open())
+			continue;
+
+		if (tf.GetLineCount() < 6) {
+			tf.Close();
+			continue;
+		}
+
+		double vals[6];
+		for (int j = 0; j < 6; j++)
+			vals[j] = wxAtof(tf.GetLine(j));
+
+		A = vals[0]; D = vals[1]; Bp = vals[2]; E = vals[3]; Cp = vals[4]; F = vals[5];
+		tf.Close();
+		return true;
+	}
+	return false;
+}
+
 void PhotoLayer::LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, wxString filename)
 {
 	wxString name = filename;
@@ -184,8 +272,8 @@ void PhotoLayer::LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, w
 	coord->lat1 = m_geoPolygon[1];
 	coord->lon1 = m_geoPolygon[0];
 
-	coord->p2.x = imageWidthX;  //3265
-	coord->p2.y = imageHeightY;  //3776
+	coord->p2.x = imageWidthX;
+	coord->p2.y = imageHeightY;
 
 	coord->lat2 = m_geoPolygon[7];
 	coord->lon2 = m_geoPolygon[6];
@@ -194,7 +282,16 @@ void PhotoLayer::LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, w
 	coord->CenterLon = m_geoPolygon[8];
 
 	coord->rotation = PhotoLayerImageCoordinates::NONE;
-	coord->mapping = PhotoLayerImageCoordinates::MERCATOR;
+
+	/* FIX: pick the mapping type based on the file's own CRS model rather
+	   than always assuming MERCATOR. A plain geographic (lat/lon) GeoTIFF
+	   has pixel rows linear in *latitude degrees*, which PLATECARREE
+	   models correctly; a projected (e.g. Web/World Mercator) GeoTIFF's
+	   pixel rows are already linear in Mercator Y, which is what MERCATOR
+	   assumes. Getting this wrong silently distorts the image vertically. */
+	coord->mapping = (m_ModelType == ModelTypeGeographic)
+		? PhotoLayerImageCoordinates::PLATECARREE
+		: PhotoLayerImageCoordinates::MERCATOR;
 
 	coord->inputtrueratio = 1.0;
 	coord->mappingmultiplier = 1.0;
@@ -334,12 +431,19 @@ void PhotoLayer::ShowSavedImages(){
 	for (unsigned int i = 0; i < m_BuiltinCoords.GetCount(); i++){
 		name = m_BuiltinCoords[i]->name;
 
+		/* FIX: skip (rather than attempt to load and pop a modal error
+		   dialog for) any entry whose file no longer exists on disk. */
+		if (!wxFileExists(name)) {
+			wxLogMessage("ShowSavedImages: skipping missing file " + name);
+			continue;
+		}
+
 		if (!wimg.LoadFile(name)) {
 			{
 				wxMessageDialog mdlg(this, _("Failed to load input file: ") + name,
 					_("PhotoLayer"), wxOK | wxICON_ERROR);
 				mdlg.ShowModal();
-				return;
+				continue;   /* FIX: one bad file shouldn't abort loading the rest */
 			}
 		}
 		PhotoLayerImage *img = new PhotoLayerImage(wimg, transparency, whitetransparency, invert);
@@ -350,8 +454,18 @@ void PhotoLayer::ShowSavedImages(){
 			m_Faxes.push_back(img);
 
 		}
+		else {
+			delete img;   /* FIX: don't leak a PhotoLayerImage whose mapping failed */
+		}
 	}
-	m_lFaxes->SetSelection(0);
+
+	/* FIX: SetSelection()/Select() on an empty (or, for a multi-select
+	   wxLB_EXTENDED listbox, wrongly-called) listbox is undefined/unsafe on
+	   some platforms. Guard the count, and use Select() rather than
+	   SetSelection() - see the note on Select() below in OpenImage(). */
+	if (m_lFaxes->GetCount() > 0)
+		m_lFaxes->Select(0);
+
 	RequestRefresh(m_parent);
 }
 
@@ -374,28 +488,79 @@ void PhotoLayer::OnFaxes( wxCommandEvent& event )
 }
 
 
-bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff) {
+bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff, wxString filename) {
 
-	int		xsize, ysize;
-	int		inv_flag = 0, dec_flag = 1;
+	/* FIX: xsize/ysize are now initialized, and both TIFFGetField() return
+	   values are checked. Previously these were uninitialized locals, and
+	   TIFFGetField() only writes its output if the tag is present - if
+	   TIFFTAG_IMAGELENGTH failed to read for any reason, ysize was left
+	   holding stack garbage, which propagated into every downstream corner
+	   / mapping calculation as a degenerate value. */
+	int xsize = 0, ysize = 0;
+	int	inv_flag = 0, dec_flag = 1;
 
 	GTIFDefn defn;
 
+	bool gotW = TIFFGetField(m_Tiff, TIFFTAG_IMAGEWIDTH,  &xsize) != 0;
+	bool gotH = TIFFGetField(m_Tiff, TIFFTAG_IMAGELENGTH, &ysize) != 0;
+
+	if (!gotW || !gotH || xsize <= 0 || ysize <= 0) {
+		wxLogMessage(wxString::Format(
+			"ReadHeader: bad image dimensions gotW=%d gotH=%d xsize=%d ysize=%d for %s",
+			gotW, gotH, xsize, ysize, filename));
+		m_ModelType = -1;
+		return false;
+	}
+
+	imageWidthX = xsize;
+	imageHeightY = ysize;
+
+	/* FIX: some GeoTIFFs (seen from SASPlanet) carry embedded
+	   ModelPixelScaleTag/ModelTiepointTag entries that are present but
+	   all-zero, rather than being absent outright. Either case means
+	   GTIFImageToPCS() cannot produce a usable per-pixel transform, so
+	   fall back to a sidecar .tfw/.tifw/.wld world file in both cases. */
+	double scale[3] = {0,0,0}, tie[6] = {0,0,0,0,0,0};
+	uint16_t scaleCount = 0, tieCount = 0;
+	TIFFGetField(m_Tiff, TIFFTAG_GEOPIXELSCALE, &scaleCount, &scale);
+	TIFFGetField(m_Tiff, TIFFTAG_GEOTIEPOINTS, &tieCount, &tie);
+
+	if (scaleCount == 0 || tieCount == 0 || (scale[0] == 0.0 && scale[1] == 0.0)) {
+		double A, Bp, Cp, D, E, F;
+		if (ReadWorldFile(filename, A, Bp, Cp, D, E, F)) {
+			/* No rotation term supported here (B/D assumed 0, i.e. a plain
+			   axis-aligned world file). (Cp,F) is the CENTER of the
+			   top-left pixel, so corners are half a pixel further out. */
+			double lon_ul = Cp - A / 2.0,               lat_ul = F - E / 2.0;
+			double lon_lr = Cp + A * (xsize - 0.5),     lat_lr = F + E * (ysize - 0.5);
+
+			m_geoPolygon[0] = lon_ul; m_geoPolygon[1] = lat_ul;   /* Upper Left  */
+			m_geoPolygon[6] = lon_lr; m_geoPolygon[7] = lat_lr;   /* Lower Right */
+			m_geoPolygon[8] = (lon_ul + lon_lr) / 2.0;            /* Center      */
+			m_geoPolygon[9] = (lat_ul + lat_lr) / 2.0;
+
+			/* World-file georeferencing as used here is always plain
+			   lat/lon degrees. If you need to support a world file whose
+			   units are projected meters, this would need a units check
+			   (e.g. fabs(A) < 1.0 => geographic, else => projected). */
+			m_ModelType = ModelTypeGeographic;
+			return true;
+		}
+		wxLogMessage("ReadHeader: no usable embedded GeoTIFF tags and no world file found for " + filename);
+		m_ModelType = -1;
+		return false;
+	}
+
 	if (GTIFGetDefn(m_gTiff, &defn))
 	{
-		TIFFGetField(m_Tiff, TIFFTAG_IMAGEWIDTH, &xsize);
-		TIFFGetField(m_Tiff, TIFFTAG_IMAGELENGTH, &ysize);
-
-		imageWidthX = xsize;
-	    imageHeightY = ysize;
-
+		m_ModelType = defn.Model;
 		GTIFPrintCorners(m_gTiff, &defn, xsize, ysize, inv_flag, dec_flag);
 		return true;
 	}
 	else {
+		m_ModelType = -1;
 		return false;
 	}
-	return false;
 }
 
 void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, wxString contents)
@@ -408,15 +573,40 @@ void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, w
 	gtif = GTIFNew(tif);
 
 
-	ReadHeader(tif, gtif);
+	ReadHeader(tif, gtif, filename);
 
-
+	/* FIX: gtif was never freed (GTIFFree missing). On some platforms an
+	   unreleased GeoTIFF handle can leave the underlying file effectively
+	   still open, which caused the immediately-following wxImage::LoadFile()
+	   to occasionally fail on the very first open of a file. */
+	GTIFFree(gtif);
 	XTIFFClose(tif);
 
 	int transparency = m_sTransparency->GetValue();
 	int whitetransparency = m_sWhiteTransparency->GetValue();
 	bool invert = m_cInvert->GetValue();
-	//m_BuiltinCoords.Clear();
+
+	/* FIX (was: m_BuiltinCoords.Clear()): that cleared the ENTIRE list on
+	   every open, wiping out every other already-loaded file's coordinate
+	   entry too - so only the most recently opened file ever ended up in
+	   m_BuiltinCoords, and SaveTIFCoordinatesToXml() then wrote out an XML
+	   file containing just that one entry. The actual problem being solved
+	   was narrower: prevent a STALE entry for the SAME filename (e.g. left
+	   over from an earlier, differently-computed open of this exact file)
+	   from shadowing the freshly computed one in the match loop below.
+	   Remove only entries matching this filename - same pattern already
+	   used by UpdateDataSet() - and leave every other file's entry alone. */
+	{
+		PhotoLayerImageCoordinateList kept;
+		for (unsigned int i = 0; i < m_BuiltinCoords.GetCount(); i++) {
+			if (m_BuiltinCoords[i]->name != filename)
+				kept.Append(m_BuiltinCoords[i]);
+			else
+				delete m_BuiltinCoords[i];   /* free the stale entry being replaced */
+		}
+		m_BuiltinCoords = kept;
+	}
+
 	LoadCoordinatesFromTIF(m_BuiltinCoords, filename);
 	SaveTIFCoordinatesToXml(m_BuiltinCoords, _T("PhotoLayerDataSets.xml"));
 
@@ -437,21 +627,45 @@ void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, w
 	PhotoLayerImage *img = new PhotoLayerImage(wimg, transparency, whitetransparency, invert);
 	wxString name = filename;  // _T("TIF");
 
+	/* FIX: MakeMappedImage()'s return value used to be checked only via a
+	   'goto wizarddone' that unconditionally fell through to the same label
+	   whether or not it fired - so a failed mapping (NaN corners, negative
+	   or zero dimensions, oversize image) still resulted in the broken
+	   image being added to m_Faxes/m_lFaxes and then Goto() being called on
+	   its degenerate m_mappedimg. Now a failed mapping is caught, logged,
+	   and the image is discarded instead of being shown. */
+	bool mapped = false;
 	for (unsigned int i = 0; i < m_BuiltinCoords.GetCount(); i++)
 		if (name == m_BuiltinCoords[i]->name) {
 			img->m_Coords = m_BuiltinCoords[i];
 			img->MakePhasedImage();
-			if (img->MakeMappedImage(this))
-				goto wizarddone;
+			if (img->MakeMappedImage(this)) {
+				mapped = true;
+				break;
+			}
 		}
 
-wizarddone:
+	if (!mapped) {
+		wxLogMessage("OpenImage: MakeMappedImage failed for " + filename);
+		delete img;
+		UpdateDataSet(filename);
+		return;
+	}
+
 	name = station.size() && contents.size() ? (station + _T(" - ") + contents) : filename;
 	int selection = m_lFaxes->Append(name);
 	m_Faxes.push_back(img);
 
 	m_lFaxes->DeselectAll();
-	m_lFaxes->SetSelection(selection);
+	/* FIX: was SetSelection(selection). wxListBox::SetSelection() is only
+	   reliable for single-selection listboxes; m_lFaxes is wxLB_EXTENDED
+	   (multi-select), for which wx documents Select() as the correct call.
+	   SetSelection() on a multi-select box could leave IsSelected() out of
+	   sync with the visibly-highlighted row, which fed into RenderOverlay's
+	   IsSelected() check and could prevent the just-opened image from
+	   rendering until the row was clicked manually. */
+	m_lFaxes->Select(selection);
+
 	Goto(selection);
 
 	RequestRefresh(m_parent);
@@ -491,6 +705,12 @@ All files (*.*)|*.*" ), wxFD_OPEN);
         m_PhotoLayer_pi.m_path = openDialog.GetDirectory();
         OpenImage(filename);
     }
+
+    /* FIX: reclaim focus for the main canvas after the modal file dialog
+       closes. Without this, the canvas could be left without proper
+       input focus/activation until the user clicked it directly. */
+    m_PhotoLayer_pi.m_parent_window->SetFocus();
+    RequestRefresh(m_PhotoLayer_pi.m_parent_window);
 }
 
 void PhotoLayer::OnSaveAs( wxCommandEvent& event )
@@ -610,7 +830,10 @@ void PhotoLayer::UpdateDataSet(wxString filename){
 
 	wxString xmlFileName = _T("PhotoLayerDataSets.xml");
 	wxString path = PhotoLayer_pi::StandardPath();
-	wxString datasetsfile = path + xmlFileName;
+	wxString s = wxFileName::GetPathSeparator();
+	wxString datasetsfile = path + s + xmlFileName;   /* FIX: missing path separator meant this built
+	                                                      a filename like "...\datasetsPhotoLayerDataSets.xml",
+	                                                      so wxRemoveFile() below always failed. */
 
 	wxRemoveFile(datasetsfile);
 	SaveTIFCoordinatesToXml(m_BuiltinCoords, xmlFileName);
@@ -688,6 +911,3 @@ void PhotoLayer::UpdateMenuStates()
     m_mDelete->Enable(e);
     EnableDisplayControls(e);
 }
-
-
-

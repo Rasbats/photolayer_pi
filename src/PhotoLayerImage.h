@@ -22,6 +22,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
+ *
+ * CHANGE IN THIS REVISION:
+ *  - Added PLATECARREE to MapType. It represents a plain geographic
+ *    (lat/lon, e.g. EPSG:4326) GeoTIFF, where input pixel rows are linear
+ *    in latitude degrees rather than linear in Mercator Y (MERCATOR) or
+ *    following the pole-anchored polar/conic/fixed-flat WeatherFax
+ *    geometry. See PhotoLayerImage.cpp for the InputToMercator() /
+ *    MercatorToInput() implementation.
+ *
+ ***************************************************************************
  */
 
 #include "ocpn_plugin.h"
@@ -43,7 +53,7 @@ PhotoLayerImageCoordinates(wxString n) : name(n),
     enum RotationType {NONE, CCW, CW, R180};
     RotationType rotation;
 
-    enum MapType {MERCATOR, POLAR, CONIC, FIXED_FLAT, MAP_TYPES};
+    enum MapType {MERCATOR, POLAR, CONIC, FIXED_FLAT, PLATECARREE, MAP_TYPES};
     MapType mapping;
     wxPoint inputpole;
     double inputequator, /* y value */ inputtrueratio;

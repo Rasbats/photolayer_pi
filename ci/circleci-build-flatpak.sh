@@ -87,7 +87,7 @@ flatpak install --user -y --noninteractive \
 
 set -x
 cd $builddir
-
+PAGER=cat
 # Patch the manifest to use correct branch and runtime unconditionally
 manifest=$(ls ../flatpak/org.opencpn.OpenCPN.Plugin*yaml)
 sed -i  '/^runtime-version/s/:.*/:'" ${FLATHUB_BRANCH:-stable}/"  $manifest
