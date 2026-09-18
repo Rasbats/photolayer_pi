@@ -24,6 +24,18 @@ pathman list > nul 2>&1
 if errorlevel 1 set PATH=%PATH%;%HomeDrive%\%HomePath%\.local\bin
 pathman add %HomeDrive%%HomePath%\.local\bin >nul
 
+:: Make sure we use 64-bit python on appveyor
+if not "%APPVEYOR_BUILD_FOLDER%" == "" (
+    rmdir /s /q C:\Python312
+    rmdir /s /q C:\Python313
+    rmdir /s /q C:\Python314
+    pathman add C:\Python314-x64
+    pathman add C:\Python314-x64\Scripts
+    set python="C:\Python314-x64\python"
+) else (
+    set python="python"
+)
+
 :: Install choco cmake and add it's persistent user path element
 ::
 set CMAKE_HOME=C:\Program Files\CMake
@@ -36,18 +48,25 @@ set POEDIT_HOME=C:\Program Files (x86)\Poedit\Gettexttools
 if not exist "%POEDIT_HOME%" (
     choco install --version 2.4.2 --no-progress -y poedit
 )
+
 pathman add "%POEDIT_HOME%\bin" > nul
 
 :: Update required python stuff
 ::
-python --version > nul 2>&1 && python -m ensurepip > nul 2>&1
+%python% --version > nul 2>&1 && %python% -m ensurepip > nul 2>&1
 if errorlevel 1 choco install --no-progress -y python
-python --version
-python -m ensurepip
-python -m pip install --upgrade pip
-python -m pip install -q setuptools wheel
-python -m pip install -q cloudsmith-cli
-python -m pip install -q cryptography
+
+echo "Checking for 64-bit python"
+%python% -c "import sys; print(sys.maxsize > 2**32)"
+
+%python% --version
+%python% -m ensurepip
+@echo on
+%python% -m pip install --upgrade --no-warn-script-location pip
+%python% -m pip install -q --no-warn-script-location setuptools wheel
+%python% -m pip install -q --no-warn-script-location cloudsmith-cli
+%python% -m pip install -q --no-warn-script-location cryptography
+@echo off
 
 :: Install pre-compiled wxWidgets and other DLL; add required paths.
 ::
