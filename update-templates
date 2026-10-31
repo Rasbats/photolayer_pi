@@ -160,6 +160,7 @@ for f in \
     .cmake-format.yaml \
     .gitattributes \
     .gitignore \
+    .pre-commit-config.yaml \
     INSTALL.md \
     plugin.xml.in \
     .travis.yml \
@@ -188,12 +189,12 @@ sed -i 's|leamas/opencpn-libs|opencpn/opencpn-libs|g' \
 
 # Update flatpak runtime version as required:
 $SED_I \
-    -e '/sdk: org.freedesktop.Sdk/s/20.08/22.08/' \
+    -e '/sdk: org.freedesktop.Sdk/s/2[02].08/24.08/' \
     -e '/^runtime-version:/s/:.*/: stable/' \
   flatpak/org.opencpn.OpenCPN.Plugin.*.yaml
 git add flatpak
 git diff-index --quiet --cached HEAD -- || {
-    echo "Updating Updating flatpak runtime version to 22.08"
+    echo "Updating Updating flatpak runtime version to 24.08"
     git commit -m "opencpn-libs: Update to latest version."
 }
 
@@ -278,6 +279,20 @@ if [ -f cmake/TemplateVersion ]; then
         >> $our_manifest
     git rm -f $src_manifest
 fi
+
+git  grep -q "set(MIN_API_VERSION" Plugin.cmake || {
+  sed -i '/PKG_API_LIB/a \
+\
+# Minimum version which should be loaded. Ignored if api < 22. \
+# Allows plugins using functions from 1.22+ API to be loaded by \
+# hosts only supporting 1.21; plugins then needs to check if host \
+# supports 1.22+ before using such functions. \
+# If undefined, plugin will only be loaded by host supporting the \
+# included api. \
+## set(MIN_API_VERSION 1.21) \
+\
+  ' Plugin.cmake
+}
 
 echo "Create or update cmake/TemplateVersion"
 echo "# Created by update-templates" > cmake/TemplateVersion
