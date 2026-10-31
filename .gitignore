@@ -3,6 +3,7 @@ build
 build-*
 !build-conf.rc
 !build-deps
+ide_setup.cmake
 po/*.pot
 .DS_Store
 *humbs.db
@@ -13,4 +14,3 @@ plugins
 *.bak
 buildwin/*.7z
 *.user
-

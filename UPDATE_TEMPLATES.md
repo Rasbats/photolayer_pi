@@ -70,7 +70,7 @@ Parameters:
 
 **-l** lists available tags which can be used as _treeish_
 
-**-T** runs in test mode, lots of output, requires an existing shipdriver 
+**-T** runs in test mode, lots of output, requires an existing shipdriver
 remote and does not self-update.
 
 **-h** prints the complete help message.
@@ -85,7 +85,7 @@ Examples:
 
 ## 3 CMakeLists.txt
 
-As part of the 3.0.0 transition CMakeLists.txt is split into one plugin-specific 
+As part of the 3.0.0 transition CMakeLists.txt is split into one plugin-specific
 file Plugin.cmake and a generic CMakeLists.txt. If the file _Plugin.cmake_
 exists script will thus update _CMakeLists.txt_, otherwise not.
 
@@ -93,7 +93,7 @@ exists script will thus update _CMakeLists.txt_, otherwise not.
 
 The "flatpak manifest" is the yaml file configuring the flatpak build,
 named like flatpak/org.opencpn.OpenCPN.Plugin.\*.yaml.  This might need
-to be updated. If there have been changes to the shipdriver manifest 
+to be updated. If there have been changes to the shipdriver manifest
 since the last release these are added as comments at the end of the
 manifest. Review the file, consider applying corresponding changes to
 the manifest and eventually remove the comment.
@@ -110,7 +110,7 @@ Testing is done using -T which means that many steps otherwise handled
 automagically needs to be done manually. This is a complicated and
 error-prone procedure.
 
-In  shipdriver repo: Commit changes and create a tag with a sd- prefix, 
+In  shipdriver repo: Commit changes and create a tag with a sd- prefix,
 something like:
 
     $ git commit -am "Testing new update-templates"

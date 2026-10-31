@@ -1,5 +1,5 @@
 ---
-version: 2.2
+version: 2.1
 
 debian-steps: &debian-steps
   steps:
@@ -52,20 +52,6 @@ jobs:
       - run: cd build-debian; /bin/bash < upload.sh
       - run: ci/git-push.sh build-debian
 
-  build-bookworm-armhf:
-    machine:
-      image: ubuntu-2204:current
-    resource_class: arm.medium
-    environment:
-      - TARGET_TUPLE: debian-armhf;12;armhf
-      - OCPN_TARGET: bookworm
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-    steps:
-      - checkout
-      - run: ci/circleci-build-debian-armhf.sh
-      - run: cd build-debian; /bin/bash < upload.sh
-      - run: ci/git-push.sh build-debian
-
   build-trixie:
     machine:
       image: ubuntu-2204:current
@@ -94,34 +80,33 @@ jobs:
       - run: cd build-debian; /bin/bash < upload.sh
       - run: ci/git-push.sh build-debian
 
-  build-trixie-armhf:
+  build-forky-amd64:
     machine:
       image: ubuntu-2204:current
-    resource_class: arm.medium
+    resource_class: medium
     environment:
-      - TARGET_TUPLE: debian-armhf;13;armhf
-      - OCPN_TARGET: bookworm
+      - OCPN_TARGET: forky
+      - TARGET_TUPLE: debian-x86_64;14;x86_64
       - CMAKE_BUILD_PARALLEL_LEVEL: 2
     steps:
       - checkout
-      - run: ci/circleci-build-debian-armhf.sh
+      - run: ci/circleci-build-debian-docker.sh
       - run: cd build-debian; /bin/bash < upload.sh
       - run: ci/git-push.sh build-debian
 
-  build-flatpak-arm64:
+  build-forky-arm64:
     machine:
       image: ubuntu-2204:current
     resource_class: arm.medium
     environment:
-      - OCPN_TARGET: flatpak-arm64
+      - OCPN_TARGET: forky
+      - TARGET_TUPLE: debian-arm64;14;arm64
       - CMAKE_BUILD_PARALLEL_LEVEL: 2
-      - BRANCH: 2208
-    parameters:
-      cache-key:
-        type: string
-        # Update the last part, here v2, to invalidate cache
-        default: "fp-arm20-v2"
-    <<: *flatpak-steps
+    steps:
+      - checkout
+      - run: ci/circleci-build-debian-docker.sh
+      - run: cd build-debian; /bin/bash < upload.sh
+      - run: ci/git-push.sh build-debian
 
   build-flatpak-arm64-2408:
     machine:
@@ -153,20 +138,6 @@ jobs:
         default: "fp-arm25-v2"
     <<: *flatpak-steps
 
-  build-flatpak-x86:
-    machine:
-      image: ubuntu-2204:current
-    environment:
-      - OCPN_TARGET: flatpak
-      - CMAKE_BUILD_PARALLEL_LEVEL: 2
-      - BRANCH: 2208
-    parameters:
-      cache-key:
-        type: string
-        # Update the last part, here v2, to invalidate cache
-        default: "fp-x86-20-v2"
-    <<: *flatpak-steps
-
   build-flatpak-x86-2408:
     machine:
       image: ubuntu-2204:current
@@ -192,6 +163,35 @@ jobs:
         type: string
         # Update the last part, here v2, to invalidate cache
         default: "fp-x86-25-v2"
+    <<: *flatpak-steps
+
+  build-flatpak-arm64-2608:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: arm.medium
+    environment:
+      - OCPN_TARGET: flatpak-arm64
+      - CMAKE_BUILD_PARALLEL_LEVEL: 2
+      - BRANCH: 2608
+    parameters:
+      cache-key:
+        type: string
+        # Update the last part, here v1, to invalidate cache
+        default: "fp-arm26-v1"
+    <<: *flatpak-steps
+
+  build-flatpak-x86-2608:
+    machine:
+      image: ubuntu-2404:current
+    environment:
+      - OCPN_TARGET: flatpak
+      - CMAKE_BUILD_PARALLEL_LEVEL: 2
+      - BRANCH: 2608
+    parameters:
+      cache-key:
+        type: string
+        # Update the last part, here v1, to invalidate cache
+        default: "fp-x86-26-v1"
     <<: *flatpak-steps
 
   build-macos-universal:
@@ -221,6 +221,17 @@ jobs:
       - run: cd build-osx; /bin/bash < upload.sh
       - run: ci/git-push.sh  build-osx
 
+  build-android-arm64:
+    docker:
+      - image: cimg/android:2023.08-ndk
+    environment:
+      - OCPN_TARGET: android-aarch64
+      - CMAKE_BUILD_PARALLEL_LEVEL: 2
+    steps:
+      - checkout
+      - run: ci/circleci-build-android.sh
+      - run: ci/maybe-push-upload.sh
+
 std-filters: &std-filters
   filters:
     branches:
@@ -229,14 +240,9 @@ std-filters: &std-filters
         - /tmp-.*/
 
 workflows:
-  version: 2
+  version: 2.1
   build_all:
     jobs:
-      - build-flatpak-arm64:
-          <<: *std-filters
-
-      - build-flatpak-x86:
-          <<: *std-filters
 
       - build-flatpak-arm64-2408:
           <<: *std-filters
@@ -250,13 +256,19 @@ workflows:
       - build-flatpak-x86-2508:
           <<: *std-filters
 
+      - build-flatpak-arm64-2608:
+          <<: *std-filters
+
+      - build-flatpak-x86-2608:
+          <<: *std-filters
+
       - build-macos-universal:
           <<: *std-filters
 
-      - build-bookworm-arm64:
+      - build-android-arm64:
           <<: *std-filters
 
-      - build-bookworm-armhf:
+      - build-bookworm-arm64:
           <<: *std-filters
 
       - build-bookworm:
@@ -268,5 +280,8 @@ workflows:
       - build-trixie-arm64:
           <<: *std-filters
 
-      - build-trixie-armhf:
+      - build-forky-amd64:
+          <<: *std-filters
+
+      - build-forky-arm64:
           <<: *std-filters

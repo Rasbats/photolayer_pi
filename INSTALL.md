@@ -59,7 +59,7 @@ neither required nor convenient and can be excluded. However, doing it
 represents a tested baseline.
 
 Actual builds can (i. e., should) be performed without administrative
-privileges by running 
+privileges by running
 
     > ..\ci\appveyor.bat
 

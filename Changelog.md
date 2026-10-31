@@ -1,3 +1,14 @@
+3.5.1 Oct 21, 2026
+* Remove outdated bullseye and Linux armhf builds
+  https://github.com/OpenCPN/OpenCPN/discussions/4701
+* Add new Flatpak build using runtime 26.08
+* Drop Macos legacy builds, using universal packages only - #645
+* Add CLion support - #634
+* Add support for https://pre-commit.com - #629
+* Add support for dynamic API level - #632
+* Fix long standing flatpak bug causing occasional FTBFS - #519
+* Fix MacOS Universal build problem with newer compiler and system SDK
+* And the usual sleeve of bugfixes and minor enhancements
 
 3.4.6 May 16, 2026
 * Fix update-templates problem in 3.4.5 - #651

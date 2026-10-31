@@ -28,17 +28,6 @@ matrix:
         - sh -c "cd build; /bin/bash < upload.sh"
         - python3 ci/git-push
 
-    - os: Linux
-      dist: focal
-      arch: arm64
-      env:
-        - OCPN_TARGET=debian-11-arm64
-        - CMAKE_BUILD_PARALLEL_LEVEL=2
-      script:
-        - ci/generic-build-raspbian-armhf.sh
-        - sh -c "cd build-raspbian; /bin/bash < upload.sh"
-        - python3 ci/git-push
-
     - os: windows
       script:
         - ci/travis-build-win32.sh
