@@ -66,7 +66,7 @@ modules:
 #  runtime: org.opencpn.OpenCPN
 # -runtime-version: beta   # FIXME(alec) Revert to stable when updated to 22.08
 # +runtime-version: stable
-#  sdk: org.freedesktop.Sdk//22.08
+#  sdk: org.freedesktop.Sdk//24.08
 #  build-extension: true
 #  separate-locales: false
 # diff --git a/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml b/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml
@@ -90,7 +90,7 @@ modules:
 #  runtime: org.opencpn.OpenCPN
 # -runtime-version: beta   # FIXME(alec) Revert to stable when updated to 22.08
 # +runtime-version: stable
-#  sdk: org.freedesktop.Sdk//22.08
+#  sdk: org.freedesktop.Sdk//24.08
 #  build-extension: true
 #  separate-locales: false
 # diff --git a/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml b/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml
@@ -112,7 +112,7 @@ modules:
 #  
 #  runtime: org.opencpn.OpenCPN
 #  runtime-version: stable
-# -sdk: org.freedesktop.Sdk//22.08
+# -sdk: org.freedesktop.Sdk//24.08
 # +sdk: org.freedesktop.Sdk//24.08
 #  build-extension: true
 #  separate-locales: false
@@ -142,7 +142,7 @@ modules:
 # +#  runtime: org.opencpn.OpenCPN
 # +# -runtime-version: beta   # FIXME(alec) Revert to stable when updated to 22.08
 # +# +runtime-version: stable
-# +#  sdk: org.freedesktop.Sdk//22.08
+# +#  sdk: org.freedesktop.Sdk//24.08
 # +#  build-extension: true
 # +#  separate-locales: false
 # diff --git a/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml b/flatpak/org.opencpn.OpenCPN.Plugin.shipdriver.yaml
@@ -164,7 +164,7 @@ modules:
 #  
 #  runtime: org.opencpn.OpenCPN
 #  runtime-version: stable
-# -sdk: org.freedesktop.Sdk//22.08
+# -sdk: org.freedesktop.Sdk//24.08
 # +sdk: org.freedesktop.Sdk//24.08
 #  build-extension: true
 #  separate-locales: false
@@ -194,6 +194,6 @@ modules:
 # +#  runtime: org.opencpn.OpenCPN
 # +# -runtime-version: beta   # FIXME(alec) Revert to stable when updated to 22.08
 # +# +runtime-version: stable
-# +#  sdk: org.freedesktop.Sdk//22.08
+# +#  sdk: org.freedesktop.Sdk//24.08
 # +#  build-extension: true
 # +#  separate-locales: false
