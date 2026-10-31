@@ -32,13 +32,13 @@
 #include <wx/fileconf.h>
 
 #include "ocpn_plugin.h"
-#define API_VERSION       "1.16"
 
 #define PLUGIN_CATALOG_NAME "opencpn-PhotoLayer_pi"
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
 
 
 #include "defs.h"
+#include "config.h"
 
 
 //----------------------------------------------------------------------------------------------------------
@@ -50,10 +50,10 @@
 class PhotoLayerImage;
 class PhotoLayer;
 
-class PhotoLayer_pi : public opencpn_plugin_116
+class PhotoLayer_pi : public opencpn_plugin_118
 {
 public:
-      PhotoLayer_pi(void *ppimgr);
+   PhotoLayer_pi(void* ppimgr);
 	  ~PhotoLayer_pi(void);
       
 //    The required PlugIn Methods
@@ -64,10 +64,15 @@ public:
       int GetAPIVersionMinor();
       int GetPlugInVersionMajor();
       int GetPlugInVersionMinor();
+      int GetPlugInVersionPatch();
+      int GetPlugInVersionPost();
+      const char *GetPlugInVersionPre();
+      const char *GetPlugInVersionBuild();
+
       wxBitmap *GetPlugInBitmap();
       wxString GetCommonName();
       wxString GetShortDescription();
-      wxString GetLongDescription();
+      wxString GetLongDescription() override;
 
       int GetToolbarToolCount(void);
       void OnToolbarToolCallback(int id);
