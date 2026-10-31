@@ -1,5 +1,5 @@
 :: Build script for appveyor, https://www.appveyor.com
-:: Builds one version linked against wxWidgets 3.2
+:: Builds one version linked against wxWidgets 3.2 (Win32) or 3.3 (x64)
 
 @echo off
 setlocal enabledelayedexpansion
@@ -24,14 +24,21 @@ if not defined VCINSTALLDIR (
 if exist build (rmdir /s /q build)
 mkdir build && cd build
 
-cmake -A Win32 -G "Visual Studio 17 2022" ^
-    -DCMAKE_GENERATOR_PLATFORM=Win32 ^
+set "GENERATOR_PLATFORM=Win32"
+set "OCPN_TARGET=msvc-wx32;10;x86"
+if /I "%PLATFORM%"=="x64" (
+  set "GENERATOR_PLATFORM=x64"
+  set "OCPN_TARGET=msvc-64;10;x86_64"
+)
+
+cmake -A %GENERATOR_PLATFORM% -G "Visual Studio 17 2022" ^
+    -DCMAKE_GENERATOR_PLATFORM=%GENERATOR_PLATFORM% ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
     -DwxWidgets_LIB_DIR=!wxWidgets_LIB_DIR! ^
     -DwxWidgets_ROOT_DIR=!wxWidgets_ROOT_DIR! ^
-    -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
-    ..
-cmake --build . --target tarball --config %CONFIGURATION%
+    -DOCPN_TARGET_TUPLE=%OCPN_TARGET% ^
+    .. || exit /b 1
+cmake --build . --target tarball --config %CONFIGURATION% || exit /b 1
 
 :: Display dependencies debug info
 echo import glob; import subprocess > ldd.py
@@ -40,8 +47,8 @@ echo subprocess.call(['dumpbin', '/dependents', lib], shell=True) >> ldd.py
 python ldd.py
 
 echo Uploading artifact
-call upload.bat
+call upload.bat || exit /b 1
 
 echo Pushing updates to catalog
-python %SCRIPTDIR%..\ci\git-push
+python %SCRIPTDIR%..\ci\git-push || exit /b 1
 cd ..
