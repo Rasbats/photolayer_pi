@@ -8,7 +8,7 @@ if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
-if (WIN32)
+if (WIN32 || WIN64)
   file(GLOB libtiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/tiff-*")
   add_library(TIFF STATIC IMPORTED)
   set_property(

@@ -8,7 +8,7 @@ endif ()
 set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 
-if (WIN32)
+if (WIN32 || WIN64)
   file(GLOB geotiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/libgeotiff-*")
   add_library(GEOTIFF STATIC IMPORTED)
   set_property(
