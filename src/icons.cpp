@@ -10,7 +10,7 @@
 wxBitmap *_img_photolayer;
 wxBitmap *_img_photolayer_pi;
 
-
+#include <cstdint>
 #include "ocpn_plugin.h"
 wxString _svg_photolayer;
 wxString _svg_photolayer_rollover;

@@ -30,7 +30,7 @@
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/fileconf.h>
-
+#include <cstdint>
 #include "ocpn_plugin.h"
 
 
