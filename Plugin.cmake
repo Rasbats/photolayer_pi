@@ -40,9 +40,7 @@ set(PKG_PRERELEASE "")  # Empty, or a tag like 'beta'
 set(DISPLAY_NAME photolayer)    # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME photolayer) # As of GetCommonName() in plugin API
 set(PKG_SUMMARY "Display geotiff files with transparency")
-set(PKG_DESCRIPTION [=[
-Display geotiff files with adjustable transparency, as an overlay.
-]=])
+set(PKG_DESCRIPTION "Display geotiff files with adjustable transparency, as an overlay.")
 
 set(PKG_AUTHOR "Mike Rossiter")
 set(PKG_IS_OPEN_SOURCE "yes")

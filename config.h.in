@@ -18,4 +18,3 @@ static const char* const PKG_DESCRIPTION = _(R"~~(@PKG_DESCRIPTION@)~~");
 #define PLUGIN
 
 #endif  //  CONFIG_H__
-

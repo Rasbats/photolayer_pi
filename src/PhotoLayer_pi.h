@@ -33,11 +33,12 @@
 
 #include "ocpn_plugin.h"
 
-#define PLUGIN_CATALOG_NAME "opencpn-PhotoLayer_pi"
+
 #define ABOUT_AUTHOR_URL "http://mikerossiter.co.uk"
 
 
 #include "defs.h"
+
 #include "config.h"
 
 

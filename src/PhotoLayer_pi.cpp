@@ -46,12 +46,11 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "config.h"
 #include "PhotoLayer_pi.h"
 #include "PhotoLayerImage.h"
 #include "PhotoLayer.h"
 #include "icons.h"
-#include "ocpn_plugin.h"
+
 
 // the class factories, used to create and destroy instances of the PlugIn
 
