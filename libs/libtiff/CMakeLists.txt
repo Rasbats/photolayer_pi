@@ -1,41 +1,33 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required (VERSION 3.10)
 
 if (TARGET ocpn::tiff)
-    return ()
+  return ()
 endif ()
 
 if (NOT CMAKE_MODULE_PATH)
   set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 endif ()
 
-if (WIN32 & MSVC)
-  if(!CMAKE_SIZEOF_VOID_P EQUAL 8)
-  file(GLOB libtiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/tiff-4.0.10")
-  add_library(TIFF STATIC IMPORTED)
-  set_property(
+if (WIN32 AND MSVC)
+  if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set (libtiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/tiff-4.7.2")
+  else ()
+    set (libtiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/tiff-4.0.10")
+  endif ()
+
+  add_library (TIFF STATIC IMPORTED)
+  set_property (
     TARGET TIFF
-    PROPERTY IMPORTED_LOCATION ${libtiff_dir}/libtiff.lib
+    PROPERTY IMPORTED_LOCATION "${libtiff_dir}/libtiff.lib"
   )
-  add_library(_TIFF INTERFACE)
-  target_include_directories(_TIFF INTERFACE ${libtiff_dir}/include)
-  target_link_libraries(_TIFF INTERFACE TIFF)
-  add_library(ocpn::tiff ALIAS _TIFF)
-elseif(WIN32 & MSVC)  
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  file(GLOB libtiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/tiff-4.7.2")
-  add_library(TIFF STATIC IMPORTED)
-  set_property(
-    TARGET TIFF
-    PROPERTY IMPORTED_LOCATION ${libtiff_dir}/libtiff.lib
-  )
-  add_library(_TIFF INTERFACE)
-  target_include_directories(_TIFF INTERFACE ${libtiff_dir}/include)
-  target_link_libraries(_TIFF INTERFACE TIFF)
-  add_library(ocpn::tiff ALIAS _TIFF)
+  add_library (_TIFF INTERFACE)
+  target_include_directories (_TIFF INTERFACE "${libtiff_dir}/include")
+  target_link_libraries (_TIFF INTERFACE TIFF)
+  add_library (ocpn::tiff ALIAS _TIFF)
 else ()
-  find_package(TIFF REQUIRED)
-  add_library(_TIFF INTERFACE)
-  target_link_libraries(_TIFF INTERFACE ${TIFF_LIBRARIES})
-  target_include_directories(_TIFF INTERFACE ${TIFF_INCLUDE_DIRS})
-  add_library(ocpn::tiff ALIAS _TIFF)
+  find_package (TIFF REQUIRED)
+  add_library (_TIFF INTERFACE)
+  target_link_libraries (_TIFF INTERFACE ${TIFF_LIBRARIES})
+  target_include_directories (_TIFF INTERFACE ${TIFF_INCLUDE_DIRS})
+  add_library (ocpn::tiff ALIAS _TIFF)
 endif ()
