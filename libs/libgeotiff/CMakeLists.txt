@@ -8,8 +8,9 @@ endif ()
 set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 
-if (WIN32 || WIN64)
-  file(GLOB geotiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/libgeotiff-*")
+if (WIN32 & MSVC)
+  if(!CMAKE_SIZEOF_VOID_P EQUAL 8)(
+  file(GLOB geotiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/libgeotiff-1.4.2")
   add_library(GEOTIFF STATIC IMPORTED)
   set_property(
     TARGET GEOTIFF
@@ -19,7 +20,20 @@ if (WIN32 || WIN64)
   target_link_libraries(_GEOTIFF INTERFACE GEOTIFF)
   target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/include)
   target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/libxtiff)
-  add_library(ocpn::geotiff ALIAS _GEOTIFF)
+  add_library(ocpn::geotiff ALIAS _GEOTIFF))
+elseif(WIN32 & MSVC)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)(
+  file(GLOB geotiff_dir "${CMAKE_CURRENT_SOURCE_DIR}/libgeotiff-1.4.3")
+  add_library(GEOTIFF STATIC IMPORTED)
+  set_property(
+    TARGET GEOTIFF
+    PROPERTY IMPORTED_LOCATION ${geotiff_dir}/geotiff.lib
+  )
+  add_library(_GEOTIFF INTERFACE)
+  target_link_libraries(_GEOTIFF INTERFACE GEOTIFF)
+  target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/include)
+  target_include_directories(_GEOTIFF INTERFACE ${geotiff_dir}/libxtiff)
+  add_library(ocpn::geotiff ALIAS _GEOTIFF))
 else ()
   find_package(GeoTIFF REQUIRED)
   add_library(_GeoTIFF INTERFACE)
