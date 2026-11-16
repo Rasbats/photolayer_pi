@@ -34,6 +34,7 @@
  ***************************************************************************
  */
 
+#include <cstdint>'
 #include "ocpn_plugin.h"
 #include <cmath>
 #include "TransverseMercator.h"
