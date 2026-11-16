@@ -33,17 +33,21 @@
  *
  ***************************************************************************
  */
-#include <cstdint>
+
 #include "ocpn_plugin.h"
 #include <cmath>
+#include "TransverseMercator.h"
 
 struct PhotoLayerImageCoordinates
 {
 PhotoLayerImageCoordinates(wxString n) : name(n), 
         p1(wxPoint(0, 0)), p2(wxPoint(0, 0)), lat1(0), lon1(0), lat2(0), lon2(0), CenterLat(0), CenterLon(0),
         rotation(NONE), mapping(MERCATOR), inputpole(wxPoint(0,0)), inputequator(0), inputtrueratio(1),
-        mappingmultiplier(1), mappingratio(1)
-        {}
+        mappingmultiplier(1), mappingratio(1),
+        tmCm(0), tmK0(0.9996), tmFE(500000.0), tmFN(0)
+        {
+            tmAff[0] = tmAff[1] = tmAff[2] = tmAff[3] = tmAff[4] = tmAff[5] = 0;
+        }
 
     wxString name;
     wxPoint p1, p2;
@@ -53,11 +57,21 @@ PhotoLayerImageCoordinates(wxString n) : name(n),
     enum RotationType {NONE, CCW, CW, R180};
     RotationType rotation;
 
-    enum MapType {MERCATOR, POLAR, CONIC, FIXED_FLAT, PLATECARREE, MAP_TYPES};
+    /* TRANSVERSE = UTM / Transverse Mercator projected GeoTIFF (e.g. EPSG:326xx).
+       Stored in XML by name (see MapName), so new types are appended before
+       MAP_TYPES. */
+    enum MapType {MERCATOR, POLAR, CONIC, FIXED_FLAT, PLATECARREE, TRANSVERSE, MAP_TYPES};
     MapType mapping;
     wxPoint inputpole;
     double inputequator, /* y value */ inputtrueratio;
     double mappingmultiplier, mappingratio;
+
+    /* TRANSVERSE only: projection (central meridian deg, scale, false
+       easting/northing m) and the pixel -> easting/northing affine
+       E = e0 + a*px + b*py ; N = n0 + c*px + d*py, stored as
+       { e0, a, b, n0, c, d }. px,py are corner-based pixel coordinates. */
+    double tmCm, tmK0, tmFE, tmFN;
+    double tmAff[6];
 
     double lon(int x) { 
         double d = (lon2 - lon1);
@@ -131,6 +145,10 @@ public:
     void InputToMercator(double px, double py, double &mx, double &my);
     void MercatorToInput(double mx, double my, double &px, double &py);
     bool MakeMappedImage(wxWindow *parent, bool paramsonly=false);
+
+    /* TRANSVERSE: builds m_tmWarp from m_Coords and computes the output layout */
+    bool PrepareTransverse(int w, int h, PhotoLayerTM::Layout &L);
+    PhotoLayerTM::Warp m_tmWarp;
 
     double inputheight; /* used internally */
     wxPoint mercatoroffset;

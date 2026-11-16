@@ -293,6 +293,19 @@ void PhotoLayer::LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, w
 		? PhotoLayerImageCoordinates::PLATECARREE
 		: PhotoLayerImageCoordinates::MERCATOR;
 
+	/* UTM / Transverse Mercator: record the projection and affine. The
+	   corner lat/lons above are only provisional; MakeMappedImage() derives
+	   the real ones (and p1/p2) from the warped layout. */
+	if (m_isTM) {
+		coord->mapping = PhotoLayerImageCoordinates::TRANSVERSE;
+		coord->tmCm = m_tm.cm_deg;
+		coord->tmK0 = m_tm.k0;
+		coord->tmFE = m_tm.fe;
+		coord->tmFN = m_tm.fn;
+		for (int i = 0; i < 6; i++)
+			coord->tmAff[i] = m_aff[i];
+	}
+
 	coord->inputtrueratio = 1.0;
 	coord->mappingmultiplier = 1.0;
 	coord->mappingratio = 1.0;
@@ -317,15 +330,28 @@ void PhotoLayer::SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, 
 
 		c->SetAttribute("X1", wxString::Format(_T("%d"), coords[i]->p1.x).mb_str());
 		c->SetAttribute("Y1", wxString::Format(_T("%d"), coords[i]->p1.y).mb_str());
-		c->SetAttribute("Lat1", wxString::Format(_T("%.5f"), coords[i]->lat1).mb_str());
-		c->SetAttribute("Lon1", wxString::Format(_T("%.5f"), coords[i]->lon1).mb_str());
+		c->SetAttribute("Lat1", wxString::Format(_T("%.9f"), coords[i]->lat1).mb_str());
+		c->SetAttribute("Lon1", wxString::Format(_T("%.9f"), coords[i]->lon1).mb_str());
 
 		c->SetAttribute("X2", wxString::Format(_T("%d"), coords[i]->p2.x).mb_str());
 		c->SetAttribute("Y2", wxString::Format(_T("%d"), coords[i]->p2.y).mb_str());
-		c->SetAttribute("Lat2", wxString::Format(_T("%.5f"), coords[i]->lat2).mb_str());
-		c->SetAttribute("Lon2", wxString::Format(_T("%.5f"), coords[i]->lon2).mb_str());
-		c->SetAttribute("CenterLat", wxString::Format(_T("%.5f"), coords[i]->CenterLat).mb_str());
-		c->SetAttribute("CenterLon", wxString::Format(_T("%.5f"), coords[i]->CenterLon).mb_str());
+		c->SetAttribute("Lat2", wxString::Format(_T("%.9f"), coords[i]->lat2).mb_str());
+		c->SetAttribute("Lon2", wxString::Format(_T("%.9f"), coords[i]->lon2).mb_str());
+		c->SetAttribute("CenterLat", wxString::Format(_T("%.9f"), coords[i]->CenterLat).mb_str());
+		c->SetAttribute("CenterLon", wxString::Format(_T("%.9f"), coords[i]->CenterLon).mb_str());
+
+		/* The mapping type was never saved before, so every entry
+		   reloaded as Mercator. */
+		c->SetAttribute("Map", PhotoLayerImageCoordinates::MapName(coords[i]->mapping).ToUTF8());
+		if (coords[i]->mapping == PhotoLayerImageCoordinates::TRANSVERSE) {
+			c->SetAttribute("TmCm", wxString::Format(_T("%.12g"), coords[i]->tmCm).mb_str());
+			c->SetAttribute("TmK0", wxString::Format(_T("%.12g"), coords[i]->tmK0).mb_str());
+			c->SetAttribute("TmFE", wxString::Format(_T("%.12g"), coords[i]->tmFE).mb_str());
+			c->SetAttribute("TmFN", wxString::Format(_T("%.12g"), coords[i]->tmFN).mb_str());
+			static const char *affNames[6] = { "TmE0", "TmA", "TmB", "TmN0", "TmC", "TmD" };
+			for (int k = 0; k < 6; k++)
+				c->SetAttribute(affNames[k], wxString::Format(_T("%.17g"), coords[i]->tmAff[k]).mb_str());
+		}
 
 		root->LinkEndChild(c);
 	}
@@ -370,6 +396,20 @@ void PhotoLayer::LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords
 
 				coord->CenterLat = AttributeDouble(e, "CenterLat", 0);
 				coord->CenterLon = AttributeDouble(e, "CenterLon", 0);
+
+				/* entries written before the Map attribute existed stay Mercator */
+				const char *mapattr = e->Attribute("Map");
+				if (mapattr)
+					coord->mapping = PhotoLayerImageCoordinates::GetMapType(wxString::FromUTF8(mapattr));
+				if (coord->mapping == PhotoLayerImageCoordinates::TRANSVERSE) {
+					coord->tmCm = AttributeDouble(e, "TmCm", 0);
+					coord->tmK0 = AttributeDouble(e, "TmK0", 0.9996);
+					coord->tmFE = AttributeDouble(e, "TmFE", 500000.0);
+					coord->tmFN = AttributeDouble(e, "TmFN", 0);
+					static const char *affNames[6] = { "TmE0", "TmA", "TmB", "TmN0", "TmC", "TmD" };
+					for (int k = 0; k < 6; k++)
+						coord->tmAff[k] = AttributeDouble(e, affNames[k], 0);
+				}
 
 				coords.Append(coord);
 
@@ -488,18 +528,116 @@ void PhotoLayer::OnFaxes( wxCommandEvent& event )
 }
 
 
+/* UTM / Transverse Mercator georeferencing, with no PROJ and no EPSG tables.
+   Fills m_tm and m_aff from the file's own GeoKeys and tie-point/scale tags
+   (via GTIFImageToPCS, which only needs the raw tags), and fills
+   m_geoPolygon from the warp. On failure m_Error says why. */
+bool PhotoLayer::ReadTransverse(GTIF *gtif, GTIFDefn *defn, int xsize, int ysize)
+{
+	using namespace PhotoLayerTM;
+	Params p;
+
+	if (UTMFromEPSG(defn->PCS, p)) {
+		/* standard UTM zone from the EPSG code alone */
+	}
+	else if (defn->PCS == 32767 /* user-defined */) {
+		unsigned short ct = 0;
+		GTIFKeyGet(gtif, ProjCoordTransGeoKey, &ct, 0, 1);
+		if (ct != CT_TransverseMercator) {
+			m_Error = _("Unsupported user-defined projection (only Mercator and Transverse Mercator/UTM are handled)");
+			return false;
+		}
+		double lon0 = 0, lat0 = 0, k0 = 0, fe = 0, fn = 0;
+		if (!GTIFKeyGet(gtif, ProjNatOriginLongGeoKey, &lon0, 0, 1))
+			GTIFKeyGet(gtif, ProjCenterLongGeoKey, &lon0, 0, 1);
+		if (!GTIFKeyGet(gtif, ProjNatOriginLatGeoKey, &lat0, 0, 1))
+			lat0 = 0;
+		if (!GTIFKeyGet(gtif, ProjScaleAtNatOriginGeoKey, &k0, 0, 1) || !(k0 > 0)) {
+			m_Error = _("Transverse Mercator file has no scale factor (ProjScaleAtNatOrigin)");
+			return false;
+		}
+		GTIFKeyGet(gtif, ProjFalseEastingGeoKey, &fe, 0, 1);
+		GTIFKeyGet(gtif, ProjFalseNorthingGeoKey, &fn, 0, 1);
+		if (fabs(lat0) > 1e-9) {
+			m_Error = _("Transverse Mercator with a non-zero latitude of origin is not supported");
+			return false;
+		}
+		/* The ellipsoid is always taken as WGS84; refuse a datum we know is not. */
+		unsigned short gcs = 0;
+		if (GTIFKeyGet(gtif, GeographicTypeGeoKey, &gcs, 0, 1) &&
+		    gcs != 4326 && gcs != 4258 && gcs != 4269 && gcs != 32767) {
+			m_Error = wxString::Format(_("Unsupported geographic CRS EPSG:%d (only WGS84 / ETRS89 / NAD83 are handled)"), (int)gcs);
+			return false;
+		}
+		p.cm_deg = lon0; p.k0 = k0; p.fe = fe; p.fn = fn;
+	}
+	else {
+		m_Error = wxString::Format(_("Unsupported projected CRS EPSG:%d"), (int)defn->PCS);
+		return false;
+	}
+
+	/* the maths here assumes metres */
+	unsigned short units = 0;
+	if (GTIFKeyGet(gtif, ProjLinearUnitsGeoKey, &units, 0, 1) && units != Linear_Meter) {
+		m_Error = wxString::Format(_("Projected units code %d is not metres (unsupported)"), (int)units);
+		return false;
+	}
+
+	/* pixel -> easting/northing affine, taken from three image points so it
+	   is right for both PixelIsArea and PixelIsPoint files, rotated or not */
+	double x0 = 0, y0 = 0, x1 = 1, y1 = 0, x2 = 0, y2 = 1;
+	if (!GTIFImageToPCS(gtif, &x0, &y0) || !GTIFImageToPCS(gtif, &x1, &y1) ||
+	    !GTIFImageToPCS(gtif, &x2, &y2)) {
+		m_Error = _("Unable to transform pixel/line to projected coordinates");
+		return false;
+	}
+
+	Warp W;
+	W.tm = p;
+	W.e0 = x0;        W.n0 = y0;
+	W.a  = x1 - x0;   W.c  = y1 - y0;
+	W.b  = x2 - x0;   W.d  = y2 - y0;
+	if (!W.Init(xsize, ysize)) {
+		m_Error = _("Degenerate georeferencing (zero pixel size)");
+		return false;
+	}
+
+	/* corner lat/lon for the XML and Goto, same slots as GTIFPrintCorners */
+	memset(m_geoPolygon, 0, sizeof(m_geoPolygon));
+	struct { double px, py; int idx; } pts[5] = {
+		{ 0.0,        0.0,        0 },
+		{ 0.0,        (double)ysize, 2 },
+		{ (double)xsize, 0.0,        4 },
+		{ (double)xsize, (double)ysize, 6 },
+		{ xsize / 2.0, ysize / 2.0, 8 },
+	};
+	for (int i = 0; i < 5; i++) {
+		double lat, lon;
+		W.PixelToLatLon(pts[i].px, pts[i].py, lat, lon);
+		m_geoPolygon[pts[i].idx]     = lon;
+		m_geoPolygon[pts[i].idx + 1] = lat;
+	}
+
+	m_isTM = true;
+	m_tm = p;
+	m_aff[0] = W.e0; m_aff[1] = W.a; m_aff[2] = W.b;
+	m_aff[3] = W.n0; m_aff[4] = W.c; m_aff[5] = W.d;
+	wxLogMessage(wxString::Format(
+		"ReadTransverse: cm=%.6f k0=%.6f fe=%.3f fn=%.3f e0=%.4f n0=%.4f a=%.8f b=%.8f c=%.8f d=%.8f",
+		p.cm_deg, p.k0, p.fe, p.fn, W.e0, W.n0, W.a, W.b, W.c, W.d));
+	return true;
+}
+
 bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff, wxString filename) {
 
-	/* FIX: xsize/ysize are now initialized, and both TIFFGetField() return
-	   values are checked. Previously these were uninitialized locals, and
-	   TIFFGetField() only writes its output if the tag is present - if
-	   TIFFTAG_IMAGELENGTH failed to read for any reason, ysize was left
-	   holding stack garbage, which propagated into every downstream corner
-	   / mapping calculation as a degenerate value. */
 	int xsize = 0, ysize = 0;
 	int	inv_flag = 0, dec_flag = 1;
 
 	GTIFDefn defn;
+
+	m_ModelType = -1;
+	m_isTM = false;
+	m_Error = wxEmptyString;
 
 	bool gotW = TIFFGetField(m_Tiff, TIFFTAG_IMAGEWIDTH,  &xsize) != 0;
 	bool gotH = TIFFGetField(m_Tiff, TIFFTAG_IMAGELENGTH, &ysize) != 0;
@@ -508,24 +646,29 @@ bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff, wxString filename) {
 		wxLogMessage(wxString::Format(
 			"ReadHeader: bad image dimensions gotW=%d gotH=%d xsize=%d ysize=%d for %s",
 			gotW, gotH, xsize, ysize, filename));
-		m_ModelType = -1;
+		m_Error = _("Unable to read the image dimensions");
 		return false;
 	}
 
 	imageWidthX = xsize;
 	imageHeightY = ysize;
 
-	/* FIX: some GeoTIFFs (seen from SASPlanet) carry embedded
-	   ModelPixelScaleTag/ModelTiepointTag entries that are present but
-	   all-zero, rather than being absent outright. Either case means
-	   GTIFImageToPCS() cannot produce a usable per-pixel transform, so
-	   fall back to a sidecar .tfw/.tifw/.wld world file in both cases. */
-	double scale[3] = {0,0,0}, tie[6] = {0,0,0,0,0,0};
-	uint16_t scaleCount = 0, tieCount = 0;
+	/* Some GeoTIFFs (seen from SASPlanet) carry ModelPixelScale/ModelTiepoint
+	   tags that are present but all-zero, or absent outright. Then
+	   GTIFImageToPCS() cannot give a per-pixel transform, so fall back to a
+	   sidecar .tfw/.tifw/.wld world file.
+	   libtiff returns these custom tags as (count, pointer-to-array). */
+	uint16_t scaleCount = 0, tieCount = 0, matCount = 0;
+	double *scale = NULL, *tie = NULL, *mat = NULL;
 	TIFFGetField(m_Tiff, TIFFTAG_GEOPIXELSCALE, &scaleCount, &scale);
 	TIFFGetField(m_Tiff, TIFFTAG_GEOTIEPOINTS, &tieCount, &tie);
+	TIFFGetField(m_Tiff, TIFFTAG_GEOTRANSMATRIX, &matCount, &mat);
 
-	if (scaleCount == 0 || tieCount == 0 || (scale[0] == 0.0 && scale[1] == 0.0)) {
+	bool haveTransform = (matCount >= 16 && mat) ||
+		(scaleCount >= 2 && scale && tieCount >= 6 && tie &&
+		 !(scale[0] == 0.0 && scale[1] == 0.0));
+
+	if (!haveTransform) {
 		double A, Bp, Cp, D, E, F;
 		if (ReadWorldFile(filename, A, Bp, Cp, D, E, F)) {
 			/* No rotation term supported here (B/D assumed 0, i.e. a plain
@@ -534,33 +677,63 @@ bool PhotoLayer::ReadHeader(TIFF* m_Tiff, GTIF* m_gTiff, wxString filename) {
 			double lon_ul = Cp - A / 2.0,               lat_ul = F - E / 2.0;
 			double lon_lr = Cp + A * (xsize - 0.5),     lat_lr = F + E * (ysize - 0.5);
 
+			memset(m_geoPolygon, 0, sizeof(m_geoPolygon));
 			m_geoPolygon[0] = lon_ul; m_geoPolygon[1] = lat_ul;   /* Upper Left  */
 			m_geoPolygon[6] = lon_lr; m_geoPolygon[7] = lat_lr;   /* Lower Right */
 			m_geoPolygon[8] = (lon_ul + lon_lr) / 2.0;            /* Center      */
 			m_geoPolygon[9] = (lat_ul + lat_lr) / 2.0;
 
 			/* World-file georeferencing as used here is always plain
-			   lat/lon degrees. If you need to support a world file whose
-			   units are projected meters, this would need a units check
-			   (e.g. fabs(A) < 1.0 => geographic, else => projected). */
+			   lat/lon degrees. A world file in projected metres is not
+			   handled (its CRS is unknowable from the .tfw alone). */
 			m_ModelType = ModelTypeGeographic;
 			return true;
 		}
 		wxLogMessage("ReadHeader: no usable embedded GeoTIFF tags and no world file found for " + filename);
-		m_ModelType = -1;
+		m_Error = _("No usable georeferencing (no GeoTIFF tags and no .tfw world file)");
 		return false;
 	}
 
-	if (GTIFGetDefn(m_gTiff, &defn))
-	{
-		m_ModelType = defn.Model;
-		GTIFPrintCorners(m_gTiff, &defn, xsize, ysize, inv_flag, dec_flag);
-		return true;
-	}
-	else {
-		m_ModelType = -1;
+	if (!m_gTiff || !GTIFGetDefn(m_gTiff, &defn)) {
+		m_Error = _("Unable to read the GeoTIFF keys");
 		return false;
 	}
+
+	m_ModelType = defn.Model;
+	wxLogMessage(wxString::Format("ReadHeader: Model=%d PCS=%d GCS=%d for %s",
+		(int)defn.Model, (int)defn.PCS, (int)defn.GCS, filename));
+
+	if (defn.Model == ModelTypeProjected) {
+		int pcs = defn.PCS;
+		PhotoLayerTM::Params probe;
+		bool isUTM = PhotoLayerTM::UTMFromEPSG(pcs, probe);
+
+		bool isTMuser = false, isMercUser = false;
+		if (pcs == 32767) {
+			unsigned short ct = 0;
+			GTIFKeyGet(m_gTiff, ProjCoordTransGeoKey, &ct, 0, 1);
+			isTMuser = (ct == CT_TransverseMercator);
+			isMercUser = (ct == CT_Mercator);
+		}
+
+		if (isUTM || isTMuser)
+			return ReadTransverse(m_gTiff, &defn, xsize, ysize);
+
+		/* Mercator family, handled by the closed-form inverse in
+		   GTIFReportACorner(): anything else is refused rather than drawn in
+		   the wrong place. */
+		bool mercOK = (pcs == 3857 || pcs == 3785 || pcs == 900913 ||
+		               pcs == 3395 || isMercUser);
+		if (!mercOK) {
+			m_Error = wxString::Format(
+				_("Unsupported projected CRS EPSG:%d. Supported: lat/lon, Web/World Mercator, and UTM (WGS84/ETRS89/NAD83)."), pcs);
+			wxLogMessage("ReadHeader: " + m_Error);
+			return false;
+		}
+	}
+
+	GTIFPrintCorners(m_gTiff, &defn, xsize, ysize, inv_flag, dec_flag);
+	return true;
 }
 
 void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, wxString contents)
@@ -570,17 +743,31 @@ void PhotoLayer::OpenImage(wxString filename, wxString station, wxString area, w
 
 
 	tif = XTIFFOpen(filename, "r");
+	if (!tif) {
+		wxMessageDialog mdlg(this, _("Failed to open file: ") + filename,
+			_("PhotoLayer"), wxOK | wxICON_ERROR);
+		mdlg.ShowModal();
+		return;
+	}
 	gtif = GTIFNew(tif);
 
-
-	ReadHeader(tif, gtif, filename);
+	bool headerOK = ReadHeader(tif, gtif, filename);
 
 	/* FIX: gtif was never freed (GTIFFree missing). On some platforms an
 	   unreleased GeoTIFF handle can leave the underlying file effectively
 	   still open, which caused the immediately-following wxImage::LoadFile()
 	   to occasionally fail on the very first open of a file. */
-	GTIFFree(gtif);
+	if (gtif)
+		GTIFFree(gtif);
 	XTIFFClose(tif);
+
+	if (!headerOK) {
+		/* never fall through with stale corner data from a previous file */
+		wxMessageDialog mdlg(this, _("Cannot place this image: ") + m_Error + _T("\n") + filename,
+			_("PhotoLayer"), wxOK | wxICON_ERROR);
+		mdlg.ShowModal();
+		return;
+	}
 
 	int transparency = m_sTransparency->GetValue();
 	int whitetransparency = m_sWhiteTransparency->GetValue();

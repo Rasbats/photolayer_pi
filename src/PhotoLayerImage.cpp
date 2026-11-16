@@ -123,6 +123,7 @@ wxString PhotoLayerImageCoordinates::MapName(MapType type)
     case CONIC:       return _T("Conic");
     case FIXED_FLAT:  return _T("FixedFlat");
     case PLATECARREE: return _T("PlateCarree");
+    case TRANSVERSE:  return _T("Transverse");
     default: break;
     }
     return _T("");
@@ -311,8 +312,45 @@ void ImageInterpolatedValue(unsigned char *data, int w, double x, double y, unsi
     InterpColor(xc[0], xc[1], d1, c);
 }
 
+/* Builds the UTM/Transverse Mercator warp from the coordinate entry and
+   computes the output (mapped image) layout. Also sets lat1/lon1/lat2/lon2
+   and p1/p2 so PhotoLayerImageCoordinates::lat()/lon() address the mapped
+   image's own pixels (these are derived values, not persisted inputs). */
+bool PhotoLayerImage::PrepareTransverse(int w, int h, PhotoLayerTM::Layout &L)
+{
+    m_tmWarp.tm.cm_deg = m_Coords->tmCm;
+    m_tmWarp.tm.k0     = m_Coords->tmK0;
+    m_tmWarp.tm.fe     = m_Coords->tmFE;
+    m_tmWarp.tm.fn     = m_Coords->tmFN;
+    m_tmWarp.e0 = m_Coords->tmAff[0];
+    m_tmWarp.a  = m_Coords->tmAff[1];
+    m_tmWarp.b  = m_Coords->tmAff[2];
+    m_tmWarp.n0 = m_Coords->tmAff[3];
+    m_tmWarp.c  = m_Coords->tmAff[4];
+    m_tmWarp.d  = m_Coords->tmAff[5];
+
+    if(!m_tmWarp.Init(w, h))
+        return false;
+    if(!m_tmWarp.ComputeLayout(w, h, m_Coords->mappingmultiplier, m_Coords->mappingratio, L))
+        return false;
+
+    m_Coords->p1 = wxPoint(0, 0);
+    m_Coords->p2 = wxPoint(L.mw, L.mh);
+    m_Coords->lat1 = L.lat1;  m_Coords->lon1 = L.lon1;
+    m_Coords->lat2 = L.lat2;  m_Coords->lon2 = L.lon2;
+    return true;
+}
+
 void PhotoLayerImage::InputToMercator(double px, double py, double &mx, double &my)
 {
+    if(m_Coords->mapping == PhotoLayerImageCoordinates::TRANSVERSE) {
+        double x, y;
+        m_tmWarp.PixelToMerc(px, py, x, y);
+        mx = mercatoroffset.x + x * m_Coords->mappingmultiplier;
+        my = mercatoroffset.y + y * m_Coords->mappingmultiplier / m_Coords->mappingratio;
+        return;
+    }
+
     double dx, dy;
 
     /* apply offsets */
@@ -391,6 +429,13 @@ void PhotoLayerImage::InputToMercator(double px, double py, double &mx, double &
 /* the exact inverse of InputToMercator */
 void PhotoLayerImage::MercatorToInput(double mx, double my, double &px, double &py)
 {
+    if(m_Coords->mapping == PhotoLayerImageCoordinates::TRANSVERSE) {
+        m_tmWarp.MercToPixel((mx - mercatoroffset.x) / m_Coords->mappingmultiplier,
+                             (my - mercatoroffset.y) / (m_Coords->mappingmultiplier / m_Coords->mappingratio),
+                             px, py);
+        return;
+    }
+
     double x, y;
 
     /* apply offsets */
@@ -466,6 +511,25 @@ bool PhotoLayerImage::MakeMappedImage(wxWindow *parent, bool paramsonly)
 
     inputheight = m_Coords->inputequator - m_Coords->inputpole.y;
 
+    int mw = 0, mh = 0;
+
+    if(m_Coords->mapping == PhotoLayerImageCoordinates::TRANSVERSE) {
+        /* UTM / Transverse Mercator: the layout (offsets, output size and
+           the lat/lon of the output corners) comes from the warp, which
+           samples the whole footprint. Meridian convergence means the grid
+           is rotated in Mercator space, so the output box is larger than
+           the source and has empty (white) corner wedges. */
+        PhotoLayerTM::Layout L;
+        if(!PrepareTransverse(w, h, L)) {
+            wxLogMessage("MakeMappedImage: Transverse Mercator setup failed (degenerate georeferencing)");
+            return false;
+        }
+        mercatoroffset.x = L.offx;
+        mercatoroffset.y = L.offy;
+        mw = L.mw;
+        mh = L.mh;
+    } else {
+
     /* determine location of offsets and image boundaries */
     mercatoroffset.x = 0;
     mercatoroffset.y = 0;
@@ -487,7 +551,7 @@ bool PhotoLayerImage::MakeMappedImage(wxWindow *parent, bool paramsonly)
     if(isnan(minp) || isnan(maxp))
         return false;
 
-    int mw = maxp - minp;
+    mw = maxp - minp;
 
     /* for polar, one of the two points along vertical meridian often
        are the extreme, so expand height based on these */
@@ -513,7 +577,7 @@ bool PhotoLayerImage::MakeMappedImage(wxWindow *parent, bool paramsonly)
     if(isnan(minp_y) || isnan(maxp_y))
         return false;
 
-    int mh = maxp_y - minp_y;
+    mh = maxp_y - minp_y;
 
     /* FIX: p1/p2 must describe the mapped (output) image's own pixel
        corners, since lat()/lon() and overlay rendering index into
@@ -528,6 +592,8 @@ bool PhotoLayerImage::MakeMappedImage(wxWindow *parent, bool paramsonly)
     m_Coords->p1 = wxPoint(0, 0);
     m_Coords->p2 = wxPoint(mw, mh);
 
+    }   /* end non-TRANSVERSE layout */
+
     /* only computing parameters, not the actual mapping */
     if(paramsonly)
         return true;
@@ -540,7 +606,7 @@ bool PhotoLayerImage::MakeMappedImage(wxWindow *parent, bool paramsonly)
         return true;
     }
 
-    if(mw < 0 || mh < 0) {
+    if(mw < 1 || mh < 1) {
         wxMessageDialog w( parent, _("Resulting image has negative dimensions, aborting\n"),
                            _("Mapping Failed"), wxOK | wxICON_ERROR );
         w.ShowModal();

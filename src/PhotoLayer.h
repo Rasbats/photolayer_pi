@@ -42,6 +42,7 @@
 #include <vector>
 
 #include "PhotoLayerUI.h"
+#include "TransverseMercator.h"
 
 #ifndef WIN32
 #define __int64 long int
@@ -132,12 +133,19 @@ public:
 	   LoadCoordinatesFromTIF() to choose PLATECARREE vs MERCATOR mapping. */
 	int m_ModelType = -1;
 
+	/* Set by ReadHeader() for UTM / Transverse Mercator files: projection
+	   parameters and the pixel -> easting/northing affine
+	   { e0, a, b, n0, c, d } used by LoadCoordinatesFromTIF(). */
+	bool m_isTM = false;
+	PhotoLayerTM::Params m_tm;
+	double m_aff[6] = { 0, 0, 0, 0, 0, 0 };
 
 
 protected:
 	
 
 private:
+	bool ReadTransverse(GTIF *gtif, GTIFDefn *defn, int xsize, int ysize);
 	void LoadCoordinatesFromTIF(PhotoLayerImageCoordinateList &coords, wxString filename);
 	void LoadTIFCoordinatesFromXml(PhotoLayerImageCoordinateList &coords, wxString coordinatesets);
 	void SaveTIFCoordinatesToXml(PhotoLayerImageCoordinateList &coords, wxString filename);
